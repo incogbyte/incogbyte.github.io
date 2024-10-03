@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en-us"><head>
+    <title>incogbyte&#39;s blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+
+    
+    
+    
+    <link rel="stylesheet" href="../../css/theme.min.css">
+
+    
+    
+    
+
+    
+</head>
+<body>
+        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
+    <div class="row">
+        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
+            <a href="../../" class="text-decoration-none">
+                <img id="home-image" class="rounded-circle"
+                    
+                        
+                            src="../../images/avatar.png"
+                        
+                    
+                />
+            </a>
+        </div>
+        <div class="col-sm-8 col-12 text-sm-left text-center">
+            <h2 class="m-0 mb-2 mt-4">
+                <a href="../../" class="text-decoration-none">
+                    
+                        incogbyte
+                    
+                </a>
+            </h2>
+            <p class="text-muted mb-1">
+                
+                    incogbyte #:
+                
+            </p>
+            <ul id="nav-links" class="list-inline mb-2">
+                
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../about/" title="About">About</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
+                    </li>
+                
+            </ul>
+            <ul id="nav-social" class="list-inline">
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/incogbyte" target="_blank">
+                            <i class="fab fa-github fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
+                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://twitter.com/incogbyte" target="_blank">
+                            <i class="fab fa-twitter fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="mailto://incogbyte@gmail.com" target="_blank">
+                            <i class="fas fa-at fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="incogbyte" target="_blank">
+                            <i class="fab fa-telegram fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+    <hr />
+</header>
+<div class="container">
+    <div class="pl-sm-4 ml-sm-5">
+        <p>Hey guys, in this post i’ll describe how i used path traversal to explore a file upload, that enable me an RCE, during a private pentesting. I’ll blur the sensitive contents.</p>
+<p>firstly, while browsing i found a paramater that caugth my attention, frameManagerPath a base64 parameter. This path always return a javascript code. like the image bellow:</p>
+<p><img src="../../images/rce01.png" alt="rce"></p>
+<p>After decode the the value, i could notice that value was a relative path to a file.</p>
+<p><img src="../../images/rce02.png" alt="rce"></p>
+<p>Next, step was encoding the string /etc/passwd into base64 format to try some path traversal, for my surprise, worked :). OBS: L2V0Yy9wYXNzd2Q= == /etc/passwd</p>
+<p><img src="../../images/rce03.png" alt="rce"></p>
+<p>But, before found this path traversal, i found a miscounfigured file upload, that enabled me to upload any kind of file, but i could not access the root location in /wwwroot/path :/. The image bellow shows the request of this file upload, and the response.</p>
+<p><img src="../../images/rce04.png" alt="rce"></p>
+<p>Next step, i upload a webshell as show bellow.</p>
+<p><img src="../../images/rce05.png" alt="rce"></p>
+<p>By joining the two items it was possible to access the webshell through the path traversal and execute commands on the server through the webshell. cmFudC9ibG9nL3BhdGh0cmF2ZXJzYWwvaW1hZ2UwNS5wbmc= == “the path wwwroot encoded em base64 (blur)”</p>
+<ul>
+<li>
+<p>Request</p>
+<p><img src="../../images/rce06.png" alt="rce"></p>
+</li>
+<li>
+<p>Response</p>
+<p><img src="../../images/rce07.png" alt="rce"></p>
+</li>
+</ul>
+<p>The next image ilustrates the final results.</p>
+<p><img src="../../images/rce08.png" alt="rce"></p>
+
+    </div>
+
+    
+
+            </div>
+        </div><footer class="text-center pb-1">
+    <small class="text-muted">
+        
+            &copy; Copyright 2024, incogbyte
+        
+        <br>
+    </small>
+</footer>
+</body>
+</html>

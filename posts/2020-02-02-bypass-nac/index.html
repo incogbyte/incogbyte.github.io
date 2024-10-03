@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en-us"><head>
+    <title>incogbyte&#39;s blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+
+    
+    
+    
+    <link rel="stylesheet" href="../../css/theme.min.css">
+
+    
+    
+    
+
+    
+</head>
+<body>
+        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
+    <div class="row">
+        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
+            <a href="../../" class="text-decoration-none">
+                <img id="home-image" class="rounded-circle"
+                    
+                        
+                            src="../../images/avatar.png"
+                        
+                    
+                />
+            </a>
+        </div>
+        <div class="col-sm-8 col-12 text-sm-left text-center">
+            <h2 class="m-0 mb-2 mt-4">
+                <a href="../../" class="text-decoration-none">
+                    
+                        incogbyte
+                    
+                </a>
+            </h2>
+            <p class="text-muted mb-1">
+                
+                    incogbyte #:
+                
+            </p>
+            <ul id="nav-links" class="list-inline mb-2">
+                
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../about/" title="About">About</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
+                    </li>
+                
+            </ul>
+            <ul id="nav-social" class="list-inline">
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/incogbyte" target="_blank">
+                            <i class="fab fa-github fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
+                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://twitter.com/incogbyte" target="_blank">
+                            <i class="fab fa-twitter fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="mailto://incogbyte@gmail.com" target="_blank">
+                            <i class="fas fa-at fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="incogbyte" target="_blank">
+                            <i class="fab fa-telegram fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+    <hr />
+</header>
+<div class="container">
+    <div class="pl-sm-4 ml-sm-5">
+        <p>In this post i’ll describe how to bypass NAC ( Network Access Control ). During an internal pentest, I had a problem connecting to the client network ( all network -s 802.1x (including VoIP -s), after a few hours trying to find out why, I found out that the client had implemented NAC, but what is Network access protocol (NAC) ?</p>
+<p>Network Access Control (NAC) is a solution used on corporate networks to prevent, or even hinder, unauthorized hosts from accessing internally available services and systems. This access restriction can occur only at the network layer, preventing an IP address from being obtained through the DHCP service, or completely segmenting the wrong hosts from the valid ones at the link layer level. Below are descriptive steps to circumvent NAC, remembering that this does not work in all cases.</p>
+<p>1º Connect a valid host to hub</p>
+<p>2º Attach the attacker’s host to the hub</p>
+<p>3º Intercept the ARP frames to identify the valid host MAC address</p>
+<p>4º Connect hub / switch to the network point</p>
+<p>5º Wait for authentication of valid host</p>
+<p>6º Clone the valid host MAC address into the attacker’s host</p>
+<p>7º Enter the victim’s IP address statically in the attacker’s host</p>
+<p>This will allow the attacker to communicate with corporate networks without requiring authentication. The following illustration shows the diagram representing such a bypass of the NAC:</p>
+<p><img src="../../images/wireshark.png" alt="wireshark.png"></p>
+<p>After setup, wireshark was used to get IP and MAC address from ARP packets. As ilustrate bellow</p>
+<p><img src="../../images/wireshark_2.png" alt="wireshark_2.png"></p>
+<p>The next step was to clone the victim’s MAC address, IP address, configure network settings, and then connect the attacker’s machine to the hub. The following illustration shows when the required NAC bypass settings are made:</p>
+<p><img src="../../images/arp.png" alt="arp.png"></p>
+<p>As a proof of concept concept, a scan was performed on the 10.75.X.X/X subnet to find available hosts with the nmap tool. The image below reveals the fact:</p>
+<p><img src="../../images/nmap.png" alt="nmap.png"></p>
+<p>Thats all folks.. If you would like more posts related to internal pentest, leave your comment at</p>
+<ul>
+<li><a href="twitter.com/incogbyte">twitter.com/incogbyte</a></li>
+</ul>
+
+    </div>
+
+    
+
+            </div>
+        </div><footer class="text-center pb-1">
+    <small class="text-muted">
+        
+            &copy; Copyright 2024, incogbyte
+        
+        <br>
+    </small>
+</footer>
+</body>
+</html>

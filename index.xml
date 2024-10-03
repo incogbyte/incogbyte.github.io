@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>incogbyte&#39;s blog</title>
+    <link>https://incogbyte.github.io/</link>
+    <description>Recent content on incogbyte&#39;s blog</description>
+    <generator>- -- go-.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; Copyright 2024, incogbyte</copyright>
+    <lastBuildDate>Thu, 18 Apr 2024 22:40:38 -0300</lastBuildDate>
+    <atom:link href="https://incogbyte.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bypass MTLS Flutter</title>
+      <link>https://incogbyte.github.io/posts/bypassmtlsflutter/</link>
+      <pubDate>Thu, 18 Apr 2024 22:40:38 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/bypassmtlsflutter/</guid>
+      <description>Overview In this blog post, we&amp;rsquo;ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\(ツ)/¯ ) from developers. Before we continue.. into the specifics, it&amp;rsquo;s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.&#xA;Our journey will begin with an exploration of Flutter&amp;rsquo;s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited.</description>
+    </item>
+    <item>
+      <title>Decrypt WhatsApp Msgs Android (Investigator)</title>
+      <link>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</link>
+      <pubDate>Sun, 10 Mar 2024 22:40:38 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</guid>
+      <description>Overview In this blog post, we&amp;rsquo;ll tackle a compelling challenge: decrypting WhatsApp messages. However, before we dive into the solution, it&amp;rsquo;s crucial to grasp some foundational concepts about how Android—though not all versions—stores your screen lock password. More importantly, we&amp;rsquo;ll explore why reusing this password across other applications, such as WhatsApp, is a security misstep.&#xA;Our journey will begin with an exploration of Android&amp;rsquo;s password storage mechanisms, focusing on the nuances of different versions and how they impact your -&amp;rsquo;s security.</description>
+    </item>
+    <item>
+      <title>PortSwigger Practice Exam</title>
+      <link>https://incogbyte.github.io/posts/portswigger-practice-exam/</link>
+      <pubDate>Fri, 01 Dec 2023 17:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/portswigger-practice-exam/</guid>
+      <description>In this blog post, we&amp;rsquo;ll embark on a journey to dissect the solution to a challenging practice exam question provided by PortSwigger. We&amp;rsquo;ll delve deep into the intricacies of web security, emphasizing the critical importance of understanding vulnerabilities, exploitation techniques, and mitigation strategies. By the time you finish reading this article, you&amp;rsquo;ll have gained valuable insights into real-world web security scenarios, equipping yourself with the knowledge required to effectively protect digital assets.</description>
+    </item>
+    <item>
+      <title>Detect burp suite</title>
+      <link>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</link>
+      <pubDate>Fri, 11 Nov 2022 17:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</guid>
+      <description>tl;dr&#xA;You can see the result here :)&#xA;Click here 👀&#xA;Hey guys, I’m here to show you a little simple technique, but it’s a tip that maybe someday help someone. The question is how to identify that someone is using web proxy (BURP)? well, a friend of mine aka Jerry was with me one afternoon and we decided to do a PoC, maybe a lot of people already know, but when starting BURP it automatically goes up to a “light” web server where you can for example download the BURP certificate to import into your browser or - at the following address http://burp/ The following image illustrates this interface:</description>
+    </item>
+    <item>
+      <title>Reversing Nim Binary With Radare</title>
+      <link>https://incogbyte.github.io/posts/reverse-nim-binary/</link>
+      <pubDate>Thu, 09 Jun 2022 10:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/reverse-nim-binary/</guid>
+      <description>This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (https://nim-lang.org/) program language.&#xA;tl;dr&#xA;If you want to know the answer right away, just put a break point in the sym.join_main_42 function, and check the registers and your flag will be there.&#xA;The challenge itself was not complex however, I had never written anything in Nim.</description>
+    </item>
+    <item>
+      <title>iOS Anti-Tampers Bypass</title>
+      <link>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</link>
+      <pubDate>Fri, 18 Mar 2022 22:40:38 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</guid>
+      <description>Hi everyone, in this blog i&amp;rsquo;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&#xA;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&#xA;ptrace sysctl strstr geppid In this blog, I will only talk about how I did it to bypass, using only frida with radare2.</description>
+    </item>
+    <item>
+      <title>SQL Injection CVE-2022-23046 - PHPIPAM &#43; Exploit</title>
+      <link>https://incogbyte.github.io/posts/2022-01-20-cve_2022_23046_phpipam/</link>
+      <pubDate>Thu, 20 Jan 2022 17:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2022-01-20-cve_2022_23046_phpipam/</guid>
+      <description>CVE-2022-23046 - PHPIPAM TL;DR&#xA;This write up is about a SQL injection which I found 4 days after another researcher reported it :/, however, because of the fact that I haven’t found any write ups or publicly available exploits, I decided to write about it. Exploit at the end!&#xA;PHPIPAM is a software widely used internally by several companies. And by being so, it is relatively common for you to find a running instance to manage IT assets, networks, etc.</description>
+    </item>
+    <item>
+      <title>SQL Injection WAF bypass techniques</title>
+      <link>https://incogbyte.github.io/posts/2020-12-12-sqli-bypass.techs/</link>
+      <pubDate>Sat, 12 Dec 2020 17:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2020-12-12-sqli-bypass.techs/</guid>
+      <description>HI, People In this basic tutorial, I want to show you a little bit of SQL Injection WAF bypass, I know it is a subject that is well commented and discussed every day .. after all, WAFS are boring :/ and in the end .. they just work as a superficial protection for an environment (in my opnion it is like a leaky bucket that you fix with bubble gum) .</description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://incogbyte.github.io/cve/</link>
+      <pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate>
+      <guid>https://incogbyte.github.io/cve/</guid>
+      <description>Here is a my selection of CVEs published:&#xA;CVE-2024-33329: LumisXP - Unauthenticated XSS CVE-2024-33328: LumisXP - Unauthenticated XSS CVE-2024-33327: LumisXP - Unauthenticated XSS CVE-2024-33326: LumisXP - IDOR CVE-2023-26877: SeSuite - Code Execution CVE-2023-26876: Piwigo - SQL Injection CVE-2022-2863: WordPress WPvivid Backup - Path Traversal CVE-2021-46426: phpIPAM - CSRF + XSS CVE-2021-30140: LiquidFiles 3.4.15 - Stored XSS CVE-2020-35581: Envira Gallery Lite - Stored XSS CVE-2020-25790: Typesetter CMS - Code Execution CVE-2019-20803: Gila CMS 1.</description>
+    </item>
+    <item>
+      <title>Bypass NAC ( Network Access Control )</title>
+      <link>https://incogbyte.github.io/posts/2020-02-02-bypass-nac/</link>
+      <pubDate>Sun, 02 Feb 2020 17:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2020-02-02-bypass-nac/</guid>
+      <description>In this post i’ll describe how to bypass NAC ( Network Access Control ). During an internal pentest, I had a problem connecting to the client network ( all network -s 802.1x (including VoIP -s), after a few hours trying to find out why, I found out that the client had implemented NAC, but what is Network access protocol (NAC) ?&#xA;Network Access Control (NAC) is a solution used on corporate networks to prevent, or even hinder, unauthorized hosts from accessing internally available services and systems.</description>
+    </item>
+    <item>
+      <title>RCE using Path Traversal</title>
+      <link>https://incogbyte.github.io/posts/2020-01-02-rce-path-traversal/</link>
+      <pubDate>Sun, 02 Feb 2020 17:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2020-01-02-rce-path-traversal/</guid>
+      <description>Hey guys, in this post i’ll describe how i used path traversal to explore a file upload, that enable me an RCE, during a private pentesting. I’ll blur the sensitive contents.&#xA;firstly, while browsing i found a paramater that caugth my attention, frameManagerPath a base64 parameter. This path always return a javascript code. like the image bellow:&#xA;After decode the the value, i could notice that value was a relative path to a file.</description>
+    </item>
+    <item>
+      <title>Whoami!</title>
+      <link>https://incogbyte.github.io/posts/whoami/</link>
+      <pubDate>Sun, 02 Feb 2020 17:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/whoami/</guid>
+      <description>root:# cowsay &amp;#39;hi, incogbyte here&amp;#39; &amp;lt; hi,incogbyte here! &amp;gt; -------------- \ ^__^ \ (oo)\_______ (__)\ )\/\\ ||----w | || || </description>
+    </item>
+    <item>
+      <title>Cowsay</title>
+      <link>https://incogbyte.github.io/posts/cowsay/</link>
+      <pubDate>Sun, 22 Sep 2019 15:15:53 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/cowsay/</guid>
+      <description>hi :)&#xA;_______________________________________ / hi, incogbyte here :) welcome more info \ \ at /about / --------------------------------------- \ ^__^ \ (oo)\_______ (__)\ )\/\ ||----w | || || </description>
+    </item>
+    <item>
+      <title>About</title>
+      <link>https://incogbyte.github.io/about/</link>
+      <pubDate>Thu, 18 Apr 2019 22:40:38 -0300</pubDate>
+      <guid>https://incogbyte.github.io/about/</guid>
+      <description>incogbyte:# cat ~/info.txt Rodolfo Tavares is a pentester with over five years of experience poking around in all the right (and wrong) places in cybersecurity. From hacking apps (AppSec), breaking into infrastructure, and even figuring out how to mess with ATMs and POS systems (don’t worry, all ethical), he&amp;rsquo;s done it all. Along the way, he’s found and reported a ton of vulnerabilities, earning himself a bunch of shiny CVEs. Oh, and you might also know him by his alter egos rodnt because even pentesters need a r4nd0m alias, right?</description>
+    </item>
+  </channel>
+</rss>

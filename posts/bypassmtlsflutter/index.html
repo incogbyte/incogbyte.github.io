@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en-us"><head>
+    <title>incogbyte&#39;s blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+
+    
+    
+    
+    <link rel="stylesheet" href="../../css/theme.min.css">
+
+    
+    
+    
+
+    
+</head>
+<body>
+        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
+    <div class="row">
+        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
+            <a href="../../" class="text-decoration-none">
+                <img id="home-image" class="rounded-circle"
+                    
+                        
+                            src="../../images/avatar.png"
+                        
+                    
+                />
+            </a>
+        </div>
+        <div class="col-sm-8 col-12 text-sm-left text-center">
+            <h2 class="m-0 mb-2 mt-4">
+                <a href="../../" class="text-decoration-none">
+                    
+                        incogbyte
+                    
+                </a>
+            </h2>
+            <p class="text-muted mb-1">
+                
+                    incogbyte #:
+                
+            </p>
+            <ul id="nav-links" class="list-inline mb-2">
+                
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../about/" title="About">About</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
+                    </li>
+                
+            </ul>
+            <ul id="nav-social" class="list-inline">
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/incogbyte" target="_blank">
+                            <i class="fab fa-github fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
+                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://twitter.com/incogbyte" target="_blank">
+                            <i class="fab fa-twitter fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="mailto://incogbyte@gmail.com" target="_blank">
+                            <i class="fas fa-at fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="incogbyte" target="_blank">
+                            <i class="fab fa-telegram fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+    <hr />
+</header>
+<div class="container">
+    <div class="pl-sm-4 ml-sm-5">
+        <h4 id="overview">Overview</h4>
+<p>In this blog post, we&rsquo;ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\<em>(ツ)</em>/¯  ) from developers. Before we continue.. into the specifics, it&rsquo;s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.</p>
+<p>Our journey will begin with an exploration of Flutter&rsquo;s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.</p>
+<h4 id="mtls--mutual-tls-">MTLS ( Mutual TLS )</h4>
+<p>Mutual TLS (mTLS) authentication ensures that traffic is both secure and trusted in both directions between a client and server. It allows requests that do not log in with an identity provider (like IoT -s) to demonstrate that they can reach a given resource. Client certificate authentication is also a second layer of security for team members who both log in with an identity provider (IdP) and present a valid client certificate.</p>
+<p>With a root certificate authority (CA) in place, Access only allows requests from -s with a corresponding client certificate. When a request reaches the application, Access responds with a request for the client to present a certificate. If the - fails to present the certificate, the request is not allowed to proceed. If the client does have a certificate, Access completes a key exchange to verify.</p>
+<p><img src="../../images/flutter_00.png" alt=""></p>
+<h4 id="flutter--ssl-pinning-and-mtls">Flutter + SSL Pinning and MTLS</h4>
+<p>Flutter does not perform CA checks as demonstrated in the code snippet from <a href="https://github.com/dart-lang/sdk/blob/main/runtime/bin/security_context.cc">this Dart SDK file on GitHub</a>. There is extensive documentation and many blog posts dedicated to bypassing traditional SSL pinning, such as:</p>
+<ul>
+<li><a href="https://blog.nviso.eu/2022/08/18/intercept-flutter-traffic-on-ios-and-android-http-https-dio-pinning/">Intercepting Flutter Traffic on iOS and Android</a> by NVISO</li>
+<li><a href="https://github.com/horangi-cyops/flutter-ssl-pinning-bypass">Flutter SSL Pinning Bypass Techniques</a> on GitHub</li>
+</ul>
+<p>However, many modern applications are transitioning to mTLS rather than relying solely on traditional SSL pinning. This shift adds an additional layer of security through client certificate authentication, enhancing overall protection against unauthorized access.</p>
+<h4 id="how-the-bypass-works">How the Bypass Works</h4>
+<p>To understand the process of bypassing mTLS implementations in Flutter, I&rsquo;ll break down the explanation into common code patterns and their practical implementations. Here’s a look at typical methods used to implement client certificates mTLS in Flutter:</p>
+<ol>
+<li>
+<p><strong>Loading the private key and certificate from environment variables</strong></p>
+<p>In this pattern, private keys and certificates are loaded from environment variables, which is considered a secure practice as it avoids hardcoding sensitive information directly in the application’s source code. Here&rsquo;s an example:</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dart" data-lang="dart"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SecurityConfiguration</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">String</span> privateKeyBase64 <span style="color:#f92672">=</span> <span style="color:#66d9ef">String</span>.fromEnvironment(<span style="color:#e6db74">&#39;PRIVATE_KEY_BASE64&#39;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">String</span> certificateBase64 <span style="color:#f92672">=</span> <span style="color:#66d9ef">String</span>.fromEnvironment(<span style="color:#e6db74">&#39;CERTIFICATE_BASE64&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> Uint8List <span style="color:#66d9ef">get</span> privateKeyBytes <span style="color:#f92672">=&gt;</span> base64.decode(privateKeyBase64);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> Uint8List <span style="color:#66d9ef">get</span> certificateChainBytes <span style="color:#f92672">=&gt;</span> base64.decode(certificateBase64);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> Future<span style="color:#f92672">&lt;</span>SecurityContext<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">get</span> globalContext <span style="color:#66d9ef">async</span> {
+</span></span><span style="display:flex;"><span>    SecurityContext sc <span style="color:#f92672">=</span> SecurityContext(withTrustedRoots: <span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>    sc.usePrivateKeyBytes(privateKeyBytes);
+</span></span><span style="display:flex;"><span>    sc.useCertificateChainBytes(certificateChainBytes);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> sc;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This code snippet demonstrates how to decode private keys and certificates stored in environment variables using base64 encoding, then use these for configuring the <code>SecurityContext</code> in Flutter. The <code>withTrustedRoots: false</code> parameter ensures that the default trusted root certificates are not automatically used, which is crucial for custom security configurations.</p>
+<ol start="2">
+<li>
+<p><strong>Loading static files from the assets folder</strong></p>
+<p>Another common approach involves storing the certificate and key as files in the application&rsquo;s assets folder. This method is straightforward and often used in developmental stages:</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dart" data-lang="dart"><span style="display:flex;"><span>Future<span style="color:#f92672">&lt;</span>SecurityContext<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">get</span> globalContext <span style="color:#66d9ef">async</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> keyBytes <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>        (<span style="color:#66d9ef">await</span> rootBundle.load(<span style="color:#e6db74">&#39;assets/resources/key.key&#39;</span>))
+</span></span><span style="display:flex;"><span>        .buffer
+</span></span><span style="display:flex;"><span>        .asInt8List();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> certificateChainBytes <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>        (<span style="color:#66d9ef">await</span> rootBundle.load(<span style="color:#e6db74">&#39;assets/resources/key_crt.crt&#39;</span>))
+</span></span><span style="display:flex;"><span>        .buffer
+</span></span><span style="display:flex;"><span>        .asInt8List();
+</span></span><span style="display:flex;"><span>    SecurityContext sc <span style="color:#f92672">=</span> SecurityContext(withTrustedRoots: <span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>    sc.usePrivateKeyBytes(keyBytes);
+</span></span><span style="display:flex;"><span>    sc.useCertificateChainBytes(certificateChainBytes);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> sc;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>In this example, the <code>rootBundle.load</code> method is used to load the key and certificate files from the assets directory, converting them into byte arrays. These byte arrays are then utilized to set up the <code>SecurityContext</code>. Similar to the previous example, <code>withTrustedRoots: false</code> is used to prevent the inclusion of default certificates, providing a clear pathway for using only the specified client certificates and keys.</p>
+<p>The provided code examples illustrate two primary methods for configuring the <code>SecurityContext</code> in Flutter applications to use custom client certificates and private keys for mTLS. Both methods aim to enhance security by either isolating sensitive data (like in the environment variables method) or simplifying the development process (like in the static files method). In both cases, the <code>SecurityContext</code> setup involves specifying that only the explicitly provided certificates and keys are to be used, without relying on any pre-existing or default security configurations. This setup is essential in scenarios where mTLS is used, as it requires precise control over both client and server-side certificate validations.</p>
+<p>You can now download my lab at: <a href="https://github.com/incogbyte/mtls-flutter">mtls-flutter on GitHub</a> and try it yourself! This blog post will primarily focus on Android.</p>
+<h4 id="reversing-the-flutter-app-and-understanding-the-methodology">Reversing the Flutter App and Understanding the Methodology</h4>
+<p>First, download the .apk file and try using <a href="https://github.com/Impact-I/reFlutter">Reflutter</a> to intercept the traffic. However, sometimes RASP (Runtime Application Self-Protection) technologies, which you can read about on <a href="https://www.guardsquare.com/runtime-application-self-protection-rasp">GuardSquare&rsquo;s RASP page</a> (Use radare2 or IDA ;)), might prevent this. If so, you&rsquo;ll need to bypass these protections before running Reflutter.</p>
+<p><img src="../../images/flutter_01.png" alt=""></p>
+<p>After successfully modifying the app, you need to sign the newly patched .apk with <a href="https://github.com/patrickfav/uber-apk-signer">uber-apk-signer</a>:</p>
+<p><img src="../../images/flutter_02.png" alt=""></p>
+<p>Next, install the modified .apk and set up your intercepting proxy (e.g., configuring the invisible proxy settings in Burp Suite with the appropriate TCP port and listen address).</p>
+<p><img src="../../images/flutter_03.png" alt=""></p>
+<p>Launch the modified <em>mtls_example</em> app and try making a request by tapping any button. Remember to configure the proxy settings on your Android - accordingly.</p>
+<p><img src="../../images/flutter_04.png" alt=""></p>
+<ul>
+<li>Not work ¯\<em>(ツ)</em>/¯</li>
+</ul>
+<p><img src="../../images/flutter_05.png" alt=""></p>
+<p>If you&rsquo;re unable to make any requests, it might be time to try some Frida scripts to further probe and manipulate the application&rsquo;s runtime.</p>
+<p><img src="../../images/flutter_06.png" alt=""></p>
+<ul>
+<li>Not work ¯\<em>(ツ)</em>/¯</li>
+</ul>
+<p><img src="../../images/flutter_07.png" alt=""></p>
+<p>If that still doesn&rsquo;t work, it&rsquo;s possible another layer of protection is in place (mTLS :p ). Suppose the developer has used static files for certificate and key storage, as one method we discussed. In that case, you can easily access the <code>.CA</code> file and <code>.key</code> in the assets folder. You can then use these files to generate a <code>.p12</code> file with the following command, which can be imported into Burp Suite to attempt the request again:</p>
+<p><img src="../../images/flutter_08.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Choose any password</span>
+</span></span><span style="display:flex;"><span>openssl pkcs12 -export -out certmtls.p12 -inkey private.key -in certificate.crt
+</span></span><span style="display:flex;"><span>Enter Export Password:
+</span></span><span style="display:flex;"><span>Verifying - Enter Export Password:
+</span></span></code></pre></div><p><img src="../../images/flutter_09.png" alt=""></p>
+<p>Relaunch the app and try pressing the button again. With the correct mTLS client <code>.key</code> and <code>.crt</code> configured in your intercepting proxy, you should now be able to intercept the app&rsquo;s traffic.</p>
+<p><img src="../../images/flutter_10.png" alt=""></p>
+<p>If the developer has employed environment variables or runtime configurations (the first method of implementation), retrieving the certificates could be more challenging. It would require a different approach, possibly involving extracting environment variables or intercepting them at runtime.</p>
+<p>Testing Flutter apps poses significant challenges due to Flutter&rsquo;s architecture, which compiles into a native binary for iOS and Android. For Android, after building the app (<code>mtls_example_flutter/build/app/outputs/flutter-apk/</code>), verify the presence of <strong>libapp.so</strong> by extracting it and using tools such as <a href="https://github.com/skylot/jadx">Jadx</a> for decompiling the .apk or <a href="https://github.com/nowsecure/r2frida">Radare with Frida</a> for dynamic analysis. The core logic is encapsulated within <strong>libapp.so</strong>. Analyzing this file with tools like <a href="https://github.com/NationalSecurityAgency/ghidra">Ghidra</a> or IDA is essential for understanding how certificates are embedded within the binary.</p>
+<p>We have two approaches to choose from here: use analysis tools like Ghidra, Radare2, or IDA, or utilize a tool called <a href="https://github.com/worawit/blutter">Blutter</a>.</p>
+<p>Let&rsquo;s explore using the Blutter tool. Begin by extracting <strong>libapp.so</strong> from the lib folder after unzipping the .apk:</p>
+<p><img src="../../images/flutter_11.png" alt=""></p>
+<p>Blutter will generate the following contents:</p>
+<ul>
+<li><strong>asm/</strong>: This directory stores the assembly code, which includes annotations from object pools and thread pools, making the assembly easier to read.</li>
+<li><strong>ida_script/</strong>: This folder contains scripts for IDA which aid in the reverse engineering of the app by adding names and structures.</li>
+<li><strong>blutter_frida.js</strong>: A Frida script designed for intercepting the target function.</li>
+<li><strong>objs.txt</strong>: Stores the data found in object pools during the app&rsquo;s initialization, making string constants easily readable.</li>
+<li><strong>pp.txt</strong>: Contains all Dart objects.</li>
+</ul>
+<p>If you search for the hexadecimal pattern <code>4c 5c 30</code> (LS0), you can locate the pattern of the certificate:</p>
+<p><img src="../../images/flutter_12.png" alt=""></p>
+<p>Copy this string, base64 decode it, and you will retrieve the certificate and the key:</p>
+<p><img src="../../images/flutter_13.png" alt=""></p>
+<p>Now, you can bypass the security using the same strategy: use OpenSSL to generate the p12 file and import it into Burp Suite to facilitate the bypass.</p>
+<p>Alternatively, you can use the Ghidra tool to search, or simply run the command <code>strings -a libapp.so</code> and look for the certificate pattern (this sometimes works):</p>
+<p><img src="../../images/flutter_14.png" alt=""></p>
+<p>As you can see, sometimes a bit of reverse engineering skill is needed to understand how systems work and how commonly they are implemented. Practice is key :).</p>
+<p>Thanks! :)</p>
+<h4 id="refs">Refs</h4>
+<ol>
+<li><a href="https://swarm.ptsecurity.com/fork-bomb-for-flutter/">https://swarm.ptsecurity.com/fork-bomb-for-flutter/</a></li>
+<li><a href="https://developers.cloudflare.com/cloudflare-one/identity/-s/access-integrations/mutual-tls-authentication/">https://developers.cloudflare.com/cloudflare-one/identity/-s/access-integrations/mutual-tls-authentication/</a></li>
+<li><a href="https://www.guardsquare.com/runtime-application-self-protection-rasp">https://www.guardsquare.com/runtime-application-self-protection-rasp</a></li>
+<li><a href="https://docs.flutter.dev/resources/architectural-overview">https://docs.flutter.dev/resources/architectural-overview</a></li>
+<li><a href="https://builtin.com/software-engineering-perspectives/mutual-tls-tutorial">https://builtin.com/software-engineering-perspectives/mutual-tls-tutorial</a></li>
+<li><a href="https://frida.re/">https://frida.re/</a></li>
+<li><a href="https://rada.re/">https://rada.re/</a></li>
+</ol>
+
+    </div>
+
+    
+
+            </div>
+        </div><footer class="text-center pb-1">
+    <small class="text-muted">
+        
+            &copy; Copyright 2024, incogbyte
+        
+        <br>
+    </small>
+</footer>
+</body>
+</html>

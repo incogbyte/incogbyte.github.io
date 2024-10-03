@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on incogbyte&#39;s blog</title>
+    <link>https://incogbyte.github.io/categories/posts/</link>
+    <description>Recent content in Posts on incogbyte&#39;s blog</description>
+    <generator>- -- go-.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; Copyright 2024, incogbyte</copyright>
+    <lastBuildDate>Sun, 22 Sep 2019 15:15:53 -0300</lastBuildDate>
+    <atom:link href="https://incogbyte.github.io/categories/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cowsay</title>
+      <link>https://incogbyte.github.io/posts/cowsay/</link>
+      <pubDate>Sun, 22 Sep 2019 15:15:53 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/cowsay/</guid>
+      <description>hi :)&#xA;_______________________________________ / hi, incogbyte here :) welcome more info \ \ at /about / --------------------------------------- \ ^__^ \ (oo)\_______ (__)\ )\/\ ||----w | || || </description>
+    </item>
+  </channel>
+</rss>

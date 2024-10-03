@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en-us"><head>
+    <title>incogbyte&#39;s blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+
+    
+    
+    
+    <link rel="stylesheet" href="../../css/theme.min.css">
+
+    
+    
+    
+
+    
+</head>
+<body>
+        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
+    <div class="row">
+        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
+            <a href="../../" class="text-decoration-none">
+                <img id="home-image" class="rounded-circle"
+                    
+                        
+                            src="../../images/avatar.png"
+                        
+                    
+                />
+            </a>
+        </div>
+        <div class="col-sm-8 col-12 text-sm-left text-center">
+            <h2 class="m-0 mb-2 mt-4">
+                <a href="../../" class="text-decoration-none">
+                    
+                        incogbyte
+                    
+                </a>
+            </h2>
+            <p class="text-muted mb-1">
+                
+                    incogbyte #:
+                
+            </p>
+            <ul id="nav-links" class="list-inline mb-2">
+                
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../about/" title="About">About</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
+                    </li>
+                
+            </ul>
+            <ul id="nav-social" class="list-inline">
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/incogbyte" target="_blank">
+                            <i class="fab fa-github fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
+                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://twitter.com/incogbyte" target="_blank">
+                            <i class="fab fa-twitter fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="mailto://incogbyte@gmail.com" target="_blank">
+                            <i class="fas fa-at fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="incogbyte" target="_blank">
+                            <i class="fab fa-telegram fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+    <hr />
+</header>
+<div class="container">
+    <div class="pl-sm-4 ml-sm-5">
+        <p>tl;dr</p>
+<p>You can see the result here :)</p>
+<p><a href="../../images/burp-dection.html">Click here 👀</a></p>
+<p>Hey guys, I’m here to show you a little simple technique, but it’s a tip that maybe someday help someone. The question is how to identify that someone is using web proxy (BURP)? well, a friend of mine aka Jerry was with me one afternoon and we decided to do a PoC, maybe a lot of people already know, but when starting BURP it automatically goes up to a “light” web server where you can for example download the BURP certificate to import into your browser or - at the following address http://burp/ The following image illustrates this interface:</p>
+<p><a href="../../imgs/burp_http.png"></a></p>
+<p>Well, taking this as a starting point, on this little web server we have BURP’s “favicon.ico” too, where you can access it from the following URL http://burp/favicon.ico</p>
+<p>according to google favicon.ico is for:</p>
+<p>“A favicon is a small 16 × 16 pixel icon that appears at the top of a web browser. It serves as branding for your website and a convenient way for visitors to locate your page when they have multiple tabs open. Because of their tiny size , favicons work best as simple images or one-to-three characters of text.”</p>
+<p>Because with this behavior, we can find out if a person(attacker) is using BURP, using a bit of Javascript. As shown in the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">style</span>&gt;
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">body</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">font-family</span>: <span style="color:#66d9ef">sans-serif</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">color</span>: <span style="color:#ae81ff">#FBF5E3</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">background</span>: <span style="color:#ae81ff">#002B36</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">margin-left</span>: <span style="color:#ae81ff">3</span><span style="color:#66d9ef">em</span>;
+</span></span><span style="display:flex;"><span>              }
+</span></span><span style="display:flex;"><span>              
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">h1</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">color</span>: <span style="color:#66d9ef">goldenrod</span>;
+</span></span><span style="display:flex;"><span>              }
+</span></span><span style="display:flex;"><span>              
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">img</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">margin-left</span>: <span style="color:#ae81ff">-1</span><span style="color:#66d9ef">em</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">margin-bottom</span>: <span style="color:#ae81ff">-2</span><span style="color:#66d9ef">em</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">width</span>: <span style="color:#ae81ff">10</span><span style="color:#66d9ef">%</span>;
+</span></span><span style="display:flex;"><span>              }
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">style</span>&gt;
+</span></span><span style="display:flex;"><span>       &lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">arroto</span>() {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">img1</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#34;img&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">img1</span>.<span style="color:#a6e22e">src</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://burp/favicon.ico&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">img1</span>.<span style="color:#a6e22e">onload</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;[+] Using BURP [+]&#34;</span>);
+</span></span><span style="display:flex;"><span>                document.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">append</span>(<span style="color:#66d9ef">this</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#39;[+] Burp Detected [+]&#39;</span>);
+</span></span><span style="display:flex;"><span>                };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">img1</span>.<span style="color:#a6e22e">onerror</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;[+] Not using BURP [+]&#34;</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">title</span>&gt; Burp Detection &lt;/<span style="color:#f92672">title</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">head</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">img</span> <span style="color:#a6e22e">src</span> <span style="color:#a6e22e">onerror</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;arroto();&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">h1</span>&gt;Using Burp ?&lt;/<span style="color:#f92672">h1</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">p</span>&gt;
+</span></span><span style="display:flex;"><span>      Let&#39;s see.. 
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">p</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">footer</span>&gt; By inc0gbyt3 and J3rry &lt;/<span style="color:#f92672">footer</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">html</span>&gt;
+</span></span></code></pre></div><p>In the code of the link above we have 2 behaviors in case if you (attacker) access with active burp, javascript will check if favicon.ico is accessible if any, will warn that you are using burp :), otherwise You will not do anything. Go ahead and try it yourself.</p>
+<p>OBS: You can disable this burp functionality in Options, just uncheck the option that will take this service</p>
+
+    </div>
+
+    
+
+            </div>
+        </div><footer class="text-center pb-1">
+    <small class="text-muted">
+        
+            &copy; Copyright 2024, incogbyte
+        
+        <br>
+    </small>
+</footer>
+</body>
+</html>

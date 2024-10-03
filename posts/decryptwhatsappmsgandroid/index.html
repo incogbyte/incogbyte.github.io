@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en-us"><head>
+    <title>incogbyte&#39;s blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+
+    
+    
+    
+    <link rel="stylesheet" href="../../css/theme.min.css">
+
+    
+    
+    
+
+    
+</head>
+<body>
+        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
+    <div class="row">
+        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
+            <a href="../../" class="text-decoration-none">
+                <img id="home-image" class="rounded-circle"
+                    
+                        
+                            src="../../images/avatar.png"
+                        
+                    
+                />
+            </a>
+        </div>
+        <div class="col-sm-8 col-12 text-sm-left text-center">
+            <h2 class="m-0 mb-2 mt-4">
+                <a href="../../" class="text-decoration-none">
+                    
+                        incogbyte
+                    
+                </a>
+            </h2>
+            <p class="text-muted mb-1">
+                
+                    incogbyte #:
+                
+            </p>
+            <ul id="nav-links" class="list-inline mb-2">
+                
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../about/" title="About">About</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
+                    </li>
+                
+            </ul>
+            <ul id="nav-social" class="list-inline">
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/incogbyte" target="_blank">
+                            <i class="fab fa-github fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
+                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://twitter.com/incogbyte" target="_blank">
+                            <i class="fab fa-twitter fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="mailto://incogbyte@gmail.com" target="_blank">
+                            <i class="fas fa-at fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="incogbyte" target="_blank">
+                            <i class="fab fa-telegram fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+    <hr />
+</header>
+<div class="container">
+    <div class="pl-sm-4 ml-sm-5">
+        <h2 id="overview">Overview</h2>
+<p>In this blog post, we&rsquo;ll tackle a compelling challenge: decrypting WhatsApp messages. However, before we dive into the solution, it&rsquo;s crucial to grasp some foundational concepts about how Android—though not all versions—stores your screen lock password. More importantly, we&rsquo;ll explore why reusing this password across other applications, such as WhatsApp, is a security misstep.</p>
+<p>Our journey will begin with an exploration of Android&rsquo;s password storage mechanisms, focusing on the nuances of different versions and how they impact your -&rsquo;s security. This understanding is pivotal as we delve into the risks associated with password reuse. It&rsquo;s a common practice, yet one fraught with vulnerabilities, especially when the same password guards access to both your - and your applications.</p>
+<blockquote>
+<p>TL;DR: This challenge was designed for Android versions 4.2 through 9.0. If you&rsquo;re looking for Android 10 &lt;= 14, this challenge might not be for you.</p>
+</blockquote>
+<h2 id="where-and-how-your-android-screenlock-password-is-saved-">Where and how your Android screenlock password is saved ?</h2>
+<p>Before delving into the topic, let&rsquo;s discuss the evolution of Android versions. The earliest Android versions did not incorporate lock screens or any form of security locks; they only featured a menu button. Gesture-based lock screens were introduced with Android 2.0. Android 3.0 brought a new lock screen feature, showcasing a ball with a padlock icon that could be dragged outside of a designated area to unlock the -. Android 4.1 introduced the ability to unlock directly into Google Search by dragging upwards. Android 4.2 further enhanced the lock screen experience by allowing swiping from the left edge of the screen. It also introduced the capability to add widgets to lock screen pages and supported locking -s using various methods such as passcodes, passwords, patterns, fingerprint sensing, or facial recognition.</p>
+<p>In this post, we will assume a particular attack scenario in which we have root and full access to the system. This is because many attack strategies, such as cracking screen locks, are conducted through various methods such as malware, offline cracking, shoulder surfing, and video recording attacks. However, these attacks come with certain limitations; they can only be successful if carried out by an authorized user.</p>
+<pre tabindex="0"><code>------------      ------------      ------------
+| ROOTING  | ----&gt; | DUMPING | ---&gt; | CRACKING |
+------------      ------------      ------------
+</code></pre><p>If it&rsquo;s a rooted -, then we can enter into the kernel layer and dump sensitive data from the phone. (Remember, some exploits can gain root access, such as MediaTek exploits, for example.)</p>
+<p>The first thing we need to get the password is the password.key file. This file is generally stored at /data/system/password.key. The /data/system/password.key file in an Android system is a crucial component related to - security, specifically for -s that are protected by a password. This file stores a hash of the password or PIN used to lock and unlock the -. It&rsquo;s important to note that the actual password or PIN is not stored in plaintext but rather in a cryptographic hash form. The format of the password.key file typically includes the hashed value of the password or PIN, sometimes accompanied by salt. Looking at the previous Android versions, we can verify the code.</p>
+<p><a href="https://android.googlesource.com/platform/frameworks/base/+/52c489cd63cca0361f374f7cb392018fabfa8bcc/core/java/com/android/internal/widget/LockPatternUtils.java">https://android.googlesource.com/platform/frameworks/base/+/52c489cd63cca0361f374f7cb392018fabfa8bcc/core/java/com/android/internal/widget/LockPatternUtils.java</a>.</p>
+<ul>
+<li>Old Android versions</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Generate a hash for the given password. To avoid brute force attacks, we use a salted hash.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Not the most secure, but it is at least a second level of protection. First level is that
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * the file is in a location only readable by the system process.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param password the gesture pattern.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @return the hash of the pattern in a byte array.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> <span style="color:#a6e22e">passwordToHash</span>(String password) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (password <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        String algo <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> hashed <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> saltedPassword <span style="color:#f92672">=</span> (password <span style="color:#f92672">+</span> getSalt()).<span style="color:#a6e22e">getBytes</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> sha1 <span style="color:#f92672">=</span> MessageDigest.<span style="color:#a6e22e">getInstance</span>(algo <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;SHA-1&#34;</span>).<span style="color:#a6e22e">digest</span>(saltedPassword);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> md5 <span style="color:#f92672">=</span> MessageDigest.<span style="color:#a6e22e">getInstance</span>(algo <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;MD5&#34;</span>).<span style="color:#a6e22e">digest</span>(saltedPassword);
+</span></span><span style="display:flex;"><span>            hashed <span style="color:#f92672">=</span> (toHex(sha1) <span style="color:#f92672">+</span> toHex(md5)).<span style="color:#a6e22e">getBytes</span>();
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (NoSuchAlgorithmException e) {
+</span></span><span style="display:flex;"><span>            Log.<span style="color:#a6e22e">w</span>(TAG, <span style="color:#e6db74">&#34;Failed to encode string because of missing algorithm: &#34;</span> <span style="color:#f92672">+</span> algo);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> hashed;
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>This code from Android 4.2 to 6.0 combines SHA-1 and MD5 hashes, not a standard or particularly secure approach to password hashing today. Both SHA-1 and MD5 are considered deprecated for security purposes due to vulnerabilities.</p>
+<ul>
+<li>New Android versions <a href="https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/com/android/internal/widget/LockPatternUtils.java">https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/com/android/internal/widget/LockPatternUtils.java</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Check to see if a credential matches the saved one.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param credential The credential to check.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param userId The user whose credential is being checked
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param progressCallback callback to deliver early signal that the credential matches
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @return {@code true} if credential matches, {@code false} otherwise
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @throws RequestThrottledException if credential verification is being throttled due to
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     *         to many incorrect attempts.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @throws IllegalStateException if called on the main thread.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">checkCredential</span>(<span style="color:#a6e22e">@NonNull</span> LockscreenCredential credential, <span style="color:#66d9ef">int</span> userId,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Nullable</span> CheckCredentialProgressCallback progressCallback)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throws</span> RequestThrottledException {
+</span></span><span style="display:flex;"><span>        throwIfCalledOnMainThread();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            VerifyCredentialResponse response <span style="color:#f92672">=</span> getLockSettings().<span style="color:#a6e22e">checkCredential</span>(
+</span></span><span style="display:flex;"><span>                    credential, userId, wrapCallback(progressCallback));
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (response <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (response.<span style="color:#a6e22e">getResponseCode</span>() <span style="color:#f92672">==</span> VerifyCredentialResponse.<span style="color:#a6e22e">RESPONSE_OK</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (response.<span style="color:#a6e22e">getResponseCode</span>() <span style="color:#f92672">==</span> VerifyCredentialResponse.<span style="color:#a6e22e">RESPONSE_RETRY</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> RequestThrottledException(response.<span style="color:#a6e22e">getTimeout</span>());
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (RemoteException re) {
+</span></span><span style="display:flex;"><span>            Log.<span style="color:#a6e22e">e</span>(TAG, <span style="color:#e6db74">&#34;failed to check credential&#34;</span>, re);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Check to see if a password matches any of the passwords stored in the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * password history.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param passwordToCheck The password to check.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param hashFactor Hash factor of the current user returned from
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     *        {@link ILockSettings#getHashFactor}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @return Whether the password matches any in the history.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">checkPasswordHistory</span>(<span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> passwordToCheck, <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> hashFactor, <span style="color:#66d9ef">int</span> userId) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (passwordToCheck <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> passwordToCheck.<span style="color:#a6e22e">length</span> <span style="color:#f92672">==</span> 0) {
+</span></span><span style="display:flex;"><span>            Log.<span style="color:#a6e22e">e</span>(TAG, <span style="color:#e6db74">&#34;checkPasswordHistory: empty password&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        String passwordHistory <span style="color:#f92672">=</span> getString(PASSWORD_HISTORY_KEY, userId);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (TextUtils.<span style="color:#a6e22e">isEmpty</span>(passwordHistory)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> passwordHistoryLength <span style="color:#f92672">=</span> getRequestedPasswordHistoryLength(userId);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(passwordHistoryLength <span style="color:#f92672">==</span> 0) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> salt <span style="color:#f92672">=</span> getSalt(userId).<span style="color:#a6e22e">getBytes</span>();
+</span></span><span style="display:flex;"><span>        String legacyHash <span style="color:#f92672">=</span> LockscreenCredential.<span style="color:#a6e22e">legacyPasswordToHash</span>(passwordToCheck, salt);
+</span></span><span style="display:flex;"><span>        String passwordHash <span style="color:#f92672">=</span> LockscreenCredential.<span style="color:#a6e22e">passwordToHistoryHash</span>(
+</span></span><span style="display:flex;"><span>                passwordToCheck, salt, hashFactor);
+</span></span><span style="display:flex;"><span>        String<span style="color:#f92672">[]</span> history <span style="color:#f92672">=</span> passwordHistory.<span style="color:#a6e22e">split</span>(PASSWORD_HISTORY_DELIMITER);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Password History may be too long...</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> Math.<span style="color:#a6e22e">min</span>(passwordHistoryLength, history.<span style="color:#a6e22e">length</span>); i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (history<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span>.<span style="color:#a6e22e">equals</span>(legacyHash) <span style="color:#f92672">||</span> history<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span>.<span style="color:#a6e22e">equals</span>(passwordHash)) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>The code showcases the evolved security mechanisms, emphasizing prevention of password reuse, legacy password hashing mechanisms, and a more secure strategy for newer passwords.</p>
+<p>Another interesting file is the -_policy.xml. This file looks like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#75715e">&lt;?xml version=&#39;1.0&#39; encoding=&#39;utf-8&#39; standalone=&#39;yes&#39; ?&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;policies</span> <span style="color:#a6e22e">setup-complete=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;active-password</span> <span style="color:#a6e22e">quality=</span><span style="color:#e6db74">&#34;262144&#34;</span> <span style="color:#a6e22e">length=</span><span style="color:#e6db74">&#34;5&#34;</span> <span style="color:#a6e22e">uppercase=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">lowercase=</span><span style="color:#e6db74">&#34;5&#34;</span> <span style="color:#a6e22e">letters=</span><span style="color:#e6db74">&#34;5&#34;</span> <span style="color:#a6e22e">numeric=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">symbols=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#a6e22e">nonletter=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/policies&gt;</span>
+</span></span></code></pre></div><p>This XML file details password requirements such as minimum length and composition. The final significant file is locksettings.db, which is part of the system&rsquo;s secure storage and contains settings related to - lock security.</p>
+<ol>
+<li>quality=&ldquo;262144&rdquo;: Specifies the quality of the password. The value 262144 corresponds to a specific password quality requirement defined by Android. In Android, different quality values represent different types of password qualities, such as alphanumeric, numeric, complex, etc. The exact meaning of 262144 can be determined by looking at the Android documentation for password quality constants.</li>
+<li>length=&ldquo;5&rdquo;: The minimum length for the password is 5 characters.</li>
+<li>uppercase=&ldquo;0&rdquo;: No uppercase letters are required in the password.</li>
+<li>lowercase=&ldquo;5&rdquo;: <strong>The password must contain at least 5 lowercase letters</strong>.</li>
+<li>letters=&ldquo;5&rdquo;: A total of at least 5 letters are required in the password, which corresponds with the lowercase requirement in this case.</li>
+<li>numeric=&ldquo;0&rdquo;: No numeric digits are required in the password.</li>
+<li>symbols=&ldquo;0&rdquo;: No special symbols are required in the password.</li>
+<li>nonletter=&ldquo;0&rdquo;: No non-letter characters are required in the password (this would include numbers and symbols).</li>
+</ol>
+<p>The final file is locksettings.db. The locksettings.db file is a database file used by Android operating systems to store settings and parameters related to - lock security. This includes various types of lock mechanisms such as PIN, pattern, password, and biometric options like fingerprint or face recognition, depending on the -&rsquo;s capabilities and the version of Android. The locksettings.db file is part of the system&rsquo;s secure storage and is not directly accessible <strong>without root</strong>. Looking at the code at <a href="https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/com/android/internal/widget/LockPatternUtils.java">https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/com/android/internal/widget/LockPatternUtils.java</a> we can verify how this file are structured.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span> <span style="color:#66d9ef">private</span> String <span style="color:#a6e22e">getSalt</span>(<span style="color:#66d9ef">int</span> userId) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> salt <span style="color:#f92672">=</span> getLong(LOCK_PASSWORD_SALT_KEY, 0, userId);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (salt <span style="color:#f92672">==</span> 0) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>                salt <span style="color:#f92672">=</span> SecureRandom.<span style="color:#a6e22e">getInstance</span>(<span style="color:#e6db74">&#34;SHA1PRNG&#34;</span>).<span style="color:#a6e22e">nextLong</span>();
+</span></span><span style="display:flex;"><span>                setLong(LOCK_PASSWORD_SALT_KEY, salt, userId);
+</span></span><span style="display:flex;"><span>                Log.<span style="color:#a6e22e">v</span>(TAG, <span style="color:#e6db74">&#34;Initialized lock password salt for user: &#34;</span> <span style="color:#f92672">+</span> userId);
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (NoSuchAlgorithmException e) {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Throw an exception rather than storing a password we&#39;ll never be able to recover</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalStateException(<span style="color:#e6db74">&#34;Couldn&#39;t get SecureRandom number&#34;</span>, e);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Long.<span style="color:#a6e22e">toHexString</span>(salt);
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>With this background, let&rsquo;s proceed to decrypting the Android lock screen password and exploring the challenge related to WhatsApp.</p>
+<h2 id="getting-the-android-lockscreen-password">Getting the Android lockscreen password</h2>
+<p>The first thing we need is the <strong>password.key</strong> file, which is stored at <strong>/system/password.key</strong>. As mentioned earlier, older versions of Android save the password using a combination of SHA-1 and MD5. We only need the MD5 part, as it&rsquo;s faster to crack than SHA-1. If you have the file, then proceed.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 32 is the length of the md5 hash output</span>
+</span></span><span style="display:flex;"><span>$ tail -c32 password.key
+</span></span><span style="display:flex;"><span>B5515B7D0DB34FF62F5C388A88B1665C
+</span></span></code></pre></div><p>Next, we need the salt from <strong>locksettings.db</strong>. We can achieve this by using <strong>sqlite3</strong> with the following command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#66d9ef">select</span> value from locksettings where name<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">&#39;</span>lockscreen-password_salt<span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">6675990079707233028
+</span></span></span></code></pre></div><p><img src="../../images/password_salt.png" alt=""></p>
+<p>This file contains a 64-bit long integer that we need to convert to hexadecimal, in lowercase (refer to the code mentioned earlier). The following Python code can accomplish this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>hex_number <span style="color:#f92672">=</span> hex(<span style="color:#ae81ff">6675990079707233028</span>)<span style="color:#f92672">.</span>lower()
+</span></span><span style="display:flex;"><span>print(hex_number)
+</span></span></code></pre></div><p>Now, we have both the hexadecimal salt and the MD5 part ready to crack. We will use hashcat for this purpose. However, before proceeding, it&rsquo;s crucial to verify the - policy. This step is important because, within this file, we can determine the length of the password and whether it is numeric. Armed with this information, we can create an appropriate mask for hashcat. In our case, the mask is as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#hash to crack: B5515B7D0DB34FF62F5C388A88B1665C:5ca5e19b48fb3b04</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>hashcat -m <span style="color:#ae81ff">10</span> B5515B7D0DB34FF62F5C388A88B1665C:5ca5e19b48fb3b04 -a <span style="color:#ae81ff">3</span> ?l?l?l?l?l
+</span></span></code></pre></div><p><img src="../../images/solved_chall_whats_pass_cracked.png" alt=""></p>
+<p>This password is the password from <strong>lockscreen</strong>.. but what about the WhatsApps ?</p>
+<h2 id="whatsapps--the-chall-">WhatsApps ( The chall )</h2>
+<p>The challenge was straightforward: you download a compact file with the <strong>/system/folder</strong> from Android, along with the <strong>backup file</strong> (.ab extension). We already have the password for this backup file.</p>
+<blockquote>
+<p>You can use tools like <a href="https://github.com/nelenkov/android-backup-extractor">android-backup-extractor</a> to extract any backup, but you generally need the password.</p>
+</blockquote>
+<p><img src="../../images/password_decrypt_ab.png" alt=""></p>
+<p>After decrypting the files, you now have the user&rsquo;s backup. Let&rsquo;s focus on WhatsApp.</p>
+<ul>
+<li>WhatsApp folder structure from the challenge:</li>
+</ul>
+<p><img src="../../images/whats_app_01.png" alt=""></p>
+<ul>
+<li>Directory structure of the DB folder:</li>
+</ul>
+<p><img src="../../images/message_store.png" alt=""></p>
+<p>There are numerous files, but we need to focus on the <strong>msgstore.db</strong> file, as well as other files like <strong>wa.db</strong> and <strong>web_sessions.db</strong>.</p>
+<ul>
+<li>wa.db:
+<ul>
+<li>A file with extensive information about the user.</li>
+</ul>
+</li>
+</ul>
+<p><img src="../../images/wa_01.png" alt=""></p>
+<ul>
+<li>msgstore.db:
+<ul>
+<li>A file that contains all chat information.</li>
+</ul>
+</li>
+</ul>
+<p><img src="../../images/message_details_null.png" alt=""></p>
+<p>As you can see, the chats are empty, but we forgot something: we are in the apps folder (/data/data..), and WhatsApp saves data inside the user preferences too (shared folder).</p>
+<p>Looking inside the WhatsApp folder&rsquo;s user structure, there are other files, but they are <strong>encrypted</strong> (msgstore.db.crypt14). Now we have a problem: how do we decrypt it?</p>
+<p>The formats .crypt14, .crypt13, .crypt15 are associated with WhatsApp&rsquo;s chat backup encryption format. WhatsApp, a widely used messaging app, implements end-to-end encryption for messages and calls, ensuring that only the communicating users can read or listen to them. This encryption extends to the backup files of the app&rsquo;s chat history. To manage or restore chat history from a .crypt14 file (older versions), you typically need to follow WhatsApp&rsquo;s prescribed procedures for backup and restoration, which involve using the same phone number and verifying your identity.</p>
+<p>To decrypt, we need the <strong>key</strong> and the <strong>encrypted database</strong>; we have the encrypted database, but what about the key? This key is located in the WhatsApp /data/data folder.</p>
+<p><img src="../../images/key.png" alt=""></p>
+<p>With this information, you can use tools like <a href="https://github.com/abdeladim-s/whatsapp-msgstore-viewer">whatsapp-msgstore-viewer</a> to get your flag:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/abdeladim-s/whatsapp-msgstore-viewer 
+</span></span><span style="display:flex;"><span>pip install -r requirements.txt
+</span></span><span style="display:flex;"><span>python3 main.py 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># set the key and the encrypted(.crypt14) file</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Look at the graphical interface</span>
+</span></span></code></pre></div><p><img src="../../images/flag_mobile_whats.png" alt=""></p>
+<blockquote>
+<p>Remember, this challenge was designed for older versions of Android, but the concept of &ldquo;cracking&rdquo; could be reused in newer versions. WhatsApp always includes new features of privacy, so newer versions may have different files. That&rsquo;s all, thanks!</p>
+</blockquote>
+<h2 id="refs">Refs</h2>
+<ol>
+<li><a href="https://www.irjet.net/archives/V7/i7/IRJET-V7I7301.pdf">https://www.irjet.net/archives/V7/i7/IRJET-V7I7301.pdf</a></li>
+<li><a href="https://android.googlesource.com/">https://android.googlesource.com/</a></li>
+<li><a href="https://github.com/nelenkov/android-backup-extractor">https://github.com/nelenkov/android-backup-extractor</a></li>
+<li><a href="https://app.hackthebox.com/challenges/Investigator">https://app.hackthebox.com/challenges/Investigator</a></li>
+<li><a href="https://github.com/abdeladim-s/whatsapp-msgstore-viewer">https://github.com/abdeladim-s/whatsapp-msgstore-viewer</a></li>
+<li><a href="https://thebinaryhick.blog/2022/06/09/new-msgstore-who-dis-a-look-at-an-updated-whatsapp-on-android/">https://thebinaryhick.blog/2022/06/09/new-msgstore-who-dis-a-look-at-an-updated-whatsapp-on-android/</a></li>
+</ol>
+
+    </div>
+
+    
+
+            </div>
+        </div><footer class="text-center pb-1">
+    <small class="text-muted">
+        
+            &copy; Copyright 2024, incogbyte
+        
+        <br>
+    </small>
+</footer>
+</body>
+</html>

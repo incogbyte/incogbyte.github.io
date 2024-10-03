@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Writeup on incogbyte&#39;s blog</title>
+    <link>https://incogbyte.github.io/tags/writeup/</link>
+    <description>Recent content in Writeup on incogbyte&#39;s blog</description>
+    <generator>- -- go-.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; Copyright 2024, incogbyte</copyright>
+    <lastBuildDate>Fri, 01 Dec 2023 17:12:34 -0300</lastBuildDate>
+    <atom:link href="https://incogbyte.github.io/tags/writeup/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PortSwigger Practice Exam</title>
+      <link>https://incogbyte.github.io/posts/portswigger-practice-exam/</link>
+      <pubDate>Fri, 01 Dec 2023 17:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/portswigger-practice-exam/</guid>
+      <description>In this blog post, we&amp;rsquo;ll embark on a journey to dissect the solution to a challenging practice exam question provided by PortSwigger. We&amp;rsquo;ll delve deep into the intricacies of web security, emphasizing the critical importance of understanding vulnerabilities, exploitation techniques, and mitigation strategies. By the time you finish reading this article, you&amp;rsquo;ll have gained valuable insights into real-world web security scenarios, equipping yourself with the knowledge required to effectively protect digital assets.</description>
+    </item>
+    <item>
+      <title>Detect burp suite</title>
+      <link>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</link>
+      <pubDate>Fri, 11 Nov 2022 17:12:34 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</guid>
+      <description>tl;dr&#xA;You can see the result here :)&#xA;Click here 👀&#xA;Hey guys, I’m here to show you a little simple technique, but it’s a tip that maybe someday help someone. The question is how to identify that someone is using web proxy (BURP)? well, a friend of mine aka Jerry was with me one afternoon and we decided to do a PoC, maybe a lot of people already know, but when starting BURP it automatically goes up to a “light” web server where you can for example download the BURP certificate to import into your browser or - at the following address http://burp/ The following image illustrates this interface:</description>
+    </item>
+    <item>
+      <title>iOS Anti-Tampers Bypass</title>
+      <link>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</link>
+      <pubDate>Fri, 18 Mar 2022 22:40:38 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</guid>
+      <description>Hi everyone, in this blog i&amp;rsquo;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&#xA;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&#xA;ptrace sysctl strstr geppid In this blog, I will only talk about how I did it to bypass, using only frida with radare2.</description>
+    </item>
+  </channel>
+</rss>

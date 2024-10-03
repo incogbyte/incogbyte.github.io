@@ -1,0 +1,46 @@
+<style>
+    body {
+        font-family: sans-serif;
+        color: #FBF5E3;
+        background: #002B36;
+        margin-left: 3em;
+      }
+      
+      h1 {
+        color: goldenrod;
+      }
+      
+      img {
+        margin-left: -1em;
+        margin-bottom: -2em;
+        width: 10%;
+      }
+</style>
+<script>
+    function arroto() {
+        var img1 = document.createElement("img");
+        img1.src = "http://burp/favicon.ico";
+
+        img1.onload = function() {
+        console.log("[+] Using BURP [+]");
+        document.body.append(this);
+        alert('[+] Burp Detected [+]');
+        };
+
+        img1.onerror = function() {
+            console.log("[+] Not using BURP [+]");
+        }
+    }
+</script>
+
+<title> Burp Detection </title>
+</head>
+<body>
+<img src onerror="arroto();">
+<h1>Using Burp ?</h1>
+<p>
+Let's see.. 
+</p>
+<footer> By inc0gbyt3 and J3rry </footer>
+</body>
+</html>

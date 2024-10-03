@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en-us"><head>
+    <title>incogbyte&#39;s blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+
+    
+    
+    
+    <link rel="stylesheet" href="../../css/theme.min.css">
+
+    
+    
+    
+
+    
+</head>
+<body>
+        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
+    <div class="row">
+        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
+            <a href="../../" class="text-decoration-none">
+                <img id="home-image" class="rounded-circle"
+                    
+                        
+                            src="../../images/avatar.png"
+                        
+                    
+                />
+            </a>
+        </div>
+        <div class="col-sm-8 col-12 text-sm-left text-center">
+            <h2 class="m-0 mb-2 mt-4">
+                <a href="../../" class="text-decoration-none">
+                    
+                        incogbyte
+                    
+                </a>
+            </h2>
+            <p class="text-muted mb-1">
+                
+                    incogbyte #:
+                
+            </p>
+            <ul id="nav-links" class="list-inline mb-2">
+                
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../about/" title="About">About</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
+                    </li>
+                
+            </ul>
+            <ul id="nav-social" class="list-inline">
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/incogbyte" target="_blank">
+                            <i class="fab fa-github fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
+                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://twitter.com/incogbyte" target="_blank">
+                            <i class="fab fa-twitter fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="mailto://incogbyte@gmail.com" target="_blank">
+                            <i class="fas fa-at fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="incogbyte" target="_blank">
+                            <i class="fab fa-telegram fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+    <hr />
+</header>
+<div class="container">
+    <div class="pl-sm-4 ml-sm-5">
+        <p>This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (<a href="https://nim-lang.org/">https://nim-lang.org/</a>) program language.</p>
+<p><strong>tl;dr</strong></p>
+<p>If you want to know the answer right away, just put a break point in the <strong>sym.join_main_42</strong> function, and check the registers and your flag will be there.</p>
+<p>The challenge itself was not complex however, I had never written anything in Nim. So right after downloading the challenge binary, I went to look at some of Nim&rsquo;s documentation and created a simple example, a guess number:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> strutils
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;Whats the number: &#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>let guess <span style="color:#f92672">=</span> parseInt(stdin<span style="color:#f92672">.</span>readline)
+</span></span><span style="display:flex;"><span>let number <span style="color:#f92672">=</span> <span style="color:#ae81ff">1337</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> guess <span style="color:#f92672">&lt;</span> number:
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;guess to low&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">elif</span> guess <span style="color:#f92672">&gt;</span> number:
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;guess to high&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;WoW!&#34;</span>
+</span></span></code></pre></div><p>The <strong>Nim</strong> language at Syntax level looks like Python but you can generate a binary in C. And with the same code you generate JavaScript, very cool.</p>
+<p>Looking at the code made by me, and put on Radare, I could see a few things:</p>
+<p>1 - Hard coded strings have the @ in front;
+2 - There is a main, and a <strong>NimMain</strong> functions
+3 - Other functions named <strong>Nim</strong><!-- raw HTML omitted --></p>
+<p>4 - <strong>NimMainInner</strong> sometime is Key to find the application logic.</p>
+<p>The following images illustrate how my code generated, inside Radare and the strings that are in my code like <strong>Whats the number</strong>:</p>
+<blockquote>
+<p>The command <strong>r2 -AA -d <!-- raw HTML omitted --></strong> will Analyze the binary and debug</p>
+</blockquote>
+<blockquote>
+<p>The command <strong>iz</strong> will dump all strings</p>
+</blockquote>
+<p><img src="../../images/UntitledNim.png" alt="UntitledNim"></p>
+<p><img src="../../images/UntitledNim%201.png" alt="UntitledNim"></p>
+<p><img src="../../images/UntitledNim%202.png" alt="UntitledNim"></p>
+<p>The next step is to put a breakpoint in main and check what it is calling:</p>
+<blockquote>
+<p>The command <strong>db (function name)</strong> will set a break point radare2</p>
+</blockquote>
+<blockquote>
+<p>The command <strong>dc</strong> will run the program</p>
+</blockquote>
+<blockquote>
+<p>The command <strong>pdf</strong> will print the “disassemble” of main funcion</p>
+</blockquote>
+<p><img src="../../images/UntitledNim%203.png" alt="UntitledNim"></p>
+<p>As can be seen in the previous image, the <strong>main</strong> function calls another function named <strong>sym.NimMain.</strong></p>
+<p>When analyzing what has in <strong>sym.NimMan</strong>, I could see that the calls usually go through an instruction and call the <strong>sym.NimMainInner</strong> function, and after that call the <strong>sym.NimMainModule</strong></p>
+<p><img src="../../images/UntitledNim%204.png" alt="UntitledNim"></p>
+<p><img src="../../images/UntitledNim%205.png" alt="UntitledNim"></p>
+<p>The next step was essential to solve the CTF, I realized that all Nim function calls are inside the <strong>sym.NimMainInner</strong> call. So the functions I used in my example are called here:</p>
+<p><img src="../../images/UntitledNim%206.png" alt="UntitledNim"></p>
+<h3 id="solving-the-nimrev-challenger">Solving the nimrev Challenger</h3>
+<p>When downloading the binary and running it straight away, we noticed that the <strong>sym.readLine</strong> function is called, as it waits for user input, as I did in the example. However the string <strong>Wrong..</strong> is displayed. And we know that to search for these strings we need the char @:</p>
+<p><img src="../../images/UntitledNim%207.png" alt="UntitledNim"></p>
+<p><img src="../../images/UntitledNim%208.png" alt="UntitledNim"></p>
+<p>We know that, we have to look for the <strong>sym.NimMainModule</strong> to check the functions used and thus try to understand some of the logic.</p>
+<p><img src="../../images/UntitledNim%209.png" alt="UntitledNim"></p>
+<p><img src="../../images/UntitledNim%2010.png" alt="UntitledNim"></p>
+<p><img src="../../images/UntitledNim%2011.png" alt="UntitledNim"></p>
+<p>Looking at the output of the <strong>sym.NimMainInner</strong> call, we notice that after reading our input with <strong>sym.readLine</strong> several other functions are called and after calling the <strong>newSeq</strong> function (<a href="https://nim-lang.org/docs/system.html#newSeq">https://nim-lang.org/docs/system.html#newSeq</a>)</p>
+<p>several <strong>mov byte</strong> operations are performed and a function called <strong>eqStrings</strong> is called before executing the function which will show <strong>Wrong or Correct</strong> ( <strong>echoBinSafe</strong> )</p>
+<p><img src="../../images/UntitledNim%2012.png" alt="UntitledNim"></p>
+<p>But before calling the string comparison, a function is called first ( sym.join_main_42 ) and is probably responsible for the check, let&rsquo;s check.</p>
+<p><img src="../../images/UntitledNim%2013.png" alt="UntitledNim"></p>
+<p><img src="../../images/UntitledNim%2014.png" alt="UntitledNim"></p>
+<p><img src="../../images/UntitledNim%2015.png" alt="UntitledNim"></p>
+<p>When analyzing each function present:</p>
+<p><strong>sym.resizeString</strong>
+<strong>sym.appendString_2</strong>
+<strong>sym.nimCharToStr</strong></p>
+<p>When analyzing the <strong>nimCharToStr</strong> function it is possible to observe that a &ldquo;new&rdquo; string is dynamically created, for comparison with our input, before calling the <strong>eqStrings</strong> function. Therefore, we must check the values of the registers before the comparison and so we get our flag ;)</p>
+<p><img src="../../images/UntitledNim%2016.png" alt="UntitledNim"></p>
+<p><img src="../../images//UntitledNim%2017.png" alt="UntitledNim"></p>
+<blockquote>
+<p>The <strong>drr</strong> command shows all the registers em try to “long to bytes” for you ;)</p>
+</blockquote>
+<p>To check the veracity of the flag, we run the binary again and pass the flag</p>
+<p><img src="../../images//UntitledNim%2018.png" alt="UntitledNim"></p>
+<p>That&rsquo;s it for today, <strong>Nim</strong> is a very cool language and I learned a lot from this challenge. It&rsquo;s basic but maybe someone hasn&rsquo;t done it using radare and this can be a mini guide for those who want to understand more about Radare ( <a href="https://rada.re/">https://rada.re</a> /n/ ) and the Nim Language ( <a href="https://nim-lang.org/">https://nim-lang.org/</a> ).</p>
+<p>Thanks O/</p>
+
+    </div>
+
+    
+
+            </div>
+        </div><footer class="text-center pb-1">
+    <small class="text-muted">
+        
+            &copy; Copyright 2024, incogbyte
+        
+        <br>
+    </small>
+</footer>
+</body>
+</html>
