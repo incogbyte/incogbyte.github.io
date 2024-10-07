@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en-us"><head>
+    <title>incogbyte&#39;s blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=zipbit-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+
+    
+    
+    
+    <link rel="stylesheet" href="../../css/theme.min.css">
+
+    
+    
+    
+
+    
+</head>
+<body>
+        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
+    <div class="row">
+        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
+            <a href="../../" class="text-decoration-none">
+                <img id="home-image" class="rounded-circle"
+                    
+                        
+                            src="../../images/avatar.png"
+                        
+                    
+                />
+            </a>
+        </div>
+        <div class="col-sm-8 col-12 text-sm-left text-center">
+            <h2 class="m-0 mb-2 mt-4">
+                <a href="../../" class="text-decoration-none">
+                    
+                        incogbyte
+                    
+                </a>
+            </h2>
+            <p class="text-muted mb-1">
+                
+                    incogbyte #:
+                
+            </p>
+            <ul id="nav-links" class="list-inline mb-2">
+                
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../about/" title="About">About</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
+                    </li>
+                
+                    <li class="list-inline-item">
+                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
+                    </li>
+                
+            </ul>
+            <ul id="nav-social" class="list-inline">
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/incogbyte" target="_blank">
+                            <i class="fab fa-github fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
+                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="https://twitter.com/incogbyte" target="_blank">
+                            <i class="fab fa-twitter fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="mailto://incogbyte@gmail.com" target="_blank">
+                            <i class="fas fa-at fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+                    <li class="list-inline-item mr-3">
+                        <a href="incogbyte" target="_blank">
+                            <i class="fab fa-telegram fa-1x text-muted"></i>
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+    <hr />
+</header>
+<div class="container">
+    <div class="pl-sm-4 ml-sm-5">
+        <h1 id="exploring-path-traversal-and-xss-vulnerabilities-in-nasa-subdomains">Exploring Path Traversal and XSS Vulnerabilities in NASA Subdomains</h1>
+<p>In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.</p>
+<h2 id="vulnerability-1-reflected-xss-on-nasa">Vulnerability #1: Reflected XSS on NASA.</h2>
+<p>The first vulnerability I identified was a Reflected Cross-Site Scripting (XSS) with CloudFlare Bypass on the NASA subdomain xxx.nasa.gov. The issue was found on the “Funded Research” page at the following URL:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://xxx.nasa.gov/cgi-bin/xxx/xxx_awards.pl
+</span></span></code></pre></div><p>The parameter search_free_text was vulnerable to XSS. By changing the request from a POST to a GET, I was able to bypass certain defenses, such as the Web Application Firewall (WAF). Here’s the crafted URL that triggered the XSS:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://xxx.nasa.gov/cgi-bin/xxx/search_projects.pl?action<span style="color:#f92672">=</span>2&amp;xxx_award_flag<span style="color:#f92672">=</span>1<span style="color:#f92672">||</span>incogbyte&amp;search_free_text<span style="color:#f92672">=</span>&lt;svg%20onloonloadad<span style="color:#f92672">||||=</span>confirm%28document.domain%29%20&lt;li&amp;submit<span style="color:#f92672">=</span>incogbyte
+</span></span></code></pre></div><p><img src="../../images/xss01.png" alt=""></p>
+<p><img src="../../images/xss02.png" alt=""></p>
+<p>You might be wondering: “What exactly is going on with this payload?” Let me break it down.</p>
+<h5 id="understanding-the-xss-payload">Understanding the XSS Payload</h5>
+<p>The payload used in the crafted URL looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&lt;svg%20onloonloadad<span style="color:#f92672">||||=</span>confirm%28document.domain%29%20&lt;li
+</span></span></code></pre></div><p>When URL-decoded, it becomes:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&lt;svg onloonloadad<span style="color:#f92672">||||=</span>confirm<span style="color:#f92672">(</span>document.domain<span style="color:#f92672">)</span> &lt;li
+</span></span></code></pre></div><p>Here’s how it works:</p>
+<ol>
+<li>Tag: The <!-- raw HTML omitted --> element is used to embed Scalable Vector Graphics in HTML and can include event handlers such as onload.</li>
+<li>Obfuscated Event Handler:</li>
+</ol>
+<ul>
+<li>Instead of using the standard onload event, I misspelled it as onloonloadad||||. This trick helps evade WAF detection.</li>
+</ul>
+<ol start="3">
+<li>JavaScript Code: The confirm(document.domain) function displays an alert with the current domain, proving that JavaScript is being executed.</li>
+<li>Incomplete HTML Tag:</li>
+</ol>
+<ul>
+<li>The &lt;li at the end is an incomplete <!-- raw HTML omitted --> tag, which may confuse the browser and further ensure the script’s execution.</li>
+</ul>
+<p>How It Bypasses the WAF ?</p>
+<p>The payload evades detection by using techniques such as:</p>
+<ul>
+<li>Misspelling event handlers: Instead of the typical onload, it uses onloonloadad||||, which WAFs might not recognize.</li>
+<li>Obfuscated syntax: Unusual characters like |||| can further confuse the WAF without affecting the browser’s ability to execute the code.</li>
+<li>Browser leniency: Browsers can be forgiving with malformed HTML, allowing the execution of even poorly structured code.</li>
+</ul>
+<h3 id="understanding-javascript-expression-evaluation">Understanding JavaScript Expression Evaluation</h3>
+<p>In JavaScript, when you use comparison operators like != (not equal to) or logical operators like || (logical OR), the expressions on both sides of the operator are evaluated. This means that any functions called within these expressions will be executed during the evaluation process.</p>
+<p>Example 1: &ldquo;aaaa&rdquo; != confirm(1)</p>
+<ul>
+<li>Expression: &ldquo;aaaa&rdquo; != confirm(1)</li>
+<li>Evaluation Steps:
+<ol>
+<li>The string &ldquo;aaaa&rdquo; is a literal and requires no evaluation.</li>
+<li>The confirm(1) function is called to obtain its return value.
+<ul>
+<li>When confirm(1) is executed.</li>
+</ul>
+</li>
+<li>The != operator compares the string &ldquo;aaaa&rdquo; to the boolean result of confirm(1).
+<ul>
+<li>Since a string and a boolean are different types, JavaScript performs type coercion.</li>
+<li>The comparison evaluates to true or false, but the key point is that confirm(1) is executed.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<p>Example 2: onload != alert(1)</p>
+<ul>
+<li>Context: Typically used within an HTML tag as an attribute.</li>
+<li>Usage: <!-- raw HTML omitted --></li>
+<li>Evaluation Steps:
+<ol>
+<li>The onerror event handler is triggered when the image fails to load (since “x” is not a valid image source).</li>
+<li>The JavaScript code onload != alert(1) is executed.
+<ul>
+<li>onload is a reference to the onload event handler (likely null or undefined in this context).</li>
+<li>alert(1) is called to obtain its return value, which is undefined (but the alert function is executed, displaying 1).</li>
+</ul>
+</li>
+<li>The != operator compares onload to the result of alert(1).
+<ul>
+<li>The comparison evaluates, but the important aspect is that alert(1) runs during this process.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<p>How Operators Cause Function Execution</p>
+<p>Comparison Operators (==, !=, ===, !==, etc.)</p>
+<ul>
+<li>Behavior:
+<ul>
+<li>Both operands are evaluated to obtain their values.</li>
+<li>If an operand is a function call, the function is executed to get its return value.</li>
+</ul>
+</li>
+<li>Implication:
+<ul>
+<li>By placing a function call on either side of the operator, you ensure that the function is executed during the comparison.</li>
+</ul>
+</li>
+</ul>
+<p>Logical Operators (||, &amp;&amp;)</p>
+<ul>
+<li>Logical OR (||):</li>
+<li>Evaluates the left operand:
+<ul>
+<li>If the left operand is truthy, returns its value and does not evaluate the right operand.</li>
+<li>If the left operand is falsy, evaluates the right operand and returns its value.</li>
+</ul>
+</li>
+<li>Logical AND (&amp;&amp;):</li>
+<li>Evaluates the left operand:
+<ul>
+<li>If the left operand is falsy, returns its value and does not evaluate the right operand.</li>
+<li>If the left operand is truthy, evaluates the right operand and returns its value.</li>
+</ul>
+</li>
+<li>Implication:
+<ul>
+<li>By using these operators cleverly, you can control whether the function call is executed based on the value of the other operand.</li>
+</ul>
+</li>
+</ul>
+<p>Example with || Operator:</p>
+<ul>
+<li>Expression: 0 || alert(1)</li>
+<li>Evaluation Steps:
+<ol>
+<li>The left operand 0 is evaluated and is falsy.</li>
+<li>Since the left operand is falsy, the right operand alert(1) is evaluated.
+<ul>
+<li>The alert function is executed, displaying 1.</li>
+</ul>
+</li>
+<li>The result of the entire expression is the value returned by alert(1) (which is undefined).</li>
+</ol>
+</li>
+</ul>
+<h4 id="using-these-behaviors-in-xss-payloads">Using These Behaviors in XSS Payloads</h4>
+<p>I exploit these JavaScript evaluation behaviors to execute malicious code in contexts where they might not be able to use standard event handlers or where certain keywords are blocked by a WAF.</p>
+<p>Bypassing WAFs:</p>
+<ul>
+<li>Obfuscation:
+<ul>
+<li>By using expressions like &ldquo;aaaa&rdquo; != confirm(1), attackers can avoid using blocked keywords like alert or onload directly in event handler attributes.</li>
+<li>Unexpected Execution:
+<ul>
+<li>WAFs may not flag such expressions because they don’t match typical malicious patterns.</li>
+</ul>
+</li>
+<li>Execution Context:
+<ul>
+<li>When injected into an HTML attribute or inline script, the JavaScript engine executes the expression, leading to the function call being executed.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Example in an HTML Attribute:</p>
+<!-- raw HTML omitted -->
+<ul>
+<li>Explanation:
+<ul>
+<li>The attribute anyattribute is not a standard event handler.</li>
+<li>The JavaScript expression inside the attribute is executed when the browser processes the attribute value.</li>
+<li>Even though the attribute name is arbitrary, some browsers might execute the code within it.</li>
+</ul>
+</li>
+</ul>
+<p>Combining with Event Handlers</p>
+<h4 id="example-with-obfuscated-event-handler">Example with Obfuscated Event Handler:</h4>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<ul>
+<li>Explanation:
+<ul>
+<li>oneonloadx is a non-standard or misspelled event handler.</li>
+</ul>
+</li>
+<li>Browsers may ignore the attribute name but still execute the JavaScript code within it.</li>
+<li>The alert(1) function is executed during the evaluation of the expression.</li>
+</ul>
+<p>Why Does This Bypass WAFs?</p>
+<ul>
+<li>Pattern Matching Limitations:
+<ul>
+<li>WAFs often use pattern matching to detect malicious code, looking for specific keywords like alert, onload, <!-- raw HTML omitted -->, etc.</li>
+<li>By embedding function calls within expressions and using operators, the payload doesn’t match typical patterns.</li>
+</ul>
+</li>
+<li>Obfuscation Techniques:
+<ul>
+<li>Misspelling event handlers or using non-standard attribute names.</li>
+<li>Using operators to trigger function execution without direct calls.</li>
+</ul>
+</li>
+<li>Browsers’ Lenient Parsing:
+<ul>
+<li>Browsers aim to render pages even with malformed HTML or unexpected attribute names.</li>
+<li>This leniency allows the execution of code that shouldn’t normally run.</li>
+</ul>
+</li>
+</ul>
+<h2 id="vulnerability-2-path-traversal">Vulnerability #2: Path Traversal</h2>
+<p>While exploring another NASA subdomain, I uncovered a Path Traversal vulnerability. This allowed access to sensitive files on the server through a simple manipulation of the URL.</p>
+<p>Here’s the endpoint where the vulnerability was found:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://XXXXXX.nasa.gov/signup.cfm
+</span></span></code></pre></div><p><img src="../../images/path01.png" alt=""></p>
+<p>When interacting with the map feature, the application triggered this request:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#a6e22e">GET</span> /location_html.cfm?filename=United_States.html <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">XXXXXX.nasa.gov</span>
+</span></span></code></pre></div><p>At first glance, it seems harmless. However, the filename parameter was vulnerable to path traversal. By modifying the filename value to something like ../../../../../../etc/passwd, I gained unauthorized access to system files.</p>
+<p>Here’s the modified URL in action:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://spotthestation.nasa.gov/location_html.cfm?filename<span style="color:#f92672">=</span>../../../../../../../../../../etc/passwd
+</span></span></code></pre></div><p><img src="../../images/path02.png" alt=""></p>
+<p>Upon further testing, I was even able to read sensitive files like /etc/shadow.</p>
+<p><img src="../../images/path03.png" alt=""></p>
+<h4 id="nasa-letter-">Nasa letter 😅</h4>
+<ul>
+<li>Thanks Nasa!</li>
+</ul>
+<p><img src="../../images/nasaletter.png" alt=""></p>
+
+    </div>
+
+    
+
+            </div>
+        </div><footer class="text-center pb-1">
+    <small class="text-muted">
+        
+            &copy; Copyright 2024, incogbyte
+        
+        <br>
+    </small>
+</footer>
+</body>
+</html>

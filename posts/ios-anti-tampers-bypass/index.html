@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
     <title>incogbyte&#39;s blog</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=zipbit-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="" />
 
     
@@ -116,7 +116,7 @@
 <blockquote>
 <p>.ipa is a .zip file, so just unzip it like a normal .zip</p>
 </blockquote>
-<p>It&rsquo;s worth mentioning here that a more realistic scenario, where you don&rsquo;t have this .ipa but have the jailbroken -. You can use the tool  <a href="https://github.com/NyaMisty/fouldecrypt">https://github.com/NyaMisty/fouldecrypt</a>, to get the decrypted binary.</p>
+<p>It&rsquo;s worth mentioning here that a more realistic scenario, where you don&rsquo;t have this .ipa but have the jailbroken zipbit. You can use the tool  <a href="https://github.com/NyaMisty/fouldecrypt">https://github.com/NyaMisty/fouldecrypt</a>, to get the decrypted binary.</p>
 <p><img src="../../images/Screen_Shot_2022-03-19_at_17.56.54.png" alt="Screen Shot 2022-03-19 at 17.56.54.png"></p>
 <p>Taking the binary, we can pass it to our machine using the <strong>scp</strong> command. Next step is to use radare2 to analyze the binary and look for possible <strong>dlsym</strong> calls. To analyze the binary on radare2 we use the command below:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>r2 -A &lt;binaryDecrypted&gt;

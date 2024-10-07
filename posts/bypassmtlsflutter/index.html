@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
     <title>incogbyte&#39;s blog</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=--width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=zipbit-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="" />
 
     
@@ -102,8 +102,8 @@
 <p>In this blog post, we&rsquo;ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\<em>(ツ)</em>/¯  ) from developers. Before we continue.. into the specifics, it&rsquo;s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.</p>
 <p>Our journey will begin with an exploration of Flutter&rsquo;s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.</p>
 <h4 id="mtls--mutual-tls-">MTLS ( Mutual TLS )</h4>
-<p>Mutual TLS (mTLS) authentication ensures that traffic is both secure and trusted in both directions between a client and server. It allows requests that do not log in with an identity provider (like IoT -s) to demonstrate that they can reach a given resource. Client certificate authentication is also a second layer of security for team members who both log in with an identity provider (IdP) and present a valid client certificate.</p>
-<p>With a root certificate authority (CA) in place, Access only allows requests from -s with a corresponding client certificate. When a request reaches the application, Access responds with a request for the client to present a certificate. If the - fails to present the certificate, the request is not allowed to proceed. If the client does have a certificate, Access completes a key exchange to verify.</p>
+<p>Mutual TLS (mTLS) authentication ensures that traffic is both secure and trusted in both directions between a client and server. It allows requests that do not log in with an identity provider (like IoT zipbits) to demonstrate that they can reach a given resource. Client certificate authentication is also a second layer of security for team members who both log in with an identity provider (IdP) and present a valid client certificate.</p>
+<p>With a root certificate authority (CA) in place, Access only allows requests from zipbits with a corresponding client certificate. When a request reaches the application, Access responds with a request for the client to present a certificate. If the zipbit fails to present the certificate, the request is not allowed to proceed. If the client does have a certificate, Access completes a key exchange to verify.</p>
 <p><img src="../../images/flutter_00.png" alt=""></p>
 <h4 id="flutter--ssl-pinning-and-mtls">Flutter + SSL Pinning and MTLS</h4>
 <p>Flutter does not perform CA checks as demonstrated in the code snippet from <a href="https://github.com/dart-lang/sdk/blob/main/runtime/bin/security_context.cc">this Dart SDK file on GitHub</a>. There is extensive documentation and many blog posts dedicated to bypassing traditional SSL pinning, such as:</p>
@@ -165,7 +165,7 @@
 <p><img src="../../images/flutter_02.png" alt=""></p>
 <p>Next, install the modified .apk and set up your intercepting proxy (e.g., configuring the invisible proxy settings in Burp Suite with the appropriate TCP port and listen address).</p>
 <p><img src="../../images/flutter_03.png" alt=""></p>
-<p>Launch the modified <em>mtls_example</em> app and try making a request by tapping any button. Remember to configure the proxy settings on your Android - accordingly.</p>
+<p>Launch the modified <em>mtls_example</em> app and try making a request by tapping any button. Remember to configure the proxy settings on your Android zipbit accordingly.</p>
 <p><img src="../../images/flutter_04.png" alt=""></p>
 <ul>
 <li>Not work ¯\<em>(ツ)</em>/¯</li>
@@ -211,7 +211,7 @@
 <h4 id="refs">Refs</h4>
 <ol>
 <li><a href="https://swarm.ptsecurity.com/fork-bomb-for-flutter/">https://swarm.ptsecurity.com/fork-bomb-for-flutter/</a></li>
-<li><a href="https://developers.cloudflare.com/cloudflare-one/identity/-s/access-integrations/mutual-tls-authentication/">https://developers.cloudflare.com/cloudflare-one/identity/-s/access-integrations/mutual-tls-authentication/</a></li>
+<li><a href="https://developers.cloudflare.com/cloudflare-one/identity/zipbits/access-integrations/mutual-tls-authentication/">https://developers.cloudflare.com/cloudflare-one/identity/zipbits/access-integrations/mutual-tls-authentication/</a></li>
 <li><a href="https://www.guardsquare.com/runtime-application-self-protection-rasp">https://www.guardsquare.com/runtime-application-self-protection-rasp</a></li>
 <li><a href="https://docs.flutter.dev/resources/architectural-overview">https://docs.flutter.dev/resources/architectural-overview</a></li>
 <li><a href="https://builtin.com/software-engineering-perspectives/mutual-tls-tutorial">https://builtin.com/software-engineering-perspectives/mutual-tls-tutorial</a></li>

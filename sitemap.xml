@@ -2,37 +2,40 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://incogbyte.github.io/posts/bypassmtlsflutter/</loc>
-    <lastmod>2024-04-18T22:40:38-03:00</lastmod>
+    <loc>https://incogbyte.github.io/categories/</loc>
+    <lastmod>2024-10-07T07:12:34-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/categories/hacking/</loc>
+    <lastmod>2024-10-07T07:12:34-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/</loc>
-    <lastmod>2024-04-18T22:40:38-03:00</lastmod>
+    <lastmod>2024-10-07T07:12:34-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</loc>
+    <lastmod>2024-10-07T07:12:34-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/posts/</loc>
+    <lastmod>2024-10-07T07:12:34-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/tags/</loc>
+    <lastmod>2024-10-07T07:12:34-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/tags/writeup/</loc>
+    <lastmod>2024-10-07T07:12:34-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/categories/writeup/</loc>
+    <lastmod>2024-10-07T07:12:34-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/posts/bypassmtlsflutter/</loc>
     <lastmod>2024-04-18T22:40:38-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</loc>
     <lastmod>2024-03-10T22:40:38-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/categories/</loc>
-    <lastmod>2023-12-01T17:12:34-03:00</lastmod>
-  </url><url>
     <loc>https://incogbyte.github.io/posts/portswigger-practice-exam/</loc>
     <lastmod>2023-12-01T17:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/tags/</loc>
-    <lastmod>2023-12-01T17:12:34-03:00</lastmod>
-  </url><url>
-    <loc>https://incogbyte.github.io/tags/writeup/</loc>
-    <lastmod>2023-12-01T17:12:34-03:00</lastmod>
-  </url><url>
-    <loc>https://incogbyte.github.io/categories/writeup/</loc>
-    <lastmod>2023-12-01T17:12:34-03:00</lastmod>
-  </url><url>
     <loc>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</loc>
-    <lastmod>2022-11-11T17:12:34-03:00</lastmod>
-  </url><url>
-    <loc>https://incogbyte.github.io/categories/hacking/</loc>
     <lastmod>2022-11-11T17:12:34-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/tags/ctf/</loc>
