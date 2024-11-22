@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
     <title>incogbyte&#39;s blog</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=zipbit-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="" />
 
     
@@ -98,7 +98,7 @@
 </header>
 <div class="container">
     <div class="pl-sm-4 ml-sm-5">
-        <h1 id="exploring-path-traversal-and-xss-vulnerabilities-in-nasa-subdomains">Exploring Path Traversal and XSS Vulnerabilities in NASA Subdomains</h1>
+        <h1 id="exploit-path-traversal-and-xss-in-nasa-subdomains">Exploit Path Traversal and XSS in NASA Subdomains</h1>
 <p>In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.</p>
 <h2 id="vulnerability-1-reflected-xss-on-nasa">Vulnerability #1: Reflected XSS on NASA.</h2>
 <p>The first vulnerability I identified was a Reflected Cross-Site Scripting (XSS) with CloudFlare Bypass on the NASA subdomain xxx.nasa.gov. The issue was found on the “Funded Research” page at the following URL:</p>
@@ -304,10 +304,16 @@
 </span></span><span style="display:flex;"><span>Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">XXXXXX.nasa.gov</span>
 </span></span></code></pre></div><p>At first glance, it seems harmless. However, the filename parameter was vulnerable to path traversal. By modifying the filename value to something like ../../../../../../etc/passwd, I gained unauthorized access to system files.</p>
 <p>Here’s the modified URL in action:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://spotthestation.nasa.gov/location_html.cfm?filename<span style="color:#f92672">=</span>../../../../../../../../../../etc/passwd
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://xxxxxxx.nasa.gov/location_html.cfm?filename<span style="color:#f92672">=</span>../../../../../../../../../../etc/passwd
 </span></span></code></pre></div><p><img src="../../images/path02.png" alt=""></p>
 <p>Upon further testing, I was even able to read sensitive files like /etc/shadow.</p>
 <p><img src="../../images/path03.png" alt=""></p>
+<ul>
+<li>tl;dr about ssm-user ;p</li>
+</ul>
+<blockquote>
+<p>The ssm-user in AWS can be exploited for privilege escalation if it has excessive permissions or misconfigured IAM roles. Attackers could gain unauthorized access to instances via Systems Manager, execute commands, or access sensitive data. They may also establish persistence by modifying system files or scripts. Additionally, if the ssm-user can access other AWS services, it could be used to further compromise the AWS environment. Proper IAM role restrictions and monitoring are essential to mitigate these risks.</p>
+</blockquote>
 <h4 id="nasa-letter-">Nasa letter 😅</h4>
 <ul>
 <li>Thanks Nasa!</li>

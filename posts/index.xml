@@ -4,17 +4,17 @@
     <title>Posts on incogbyte&#39;s blog</title>
     <link>https://incogbyte.github.io/posts/</link>
     <description>Recent content in Posts on incogbyte&#39;s blog</description>
-    <generator>incogbyte -- zipbit.io</generator>
+    <generator>0x41 -- 0x4141.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Copyright 2024, incogbyte</copyright>
     <lastBuildDate>Mon, 07 Oct 2024 07:12:34 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Nasa Path Traversal and XSS tricks</title>
+      <title>Nasa Path Traversal and XSS (waf bypass)</title>
       <link>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</link>
       <pubDate>Mon, 07 Oct 2024 07:12:34 -0300</pubDate>
       <guid>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</guid>
-      <description>Exploring Path Traversal and XSS Vulnerabilities in NASA Subdomains In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.</description>
+      <description>Exploit Path Traversal and XSS in NASA Subdomains In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.</description>
     </item>
     <item>
       <title>Bypass MTLS Flutter</title>
@@ -28,7 +28,7 @@
       <link>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</link>
       <pubDate>Sun, 10 Mar 2024 22:40:38 -0300</pubDate>
       <guid>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</guid>
-      <description>Overview In this blog post, we&amp;rsquo;ll tackle a compelling challenge: decrypting WhatsApp messages. However, before we dive into the solution, it&amp;rsquo;s crucial to grasp some foundational concepts about how Android—though not all versions—stores your screen lock password. More importantly, we&amp;rsquo;ll explore why reusing this password across other applications, such as WhatsApp, is a security misstep.&#xA;Our journey will begin with an exploration of Android&amp;rsquo;s password storage mechanisms, focusing on the nuances of different versions and how they impact your zipbit&amp;rsquo;s security.</description>
+      <description>Overview In this blog post, we&amp;rsquo;ll tackle a compelling challenge: decrypting WhatsApp messages. However, before we dive into the solution, it&amp;rsquo;s crucial to grasp some foundational concepts about how Android—though not all versions—stores your screen lock password. More importantly, we&amp;rsquo;ll explore why reusing this password across other applications, such as WhatsApp, is a security misstep.&#xA;Our journey will begin with an exploration of Android&amp;rsquo;s password storage mechanisms, focusing on the nuances of different versions and how they impact your device&amp;rsquo;s security.</description>
     </item>
     <item>
       <title>PortSwigger Practice Exam</title>
@@ -42,7 +42,7 @@
       <link>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</link>
       <pubDate>Fri, 11 Nov 2022 17:12:34 -0300</pubDate>
       <guid>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</guid>
-      <description>tl;dr&#xA;You can see the result here :)&#xA;Click here 👀&#xA;Hey guys, I’m here to show you a little simple technique, but it’s a tip that maybe someday help someone. The question is how to identify that someone is using web proxy (BURP)? well, a friend of mine aka Jerry was with me one afternoon and we decided to do a PoC, maybe a lot of people already know, but when starting BURP it automatically goes up to a “light” web server where you can for example download the BURP certificate to import into your browser or zipbit at the following address http://burp/ The following image illustrates this interface:</description>
+      <description>tl;dr&#xA;You can see the result here :)&#xA;Click here 👀&#xA;Hey guys, I’m here to show you a little simple technique, but it’s a tip that maybe someday help someone. The question is how to identify that someone is using web proxy (BURP)? well, a friend of mine aka Jerry was with me one afternoon and we decided to do a PoC, maybe a lot of people already know, but when starting BURP it automatically goes up to a “light” web server where you can for example download the BURP certificate to import into your browser or device at the following address http://burp/ The following image illustrates this interface:</description>
     </item>
     <item>
       <title>Reversing Nim Binary With Radare</title>
@@ -77,7 +77,7 @@
       <link>https://incogbyte.github.io/posts/2020-02-02-bypass-nac/</link>
       <pubDate>Sun, 02 Feb 2020 17:12:34 -0300</pubDate>
       <guid>https://incogbyte.github.io/posts/2020-02-02-bypass-nac/</guid>
-      <description>In this post i’ll describe how to bypass NAC ( Network Access Control ). During an internal pentest, I had a problem connecting to the client network ( all network zipbits 802.1x (including VoIP zipbits), after a few hours trying to find out why, I found out that the client had implemented NAC, but what is Network access protocol (NAC) ?&#xA;Network Access Control (NAC) is a solution used on corporate networks to prevent, or even hinder, unauthorized hosts from accessing internally available services and systems.</description>
+      <description>In this post i’ll describe how to bypass NAC ( Network Access Control ). During an internal pentest, I had a problem connecting to the client network ( all network devices 802.1x (including VoIP devices), after a few hours trying to find out why, I found out that the client had implemented NAC, but what is Network access protocol (NAC) ?&#xA;Network Access Control (NAC) is a solution used on corporate networks to prevent, or even hinder, unauthorized hosts from accessing internally available services and systems.</description>
     </item>
     <item>
       <title>RCE using Path Traversal</title>
