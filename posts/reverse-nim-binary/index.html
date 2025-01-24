@@ -1,104 +1,128 @@
 <!doctype html>
-<html lang="en-us"><head>
-    <title>incogbyte&#39;s blog</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html lang="en-us">
+  <head>
+    <title>Reversing Nim Binary With Radare // incogbyte ⚔️ 🚩</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.142.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
     <meta name="description" content="" />
-
-    
-    
-    
-    <link rel="stylesheet" href="../../css/theme.min.css">
-
-    
-    
+    <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
     
 
     
-</head>
-<body>
-        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
-    <div class="row">
-        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
-            <a href="../../" class="text-decoration-none">
-                <img id="home-image" class="rounded-circle"
-                    
-                        
-                            src="../../images/avatar.png"
-                        
-                    
-                />
-            </a>
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversing Nim Binary With Radare">
+  <meta name="twitter:description" content="This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (https://nim-lang.org/) program language.
+tl;dr
+If you want to know the answer right away, just put a break point in the sym.join_main_42 function, and check the registers and your flag will be there.
+The challenge itself was not complex however, I had never written anything in Nim. So right after downloading the challenge binary, I went to look at some of Nim’s documentation and created a simple example, a guess number:">
+
+    <meta property="og:url" content="https://incogbyte.github.io/posts/reverse-nim-binary/">
+  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:title" content="Reversing Nim Binary With Radare">
+  <meta property="og:description" content="This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (https://nim-lang.org/) program language.
+tl;dr
+If you want to know the answer right away, just put a break point in the sym.join_main_42 function, and check the registers and your flag will be there.
+The challenge itself was not complex however, I had never written anything in Nim. So right after downloading the challenge binary, I went to look at some of Nim’s documentation and created a simple example, a guess number:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-06-09T10:12:34-03:00">
+    <meta property="article:modified_time" content="2022-06-09T10:12:34-03:00">
+    <meta property="article:tag" content="Ctf">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
+      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/cve/">CVEs</a>
+      </nav>
+      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
+  <title>x</title>
+  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>linkedin</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+          <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
+  <title>keybase</title>
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>
+          </a>
+        
+          <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
+  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Reversing Nim Binary With Radare</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jun 9, 2022
         </div>
-        <div class="col-sm-8 col-12 text-sm-left text-center">
-            <h2 class="m-0 mb-2 mt-4">
-                <a href="../../" class="text-decoration-none">
-                    
-                        incogbyte
-                    
-                </a>
-            </h2>
-            <p class="text-muted mb-1">
-                
-                    incogbyte #:
-                
-            </p>
-            <ul id="nav-links" class="list-inline mb-2">
-                
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../about/" title="About">About</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
-                    </li>
-                
-            </ul>
-            <ul id="nav-social" class="list-inline">
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://github.com/incogbyte" target="_blank">
-                            <i class="fab fa-github fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
-                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://twitter.com/incogbyte" target="_blank">
-                            <i class="fab fa-twitter fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="mailto://incogbyte%40protonmail.com" target="_blank">
-                            <i class="fas fa-at fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="incogbyte" target="_blank">
-                            <i class="fab fa-telegram fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-            </ul>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
         </div>
-    </div>
-    <hr />
-</header>
-<div class="container">
-    <div class="pl-sm-4 ml-sm-5">
-        <p>This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (<a href="https://nim-lang.org/">https://nim-lang.org/</a>) program language.</p>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+</svg>
+              <a class="tag" href="https://incogbyte.github.io/tags/ctf/">Ctf</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (<a href="https://nim-lang.org/">https://nim-lang.org/</a>) program language.</p>
 <p><strong>tl;dr</strong></p>
 <p>If you want to know the answer right away, just put a break point in the <strong>sym.join_main_42</strong> function, and check the registers and your flag will be there.</p>
 <p>The challenge itself was not complex however, I had never written anything in Nim. So right after downloading the challenge binary, I went to look at some of Nim&rsquo;s documentation and created a simple example, a guess number:</p>
@@ -128,9 +152,9 @@
 <blockquote>
 <p>The command <strong>iz</strong> will dump all strings</p>
 </blockquote>
-<p><img src="../../images/UntitledNim.png" alt="UntitledNim"></p>
-<p><img src="../../images/UntitledNim%201.png" alt="UntitledNim"></p>
-<p><img src="../../images/UntitledNim%202.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%201.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%202.png" alt="UntitledNim"></p>
 <p>The next step is to put a breakpoint in main and check what it is calling:</p>
 <blockquote>
 <p>The command <strong>db (function name)</strong> will set a break point radare2</p>
@@ -141,55 +165,49 @@
 <blockquote>
 <p>The command <strong>pdf</strong> will print the “disassemble” of main funcion</p>
 </blockquote>
-<p><img src="../../images/UntitledNim%203.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%203.png" alt="UntitledNim"></p>
 <p>As can be seen in the previous image, the <strong>main</strong> function calls another function named <strong>sym.NimMain.</strong></p>
 <p>When analyzing what has in <strong>sym.NimMan</strong>, I could see that the calls usually go through an instruction and call the <strong>sym.NimMainInner</strong> function, and after that call the <strong>sym.NimMainModule</strong></p>
-<p><img src="../../images/UntitledNim%204.png" alt="UntitledNim"></p>
-<p><img src="../../images/UntitledNim%205.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%204.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%205.png" alt="UntitledNim"></p>
 <p>The next step was essential to solve the CTF, I realized that all Nim function calls are inside the <strong>sym.NimMainInner</strong> call. So the functions I used in my example are called here:</p>
-<p><img src="../../images/UntitledNim%206.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%206.png" alt="UntitledNim"></p>
 <h3 id="solving-the-nimrev-challenger">Solving the nimrev Challenger</h3>
 <p>When downloading the binary and running it straight away, we noticed that the <strong>sym.readLine</strong> function is called, as it waits for user input, as I did in the example. However the string <strong>Wrong..</strong> is displayed. And we know that to search for these strings we need the char @:</p>
-<p><img src="../../images/UntitledNim%207.png" alt="UntitledNim"></p>
-<p><img src="../../images/UntitledNim%208.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%207.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%208.png" alt="UntitledNim"></p>
 <p>We know that, we have to look for the <strong>sym.NimMainModule</strong> to check the functions used and thus try to understand some of the logic.</p>
-<p><img src="../../images/UntitledNim%209.png" alt="UntitledNim"></p>
-<p><img src="../../images/UntitledNim%2010.png" alt="UntitledNim"></p>
-<p><img src="../../images/UntitledNim%2011.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%209.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%2010.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%2011.png" alt="UntitledNim"></p>
 <p>Looking at the output of the <strong>sym.NimMainInner</strong> call, we notice that after reading our input with <strong>sym.readLine</strong> several other functions are called and after calling the <strong>newSeq</strong> function (<a href="https://nim-lang.org/docs/system.html#newSeq">https://nim-lang.org/docs/system.html#newSeq</a>)</p>
 <p>several <strong>mov byte</strong> operations are performed and a function called <strong>eqStrings</strong> is called before executing the function which will show <strong>Wrong or Correct</strong> ( <strong>echoBinSafe</strong> )</p>
-<p><img src="../../images/UntitledNim%2012.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%2012.png" alt="UntitledNim"></p>
 <p>But before calling the string comparison, a function is called first ( sym.join_main_42 ) and is probably responsible for the check, let&rsquo;s check.</p>
-<p><img src="../../images/UntitledNim%2013.png" alt="UntitledNim"></p>
-<p><img src="../../images/UntitledNim%2014.png" alt="UntitledNim"></p>
-<p><img src="../../images/UntitledNim%2015.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%2013.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%2014.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%2015.png" alt="UntitledNim"></p>
 <p>When analyzing each function present:</p>
 <p><strong>sym.resizeString</strong>
 <strong>sym.appendString_2</strong>
 <strong>sym.nimCharToStr</strong></p>
 <p>When analyzing the <strong>nimCharToStr</strong> function it is possible to observe that a &ldquo;new&rdquo; string is dynamically created, for comparison with our input, before calling the <strong>eqStrings</strong> function. Therefore, we must check the values of the registers before the comparison and so we get our flag ;)</p>
-<p><img src="../../images/UntitledNim%2016.png" alt="UntitledNim"></p>
-<p><img src="../../images//UntitledNim%2017.png" alt="UntitledNim"></p>
+<p><img src="/images/UntitledNim%2016.png" alt="UntitledNim"></p>
+<p><img src="/images//UntitledNim%2017.png" alt="UntitledNim"></p>
 <blockquote>
 <p>The <strong>drr</strong> command shows all the registers em try to “long to bytes” for you ;)</p>
 </blockquote>
 <p>To check the veracity of the flag, we run the binary again and pass the flag</p>
-<p><img src="../../images//UntitledNim%2018.png" alt="UntitledNim"></p>
+<p><img src="/images//UntitledNim%2018.png" alt="UntitledNim"></p>
 <p>That&rsquo;s it for today, <strong>Nim</strong> is a very cool language and I learned a lot from this challenge. It&rsquo;s basic but maybe someone hasn&rsquo;t done it using radare and this can be a mini guide for those who want to understand more about Radare ( <a href="https://rada.re/">https://rada.re</a> /n/ ) and the Nim Language ( <a href="https://nim-lang.org/">https://nim-lang.org/</a> ).</p>
 <p>Thanks O/</p>
 
     </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
 
-    
-
-            </div>
-        </div><footer class="text-center pb-1">
-    <small class="text-muted">
-        
-            &copy; Copyright 2025, incogbyte
-        
-        <br>
-    </small>
-</footer>
-</body>
+    </main>
+  </body>
 </html>

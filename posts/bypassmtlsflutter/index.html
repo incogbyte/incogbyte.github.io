@@ -1,110 +1,122 @@
 <!doctype html>
-<html lang="en-us"><head>
-    <title>incogbyte&#39;s blog</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html lang="en-us">
+  <head>
+    <title>Bypass MTLS Flutter // incogbyte ⚔️ 🚩</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.142.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
     <meta name="description" content="" />
-
-    
-    
-    
-    <link rel="stylesheet" href="../../css/theme.min.css">
-
-    
-    
+    <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
     
 
     
-</head>
-<body>
-        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
-    <div class="row">
-        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
-            <a href="../../" class="text-decoration-none">
-                <img id="home-image" class="rounded-circle"
-                    
-                        
-                            src="../../images/avatar.png"
-                        
-                    
-                />
-            </a>
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Bypass MTLS Flutter">
+  <meta name="twitter:description" content="Overview In this blog post, we’ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\(ツ)/¯ ) from developers. Before we continue.. into the specifics, it’s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.
+Our journey will begin with an exploration of Flutter’s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.">
+
+    <meta property="og:url" content="https://incogbyte.github.io/posts/bypassmtlsflutter/">
+  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:title" content="Bypass MTLS Flutter">
+  <meta property="og:description" content="Overview In this blog post, we’ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\(ツ)/¯ ) from developers. Before we continue.. into the specifics, it’s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.
+Our journey will begin with an exploration of Flutter’s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-04-18T22:40:38-03:00">
+    <meta property="article:modified_time" content="2024-04-18T22:40:38-03:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
+      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/cve/">CVEs</a>
+      </nav>
+      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
+  <title>x</title>
+  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>linkedin</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+          <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
+  <title>keybase</title>
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>
+          </a>
+        
+          <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
+  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Bypass MTLS Flutter</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 18, 2024
         </div>
-        <div class="col-sm-8 col-12 text-sm-left text-center">
-            <h2 class="m-0 mb-2 mt-4">
-                <a href="../../" class="text-decoration-none">
-                    
-                        incogbyte
-                    
-                </a>
-            </h2>
-            <p class="text-muted mb-1">
-                
-                    incogbyte #:
-                
-            </p>
-            <ul id="nav-links" class="list-inline mb-2">
-                
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../about/" title="About">About</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
-                    </li>
-                
-            </ul>
-            <ul id="nav-social" class="list-inline">
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://github.com/incogbyte" target="_blank">
-                            <i class="fab fa-github fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
-                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://twitter.com/incogbyte" target="_blank">
-                            <i class="fab fa-twitter fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="mailto://incogbyte%40protonmail.com" target="_blank">
-                            <i class="fas fa-at fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="incogbyte" target="_blank">
-                            <i class="fab fa-telegram fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-            </ul>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          7 min read
         </div>
-    </div>
-    <hr />
-</header>
-<div class="container">
-    <div class="pl-sm-4 ml-sm-5">
-        <h4 id="overview">Overview</h4>
+      </div>
+    </header>
+    <div class="post-content">
+      <h4 id="overview">Overview</h4>
 <p>In this blog post, we&rsquo;ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\<em>(ツ)</em>/¯  ) from developers. Before we continue.. into the specifics, it&rsquo;s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.</p>
 <p>Our journey will begin with an exploration of Flutter&rsquo;s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.</p>
 <h4 id="mtls--mutual-tls-">MTLS ( Mutual TLS )</h4>
 <p>Mutual TLS (mTLS) authentication ensures that traffic is both secure and trusted in both directions between a client and server. It allows requests that do not log in with an identity provider (like IoT devices) to demonstrate that they can reach a given resource. Client certificate authentication is also a second layer of security for team members who both log in with an identity provider (IdP) and present a valid client certificate.</p>
 <p>With a root certificate authority (CA) in place, Access only allows requests from devices with a corresponding client certificate. When a request reaches the application, Access responds with a request for the client to present a certificate. If the device fails to present the certificate, the request is not allowed to proceed. If the client does have a certificate, Access completes a key exchange to verify.</p>
-<p><img src="../../images/flutter_00.png" alt=""></p>
+<p><img src="/images/flutter_00.png" alt=""></p>
 <h4 id="flutter--ssl-pinning-and-mtls">Flutter + SSL Pinning and MTLS</h4>
 <p>Flutter does not perform CA checks as demonstrated in the code snippet from <a href="https://github.com/dart-lang/sdk/blob/main/runtime/bin/security_context.cc">this Dart SDK file on GitHub</a>. There is extensive documentation and many blog posts dedicated to bypassing traditional SSL pinning, such as:</p>
 <ul>
@@ -160,37 +172,37 @@
 <p>You can now download my lab at: <a href="https://github.com/incogbyte/mtls-flutter">mtls-flutter on GitHub</a> and try it yourself! This blog post will primarily focus on Android.</p>
 <h4 id="reversing-the-flutter-app-and-understanding-the-methodology">Reversing the Flutter App and Understanding the Methodology</h4>
 <p>First, download the .apk file and try using <a href="https://github.com/Impact-I/reFlutter">Reflutter</a> to intercept the traffic. However, sometimes RASP (Runtime Application Self-Protection) technologies, which you can read about on <a href="https://www.guardsquare.com/runtime-application-self-protection-rasp">GuardSquare&rsquo;s RASP page</a> (Use radare2 or IDA ;)), might prevent this. If so, you&rsquo;ll need to bypass these protections before running Reflutter.</p>
-<p><img src="../../images/flutter_01.png" alt=""></p>
+<p><img src="/images/flutter_01.png" alt=""></p>
 <p>After successfully modifying the app, you need to sign the newly patched .apk with <a href="https://github.com/patrickfav/uber-apk-signer">uber-apk-signer</a>:</p>
-<p><img src="../../images/flutter_02.png" alt=""></p>
+<p><img src="/images/flutter_02.png" alt=""></p>
 <p>Next, install the modified .apk and set up your intercepting proxy (e.g., configuring the invisible proxy settings in Burp Suite with the appropriate TCP port and listen address).</p>
-<p><img src="../../images/flutter_03.png" alt=""></p>
+<p><img src="/images/flutter_03.png" alt=""></p>
 <p>Launch the modified <em>mtls_example</em> app and try making a request by tapping any button. Remember to configure the proxy settings on your Android device accordingly.</p>
-<p><img src="../../images/flutter_04.png" alt=""></p>
+<p><img src="/images/flutter_04.png" alt=""></p>
 <ul>
 <li>Not work ¯\<em>(ツ)</em>/¯</li>
 </ul>
-<p><img src="../../images/flutter_05.png" alt=""></p>
+<p><img src="/images/flutter_05.png" alt=""></p>
 <p>If you&rsquo;re unable to make any requests, it might be time to try some Frida scripts to further probe and manipulate the application&rsquo;s runtime.</p>
-<p><img src="../../images/flutter_06.png" alt=""></p>
+<p><img src="/images/flutter_06.png" alt=""></p>
 <ul>
 <li>Not work ¯\<em>(ツ)</em>/¯</li>
 </ul>
-<p><img src="../../images/flutter_07.png" alt=""></p>
+<p><img src="/images/flutter_07.png" alt=""></p>
 <p>If that still doesn&rsquo;t work, it&rsquo;s possible another layer of protection is in place (mTLS :p ). Suppose the developer has used static files for certificate and key storage, as one method we discussed. In that case, you can easily access the <code>.CA</code> file and <code>.key</code> in the assets folder. You can then use these files to generate a <code>.p12</code> file with the following command, which can be imported into Burp Suite to attempt the request again:</p>
-<p><img src="../../images/flutter_08.png" alt=""></p>
+<p><img src="/images/flutter_08.png" alt=""></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Choose any password</span>
 </span></span><span style="display:flex;"><span>openssl pkcs12 -export -out certmtls.p12 -inkey private.key -in certificate.crt
 </span></span><span style="display:flex;"><span>Enter Export Password:
 </span></span><span style="display:flex;"><span>Verifying - Enter Export Password:
-</span></span></code></pre></div><p><img src="../../images/flutter_09.png" alt=""></p>
+</span></span></code></pre></div><p><img src="/images/flutter_09.png" alt=""></p>
 <p>Relaunch the app and try pressing the button again. With the correct mTLS client <code>.key</code> and <code>.crt</code> configured in your intercepting proxy, you should now be able to intercept the app&rsquo;s traffic.</p>
-<p><img src="../../images/flutter_10.png" alt=""></p>
+<p><img src="/images/flutter_10.png" alt=""></p>
 <p>If the developer has employed environment variables or runtime configurations (the first method of implementation), retrieving the certificates could be more challenging. It would require a different approach, possibly involving extracting environment variables or intercepting them at runtime.</p>
 <p>Testing Flutter apps poses significant challenges due to Flutter&rsquo;s architecture, which compiles into a native binary for iOS and Android. For Android, after building the app (<code>mtls_example_flutter/build/app/outputs/flutter-apk/</code>), verify the presence of <strong>libapp.so</strong> by extracting it and using tools such as <a href="https://github.com/skylot/jadx">Jadx</a> for decompiling the .apk or <a href="https://github.com/nowsecure/r2frida">Radare with Frida</a> for dynamic analysis. The core logic is encapsulated within <strong>libapp.so</strong>. Analyzing this file with tools like <a href="https://github.com/NationalSecurityAgency/ghidra">Ghidra</a> or IDA is essential for understanding how certificates are embedded within the binary.</p>
 <p>We have two approaches to choose from here: use analysis tools like Ghidra, Radare2, or IDA, or utilize a tool called <a href="https://github.com/worawit/blutter">Blutter</a>.</p>
 <p>Let&rsquo;s explore using the Blutter tool. Begin by extracting <strong>libapp.so</strong> from the lib folder after unzipping the .apk:</p>
-<p><img src="../../images/flutter_11.png" alt=""></p>
+<p><img src="/images/flutter_11.png" alt=""></p>
 <p>Blutter will generate the following contents:</p>
 <ul>
 <li><strong>asm/</strong>: This directory stores the assembly code, which includes annotations from object pools and thread pools, making the assembly easier to read.</li>
@@ -200,12 +212,12 @@
 <li><strong>pp.txt</strong>: Contains all Dart objects.</li>
 </ul>
 <p>If you search for the hexadecimal pattern <code>4c 5c 30</code> (LS0), you can locate the pattern of the certificate:</p>
-<p><img src="../../images/flutter_12.png" alt=""></p>
+<p><img src="/images/flutter_12.png" alt=""></p>
 <p>Copy this string, base64 decode it, and you will retrieve the certificate and the key:</p>
-<p><img src="../../images/flutter_13.png" alt=""></p>
+<p><img src="/images/flutter_13.png" alt=""></p>
 <p>Now, you can bypass the security using the same strategy: use OpenSSL to generate the p12 file and import it into Burp Suite to facilitate the bypass.</p>
 <p>Alternatively, you can use the Ghidra tool to search, or simply run the command <code>strings -a libapp.so</code> and look for the certificate pattern (this sometimes works):</p>
-<p><img src="../../images/flutter_14.png" alt=""></p>
+<p><img src="/images/flutter_14.png" alt=""></p>
 <p>As you can see, sometimes a bit of reverse engineering skill is needed to understand how systems work and how commonly they are implemented. Practice is key :).</p>
 <p>Thanks! :)</p>
 <h4 id="refs">Refs</h4>
@@ -220,17 +232,11 @@
 </ol>
 
     </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
 
-    
-
-            </div>
-        </div><footer class="text-center pb-1">
-    <small class="text-muted">
-        
-            &copy; Copyright 2025, incogbyte
-        
-        <br>
-    </small>
-</footer>
-</body>
+    </main>
+  </body>
 </html>

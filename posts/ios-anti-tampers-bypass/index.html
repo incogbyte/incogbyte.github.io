@@ -1,104 +1,126 @@
 <!doctype html>
-<html lang="en-us"><head>
-    <title>incogbyte&#39;s blog</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html lang="en-us">
+  <head>
+    <title>iOS Anti-Tampers Bypass // incogbyte ⚔️ 🚩</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.142.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
     <meta name="description" content="" />
-
-    
-    
-    
-    <link rel="stylesheet" href="../../css/theme.min.css">
-
-    
-    
+    <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
     
 
     
-</head>
-<body>
-        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
-    <div class="row">
-        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
-            <a href="../../" class="text-decoration-none">
-                <img id="home-image" class="rounded-circle"
-                    
-                        
-                            src="../../images/avatar.png"
-                        
-                    
-                />
-            </a>
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="iOS Anti-Tampers Bypass">
+  <meta name="twitter:description" content="Hi everyone, in this blog i’m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:
+https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:
+ptrace sysctl strstr geppid In this blog, I will only talk about how I did it to bypass, using only frida with radare2. So let’s go.">
+
+    <meta property="og:url" content="https://incogbyte.github.io/posts/ios-anti-tampers-bypass/">
+  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:title" content="iOS Anti-Tampers Bypass">
+  <meta property="og:description" content="Hi everyone, in this blog i’m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:
+https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:
+ptrace sysctl strstr geppid In this blog, I will only talk about how I did it to bypass, using only frida with radare2. So let’s go.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-03-19T17:12:34-03:00">
+    <meta property="article:modified_time" content="2022-03-19T17:12:34-03:00">
+    <meta property="article:tag" content="Writeup">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
+      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/cve/">CVEs</a>
+      </nav>
+      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
+  <title>x</title>
+  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>linkedin</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+          <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
+  <title>keybase</title>
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>
+          </a>
+        
+          <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
+  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">iOS Anti-Tampers Bypass</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Mar 19, 2022
         </div>
-        <div class="col-sm-8 col-12 text-sm-left text-center">
-            <h2 class="m-0 mb-2 mt-4">
-                <a href="../../" class="text-decoration-none">
-                    
-                        incogbyte
-                    
-                </a>
-            </h2>
-            <p class="text-muted mb-1">
-                
-                    incogbyte #:
-                
-            </p>
-            <ul id="nav-links" class="list-inline mb-2">
-                
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../about/" title="About">About</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
-                    </li>
-                
-            </ul>
-            <ul id="nav-social" class="list-inline">
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://github.com/incogbyte" target="_blank">
-                            <i class="fab fa-github fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
-                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://twitter.com/incogbyte" target="_blank">
-                            <i class="fab fa-twitter fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="mailto://incogbyte%40protonmail.com" target="_blank">
-                            <i class="fas fa-at fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="incogbyte" target="_blank">
-                            <i class="fab fa-telegram fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-            </ul>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
         </div>
-    </div>
-    <hr />
-</header>
-<div class="container">
-    <div class="pl-sm-4 ml-sm-5">
-        <p><strong>Hi everyone, in this blog i&rsquo;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:</strong></p>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+</svg>
+              <a class="tag" href="https://incogbyte.github.io/tags/writeup/">Writeup</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p><strong>Hi everyone, in this blog i&rsquo;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:</strong></p>
 <ul>
 <li><strong><a href="https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa">https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa</a></strong></li>
 </ul>
@@ -111,16 +133,16 @@
 </ul>
 <p>In this blog, I will only talk about how I did it to bypass, using only <a href="https://frida.re">frida</a>  with <a href="https://github.com/radare2">radare2</a>. So let&rsquo;s go.</p>
 <p>If you try to run the app using tools like <a href="https://github.com/sensepost/objection"><strong>objection</strong></a> and try to use methods to bypass jailbreak you will not be able to bypass, as there are mechanisms that block certain syscalls (anti-tampers) . The following GIF illustrates the attempt to open the app with objection:</p>
-<p><img src="../../images/objection.gif" alt="a"></p>
+<p><img src="/images/objection.gif" alt="a"></p>
 <p>We can use several different methods here, we already have the .ipa that contains the binary inside, so we can throw it on radare2 and thus identify the functions that are being called/executed</p>
 <blockquote>
 <p>.ipa is a .zip file, so just unzip it like a normal .zip</p>
 </blockquote>
 <p>It&rsquo;s worth mentioning here that a more realistic scenario, where you don&rsquo;t have this .ipa but have the jailbroken device. You can use the tool  <a href="https://github.com/NyaMisty/fouldecrypt">https://github.com/NyaMisty/fouldecrypt</a>, to get the decrypted binary.</p>
-<p><img src="../../images/Screen_Shot_2022-03-19_at_17.56.54.png" alt="Screen Shot 2022-03-19 at 17.56.54.png"></p>
+<p><img src="/images/Screen_Shot_2022-03-19_at_17.56.54.png" alt="Screen Shot 2022-03-19 at 17.56.54.png"></p>
 <p>Taking the binary, we can pass it to our machine using the <strong>scp</strong> command. Next step is to use radare2 to analyze the binary and look for possible <strong>dlsym</strong> calls. To analyze the binary on radare2 we use the command below:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>r2 -A &lt;binaryDecrypted&gt;
-</span></span></code></pre></div><p><img src="../../images/Screen_Shot_2022-03-19_at_16.44.37.png" alt="Screen Shot 2022-03-19 at 16.44.37.png"></p>
+</span></span></code></pre></div><p><img src="/images/Screen_Shot_2022-03-19_at_16.44.37.png" alt="Screen Shot 2022-03-19 at 16.44.37.png"></p>
 <blockquote>
 <p>What is dlsym ?</p>
 </blockquote>
@@ -129,15 +151,15 @@
 </span></span><span style="display:flex;"><span>     <span style="color:#a6e22e">searched</span> <span style="color:#a6e22e">depends</span> <span style="color:#a6e22e">on</span> <span style="color:#a6e22e">the</span> <span style="color:#a6e22e">handle</span> <span style="color:#a6e22e">parameter</span>.
 </span></span></code></pre></div><p>To check the <strong>dlsym</strong> calls we use the command below:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>axt sym.imp.dlsym
-</span></span></code></pre></div><p><img src="../../images/Screen_Shot_2022-03-19_at_16.45.32.png" alt="Screen Shot 2022-03-19 at 16.45.32.png"></p>
+</span></span></code></pre></div><p><img src="/images/Screen_Shot_2022-03-19_at_16.45.32.png" alt="Screen Shot 2022-03-19 at 16.45.32.png"></p>
 <p>As can be seen in the image above, there is a call at address 10008864, let&rsquo;s go to that address and check:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>s sym.func <span style="color:#ae81ff">10008864</span>
-</span></span></code></pre></div><p><img src="../../images/dlsymPtrace.png" alt="dlsymPtrace.png"></p>
+</span></span></code></pre></div><p><img src="/images/dlsymPtrace.png" alt="dlsymPtrace.png"></p>
 <p>After analyzing the calls, we can see that there is a direct call to <strong>ptrace</strong>. We can use <strong>r2frida</strong>, and use the dtf utility from <a href="https://github.com/nowsecure/r2frida">r2frida</a>, to check the call being made at runtime. Using the commands bellow</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>r2 frida://spawn/usb//re.murphy.ios-challenge-2
 </span></span><span style="display:flex;"><span>:dtf ptrace iiii
 </span></span><span style="display:flex;"><span>:dc
-</span></span></code></pre></div><p><img src="../../images/callingPtrace.png" alt="callingPtrace.png"></p>
+</span></span></code></pre></div><p><img src="/images/callingPtrace.png" alt="callingPtrace.png"></p>
 <p>Let&rsquo;s analyze this call to ptrace, as we can see 3 arguments being used. Ptrace was called at runtime so we should bypass, let&rsquo;s code a bypass using frida.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isPtrace</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#39;ptrace&#39;</span>);
@@ -160,7 +182,7 @@
 <p>What is getppid ?  <code>returns the process ID of the parent of the calling process</code></p>
 </blockquote>
 <p>Checking the disassembler it is possible to verify the call to <strong>getppid</strong>:</p>
-<p><img src="../../images/getp.png" alt="getp.png"></p>
+<p><img src="/images/getp.png" alt="getp.png"></p>
 <p>Checking, we can analyze that it is just a comparison, between:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#a6e22e">cmp</span> <span style="color:#a6e22e">w0</span>,<span style="color:#ae81ff">1</span>
 </span></span></code></pre></div><p>The frida script bellow can be used to bypass the getppid call:</p>
@@ -174,7 +196,7 @@
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    })
 </span></span></code></pre></div><p>Walking through the app&rsquo;s execution flow, you can check the use of <strong>sysctl</strong>, which can also be used as a form of <strong>anti-tampering</strong></p>
-<p><img src="../../images/Screen_Shot_2022-03-19_at_23.21.15.png" alt="Screen Shot 2022-03-19 at 23.21.15.png"></p>
+<p><img src="/images/Screen_Shot_2022-03-19_at_23.21.15.png" alt="Screen Shot 2022-03-19 at 23.21.15.png"></p>
 <p>What is systctl ?</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">The</span> <span style="color:#a6e22e">sysctl</span>() <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">retrieves</span> <span style="color:#a6e22e">system</span> <span style="color:#a6e22e">information</span> <span style="color:#a6e22e">and</span> <span style="color:#a6e22e">allows</span> <span style="color:#a6e22e">processes</span>
 </span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">with</span> <span style="color:#a6e22e">appropriate</span> <span style="color:#a6e22e">privileges</span> <span style="color:#a6e22e">to</span> <span style="color:#a6e22e">set</span> <span style="color:#a6e22e">system</span> <span style="color:#a6e22e">information</span>. <span style="color:#a6e22e">The</span> <span style="color:#a6e22e">information</span>
@@ -198,7 +220,7 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">The</span> <span style="color:#a6e22e">strstr</span>() <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">locates</span> <span style="color:#a6e22e">the</span> <span style="color:#a6e22e">first</span> <span style="color:#a6e22e">occurrence</span> <span style="color:#66d9ef">of</span> <span style="color:#a6e22e">the</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">-</span><span style="color:#a6e22e">terminated</span>
 </span></span><span style="display:flex;"><span>     <span style="color:#a6e22e">strings2</span> <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">the</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">-</span><span style="color:#a6e22e">terminated</span> <span style="color:#a6e22e">strings1</span>.
 </span></span></code></pre></div><p>The image below illustrates the checks:</p>
-<p><img src="../../images/tamperLibsCalls.png" alt="tamperLibsCalls.png"></p>
+<p><img src="/images/tamperLibsCalls.png" alt="tamperLibsCalls.png"></p>
 <p>The frida code to bypass strstr:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">tamperLibs</span> <span style="color:#f92672">=</span> [
@@ -228,21 +250,15 @@
 </span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>});
 </span></span></code></pre></div><p>After all those steps, it is possible to move on to the next phase of the challenge that I will write about (second part). The following gif illustrates the completed bypass using the script:</p>
-<p><img src="../../images/frida_script.gif" alt="ezgif.com-gif-maker (2).gif"></p>
+<p><img src="/images/frida_script.gif" alt="ezgif.com-gif-maker (2).gif"></p>
 <p>Bye ! see u next time !</p>
 
     </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
 
-    
-
-            </div>
-        </div><footer class="text-center pb-1">
-    <small class="text-muted">
-        
-            &copy; Copyright 2025, incogbyte
-        
-        <br>
-    </small>
-</footer>
-</body>
+    </main>
+  </body>
 </html>

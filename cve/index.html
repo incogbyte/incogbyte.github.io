@@ -1,152 +1,143 @@
 <!doctype html>
-<html lang="en-us"><head>
-    <title>incogbyte&#39;s blog</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html lang="en-us">
+  <head>
+    <title> // incogbyte ⚔️ 🚩</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.142.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
     <meta name="description" content="" />
-
-    
-    
-    
-    <link rel="stylesheet" href="../css/theme.min.css">
-
-    
-    
+    <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
     
 
     
-</head>
-<body>
-        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
-    <div class="row">
-        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
-            <a href="../" class="text-decoration-none">
-                <img id="home-image" class="rounded-circle"
-                    
-                        
-                            src="../images/avatar.png"
-                        
-                    
-                />
-            </a>
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="incogbyte ⚔️ 🚩">
+  <meta name="twitter:description" content="CVE Bruno IDE - Code Execution - CVE-2024-48463 LumisXP - Unauthenticated XSS - CVE-2024-33329 LumisXP - Unauthenticated XSS - CVE-2024-33328 LumisXP - Unauthenticated XSS - CVE-2024-33327 LumisXP - Information disclosure &#43; IDOR - CVE-2024-33326 SeSuite - Code Execution - CVE-2023-26877 Piwigo SQL Injection - CVE-2023-26876 Wordpress WPvivid Backup Path Travesal - CVE-2022-2863 phpIPAM - CSRF &#43; XSS - CVE-2021-46426 LiquidFiles 3.4.15 stored XSS - CVE-2021-30140 Stored cross-site scripting (XSS) Envira Gallery Lite 1.8.3.3 - CVE-2020-35581 Typesetter CMS Code execution - CVE-2020-25790 Gila CMS 1.11.6 reflected XSS - CVE-2019-20803 Gila CMS 1.11.6 CSRF - CVE-2019-20804 Piwigo - Version 2.9.5 - CSRF - CVE-2019-13363 Piwigo - Version 2.9.5 - XSS - CVE-2019-13364 Exploits published https://www.exploit-db.com/?author=10769 Metasploit Module - Piwigo CVE-2023-26876 Gather Credentials via SQL Injection">
+
+    <meta property="og:url" content="https://incogbyte.github.io/cve/">
+  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:title" content="incogbyte ⚔️ 🚩">
+  <meta property="og:description" content="CVE Bruno IDE - Code Execution - CVE-2024-48463 LumisXP - Unauthenticated XSS - CVE-2024-33329 LumisXP - Unauthenticated XSS - CVE-2024-33328 LumisXP - Unauthenticated XSS - CVE-2024-33327 LumisXP - Information disclosure &#43; IDOR - CVE-2024-33326 SeSuite - Code Execution - CVE-2023-26877 Piwigo SQL Injection - CVE-2023-26876 Wordpress WPvivid Backup Path Travesal - CVE-2022-2863 phpIPAM - CSRF &#43; XSS - CVE-2021-46426 LiquidFiles 3.4.15 stored XSS - CVE-2021-30140 Stored cross-site scripting (XSS) Envira Gallery Lite 1.8.3.3 - CVE-2020-35581 Typesetter CMS Code execution - CVE-2020-25790 Gila CMS 1.11.6 reflected XSS - CVE-2019-20803 Gila CMS 1.11.6 CSRF - CVE-2019-20804 Piwigo - Version 2.9.5 - CSRF - CVE-2019-13363 Piwigo - Version 2.9.5 - XSS - CVE-2019-13364 Exploits published https://www.exploit-db.com/?author=10769 Metasploit Module - Piwigo CVE-2023-26876 Gather Credentials via SQL Injection">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2020-05-28T00:00:00+00:00">
+    <meta property="article:modified_time" content="2020-05-28T00:00:00+00:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
+      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/cve/">CVEs</a>
+      </nav>
+      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
+  <title>x</title>
+  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>linkedin</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+          <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
+  <title>keybase</title>
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>
+          </a>
+        
+          <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
+  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title"></h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 28, 2020
         </div>
-        <div class="col-sm-8 col-12 text-sm-left text-center">
-            <h2 class="m-0 mb-2 mt-4">
-                <a href="../" class="text-decoration-none">
-                    
-                        incogbyte
-                    
-                </a>
-            </h2>
-            <p class="text-muted mb-1">
-                
-                    incogbyte #:
-                
-            </p>
-            <ul id="nav-links" class="list-inline mb-2">
-                
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../about/" title="About">About</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../" title="Posts">Posts</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../cve/" title="CVEs">CVEs</a>
-                    </li>
-                
-            </ul>
-            <ul id="nav-social" class="list-inline">
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://github.com/incogbyte" target="_blank">
-                            <i class="fab fa-github fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
-                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://twitter.com/incogbyte" target="_blank">
-                            <i class="fab fa-twitter fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="mailto://incogbyte%40protonmail.com" target="_blank">
-                            <i class="fas fa-at fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="incogbyte" target="_blank">
-                            <i class="fab fa-telegram fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-            </ul>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          1 min read
         </div>
-    </div>
-    <hr />
-</header>
-<div class="container">
-    <div class="pl-sm-4 ml-sm-5">
-        <hr>
-<h4 id="here-is-a-my-selection-of-cves-published">Here is a my selection of CVEs published:</h4>
-<h2 id="2024">2024</h2>
+      </div>
+    </header>
+    <div class="post-content">
+      <h3 id="cve">CVE</h3>
 <ul>
-<li><strong>[CVE-2024-48463]</strong>: Bruno IDE - Code Execution</li>
-<li><strong>[CVE-2024-33329]</strong>: LumisXP - Unauthenticated XSS</li>
-<li><strong>[CVE-2024-33328]</strong>: LumisXP - Unauthenticated XSS</li>
-<li><strong>[CVE-2024-33327]</strong>: LumisXP - Unauthenticated XSS</li>
-<li><strong>[CVE-2024-33326]</strong>: LumisXP - Information Disclosure + IDOR</li>
+<li><a href="https://github.com/advisories/GHSA-9394-rw2q-x5m7">Bruno IDE - Code Execution - CVE-2024-48463</a></li>
+<li><a href="https://seclists.org/fulldisclosure/2024/Jul/7">LumisXP - Unauthenticated XSS - CVE-2024-33329</a></li>
+<li><a href="https://seclists.org/fulldisclosure/2024/Jul/8">LumisXP - Unauthenticated XSS - CVE-2024-33328</a></li>
+<li><a href="https://seclists.org/fulldisclosure/2024/Jul/9">LumisXP - Unauthenticated XSS - CVE-2024-33327</a></li>
+<li><a href="https://seclists.org/fulldisclosure/2024/Jul/10">LumisXP - Information disclosure + IDOR - CVE-2024-33326</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2023-26877">SeSuite - Code Execution - CVE-2023-26877</a></li>
+<li><a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-26876">Piwigo SQL Injection - CVE-2023-26876 </a></li>
+<li><a href="https://wpscan.com/vulnerability/cb6a3304-2166-47a0-a011-4dcacaa133e5">Wordpress WPvivid Backup Path Travesal - CVE-2022-2863</a></li>
+<li><a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-46426">phpIPAM - CSRF + XSS - CVE-2021-46426</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2021-30140">LiquidFiles 3.4.15 stored XSS - CVE-2021-30140</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2020-35581">Stored cross-site scripting (XSS) Envira Gallery Lite 1.8.3.3 - CVE-2020-35581</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2020-25790">Typesetter CMS Code execution - CVE-2020-25790</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2019-20803">Gila CMS 1.11.6 reflected XSS - CVE-2019-20803</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2019-20804">Gila CMS 1.11.6 CSRF - CVE-2019-20804</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2019-13363">Piwigo - Version 2.9.5 - CSRF - CVE-2019-13363</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2019-13364">Piwigo - Version 2.9.5 - XSS - CVE-2019-13364</a></li>
 </ul>
-<h2 id="2023">2023</h2>
+<h4 id="exploits-published">Exploits published</h4>
 <ul>
-<li><strong>[CVE-2023-26877]</strong>: SeSuite - Code Execution</li>
-<li><strong>[CVE-2023-26876]</strong>: Piwigo - SQL Injection</li>
-</ul>
-<h2 id="2022">2022</h2>
-<ul>
-<li><strong>[CVE-2022-2863]</strong>: WordPress WPvivid Backup - Path Traversal</li>
-</ul>
-<h2 id="2021">2021</h2>
-<ul>
-<li><strong>[CVE-2021-46426]</strong>: phpIPAM - CSRF + XSS</li>
-<li><strong>[CVE-2021-30140]</strong>: LiquidFiles 3.4.15 - Stored XSS</li>
-</ul>
-<h2 id="2020">2020</h2>
-<ul>
-<li><strong>[CVE-2020-35581]</strong>: Envira Gallery Lite 1.8.3.3 - Stored XSS</li>
-<li><strong>[CVE-2020-25790]</strong>: Typesetter CMS - Code Execution</li>
-</ul>
-<h2 id="2019">2019</h2>
-<ul>
-<li><strong>[CVE-2019-20803]</strong>: Gila CMS 1.11.6 - Reflected XSS</li>
-<li><strong>[CVE-2019-20804]</strong>: Gila CMS 1.11.6 - CSRF</li>
-<li><strong>[CVE-2019-13363]</strong>: Piwigo (Version 2.9.5) - CSRF</li>
-<li><strong>[CVE-2019-13364]</strong>: Piwigo (Version 2.9.5) - XSS</li>
+<li><a href="https://www.exploit-db.com/?author=10769">https://www.exploit-db.com/?author=10769</a></li>
+<li><a href="https://www.rapid7.com/blog/post/2023/07/21/metasploit-weekly-wrap-up-20/#:~:text=Piwigo%20CVE%2D2023%2D26876%20Gather%20Credentials%20via%20SQL%20Injection">Metasploit Module - Piwigo CVE-2023-26876 Gather Credentials via SQL Injection</a></li>
 </ul>
 
     </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
 
-    
-
-            </div>
-        </div><footer class="text-center pb-1">
-    <small class="text-muted">
-        
-            &copy; Copyright 2025, incogbyte
-        
-        <br>
-    </small>
-</footer>
-</body>
+    </main>
+  </body>
 </html>

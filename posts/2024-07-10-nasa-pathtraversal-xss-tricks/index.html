@@ -1,112 +1,130 @@
 <!doctype html>
-<html lang="en-us"><head>
-    <title>incogbyte&#39;s blog</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html lang="en-us">
+  <head>
+    <title>Nasa Path Traversal and XSS (waf bypass) // incogbyte ⚔️ 🚩</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.142.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
     <meta name="description" content="" />
-
-    
-    
-    
-    <link rel="stylesheet" href="../../css/theme.min.css">
-
-    
-    
+    <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
     
 
     
-</head>
-<body>
-        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
-    <div class="row">
-        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
-            <a href="../../" class="text-decoration-none">
-                <img id="home-image" class="rounded-circle"
-                    
-                        
-                            src="../../images/avatar.png"
-                        
-                    
-                />
-            </a>
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Nasa Path Traversal and XSS (waf bypass)">
+  <meta name="twitter:description" content="Exploit Path Traversal and XSS in NASA Subdomains In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.">
+
+    <meta property="og:url" content="https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/">
+  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:title" content="Nasa Path Traversal and XSS (waf bypass)">
+  <meta property="og:description" content="Exploit Path Traversal and XSS in NASA Subdomains In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-10-07T07:12:34-03:00">
+    <meta property="article:modified_time" content="2024-10-07T07:12:34-03:00">
+    <meta property="article:tag" content="Writeup">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
+      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/cve/">CVEs</a>
+      </nav>
+      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
+  <title>x</title>
+  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>linkedin</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+          <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
+  <title>keybase</title>
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>
+          </a>
+        
+          <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
+  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Nasa Path Traversal and XSS (waf bypass)</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Oct 7, 2024
         </div>
-        <div class="col-sm-8 col-12 text-sm-left text-center">
-            <h2 class="m-0 mb-2 mt-4">
-                <a href="../../" class="text-decoration-none">
-                    
-                        incogbyte
-                    
-                </a>
-            </h2>
-            <p class="text-muted mb-1">
-                
-                    incogbyte #:
-                
-            </p>
-            <ul id="nav-links" class="list-inline mb-2">
-                
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../about/" title="About">About</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
-                    </li>
-                
-            </ul>
-            <ul id="nav-social" class="list-inline">
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://github.com/incogbyte" target="_blank">
-                            <i class="fab fa-github fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
-                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://twitter.com/incogbyte" target="_blank">
-                            <i class="fab fa-twitter fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="mailto://incogbyte%40protonmail.com" target="_blank">
-                            <i class="fas fa-at fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="incogbyte" target="_blank">
-                            <i class="fab fa-telegram fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-            </ul>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          6 min read
         </div>
-    </div>
-    <hr />
-</header>
-<div class="container">
-    <div class="pl-sm-4 ml-sm-5">
-        <h1 id="exploit-path-traversal-and-xss-in-nasa-subdomains">Exploit Path Traversal and XSS in NASA Subdomains</h1>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+</svg>
+              <a class="tag" href="https://incogbyte.github.io/tags/writeup/">Writeup</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="exploit-path-traversal-and-xss-in-nasa-subdomains">Exploit Path Traversal and XSS in NASA Subdomains</h1>
 <p>In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.</p>
 <h2 id="vulnerability-1-reflected-xss-on-nasa">Vulnerability #1: Reflected XSS on NASA.</h2>
 <p>The first vulnerability I identified was a Reflected Cross-Site Scripting (XSS) with CloudFlare Bypass on the NASA subdomain xxx.nasa.gov. The issue was found on the “Funded Research” page at the following URL:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://xxx.nasa.gov/cgi-bin/xxx/xxx_awards.pl
 </span></span></code></pre></div><p>The parameter search_free_text was vulnerable to XSS. By changing the request from a POST to a GET, I was able to bypass certain defenses, such as the Web Application Firewall (WAF). Here’s the crafted URL that triggered the XSS:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://xxx.nasa.gov/cgi-bin/xxx/search_projects.pl?action<span style="color:#f92672">=</span>2&amp;xxx_award_flag<span style="color:#f92672">=</span>1<span style="color:#f92672">||</span>incogbyte&amp;search_free_text<span style="color:#f92672">=</span>&lt;svg%20onloonloadad<span style="color:#f92672">||||=</span>confirm%28document.domain%29%20&lt;li&amp;submit<span style="color:#f92672">=</span>incogbyte
-</span></span></code></pre></div><p><img src="../../images/xss01.png" alt=""></p>
-<p><img src="../../images/xss02.png" alt=""></p>
+</span></span></code></pre></div><p><img src="/images/xss01.png" alt=""></p>
+<p><img src="/images/xss02.png" alt=""></p>
 <p>You might be wondering: “What exactly is going on with this payload?” Let me break it down.</p>
 <h5 id="understanding-the-xss-payload">Understanding the XSS Payload</h5>
 <p>The payload used in the crafted URL looks like this:</p>
@@ -298,16 +316,16 @@
 <p>While exploring another NASA subdomain, I uncovered a Path Traversal vulnerability. This allowed access to sensitive files on the server through a simple manipulation of the URL.</p>
 <p>Here’s the endpoint where the vulnerability was found:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://XXXXXX.nasa.gov/signup.cfm
-</span></span></code></pre></div><p><img src="../../images/path01.png" alt=""></p>
+</span></span></code></pre></div><p><img src="/images/path01.png" alt=""></p>
 <p>When interacting with the map feature, the application triggered this request:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#a6e22e">GET</span> /location_html.cfm?filename=United_States.html <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>
 </span></span><span style="display:flex;"><span>Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">XXXXXX.nasa.gov</span>
 </span></span></code></pre></div><p>At first glance, it seems harmless. However, the filename parameter was vulnerable to path traversal. By modifying the filename value to something like ../../../../../../etc/passwd, I gained unauthorized access to system files.</p>
 <p>Here’s the modified URL in action:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>https://xxxxxxx.nasa.gov/location_html.cfm?filename<span style="color:#f92672">=</span>../../../../../../../../../../etc/passwd
-</span></span></code></pre></div><p><img src="../../images/path02.png" alt=""></p>
+</span></span></code></pre></div><p><img src="/images/path02.png" alt=""></p>
 <p>Upon further testing, I was even able to read sensitive files like /etc/shadow.</p>
-<p><img src="../../images/path03.png" alt=""></p>
+<p><img src="/images/path03.png" alt=""></p>
 <ul>
 <li>tl;dr about ssm-user ;p</li>
 </ul>
@@ -318,20 +336,14 @@
 <ul>
 <li>Thanks Nasa!</li>
 </ul>
-<p><img src="../../images/nasaletter.png" alt=""></p>
+<p><img src="/images/nasaletter.png" alt=""></p>
 
     </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
 
-    
-
-            </div>
-        </div><footer class="text-center pb-1">
-    <small class="text-muted">
-        
-            &copy; Copyright 2025, incogbyte
-        
-        <br>
-    </small>
-</footer>
-</body>
+    </main>
+  </body>
 </html>

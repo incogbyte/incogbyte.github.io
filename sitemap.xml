@@ -38,6 +38,9 @@
     <loc>https://incogbyte.github.io/posts/kitctf2023/</loc>
     <lastmod>2023-06-19T17:12:34-03:00</lastmod>
   </url><url>
+    <loc>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</loc>
+    <lastmod>2023-02-02T17:12:34-03:00</lastmod>
+  </url><url>
     <loc>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</loc>
     <lastmod>2022-11-11T17:12:34-03:00</lastmod>
   </url><url>
@@ -51,10 +54,10 @@
     <lastmod>2022-06-09T10:12:34-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</loc>
-    <lastmod>2022-03-18T22:40:38-03:00</lastmod>
+    <lastmod>2022-03-19T17:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/2022-01-20-cve_2022_23046_phpipam/</loc>
-    <lastmod>2022-01-20T17:12:34-03:00</lastmod>
+    <loc>https://incogbyte.github.io/posts/2020-02-02-bypass-nac/</loc>
+    <lastmod>2021-02-04T17:12:34-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/posts/2020-12-12-sqli-bypass.techs/</loc>
     <lastmod>2020-12-12T17:12:34-03:00</lastmod>
@@ -62,22 +65,12 @@
     <loc>https://incogbyte.github.io/cve/</loc>
     <lastmod>2020-05-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/2020-02-02-bypass-nac/</loc>
-    <lastmod>2020-02-02T17:12:34-03:00</lastmod>
-  </url><url>
-    <loc>https://incogbyte.github.io/posts/2020-01-02-rce-path-traversal/</loc>
-    <lastmod>2020-02-02T17:12:34-03:00</lastmod>
-  </url><url>
     <loc>https://incogbyte.github.io/posts/whoami/</loc>
     <lastmod>2020-02-02T17:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/cowsay/</loc>
-    <lastmod>2019-09-22T15:15:53-03:00</lastmod>
-  </url><url>
-    <loc>https://incogbyte.github.io/categories/posts/</loc>
-    <lastmod>2019-09-22T15:15:53-03:00</lastmod>
+    <loc>https://incogbyte.github.io/posts/2020-01-02-rce-path-traversal/</loc>
+    <lastmod>2019-02-05T17:12:34-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/about/</loc>
-    <lastmod>2019-04-18T22:40:38-03:00</lastmod>
   </url>
 </urlset>
