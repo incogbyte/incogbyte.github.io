@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on incogbyte ⚔️ 🚩</title>
-    <link>https://incogbyte.github.io/categories/</link>
+    <link>http://localhost:1313/categories/</link>
     <description>Recent content in Categories on incogbyte ⚔️ 🚩</description>
-    <generator>Hugo</generator>
+    <generator>incogbyte</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 07 Oct 2024 07:12:34 -0300</lastBuildDate>
-    <atom:link href="https://incogbyte.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hacking</title>
-      <link>https://incogbyte.github.io/categories/hacking/</link>
+      <link>http://localhost:1313/categories/hacking/</link>
       <pubDate>Mon, 07 Oct 2024 07:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/categories/hacking/</guid>
+      <guid>http://localhost:1313/categories/hacking/</guid>
       <description></description>
     </item>
     <item>
       <title>Writeup</title>
-      <link>https://incogbyte.github.io/categories/writeup/</link>
+      <link>http://localhost:1313/categories/writeup/</link>
       <pubDate>Mon, 07 Oct 2024 07:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/categories/writeup/</guid>
+      <guid>http://localhost:1313/categories/writeup/</guid>
       <description></description>
     </item>
     <item>
       <title>Ctf</title>
-      <link>https://incogbyte.github.io/categories/ctf/</link>
+      <link>http://localhost:1313/categories/ctf/</link>
       <pubDate>Thu, 09 Jun 2022 10:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/categories/ctf/</guid>
+      <guid>http://localhost:1313/categories/ctf/</guid>
       <description></description>
     </item>
   </channel>
