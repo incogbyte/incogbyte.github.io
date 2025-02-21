@@ -4,10 +4,17 @@
     <title>incogbyte ⚔️ 🚩</title>
     <link>https://incogbyte.github.io/</link>
     <description>Recent content on incogbyte ⚔️ 🚩</description>
-    <generator>incogbyte</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Oct 2024 07:12:34 -0300</lastBuildDate>
+    <lastBuildDate>Thu, 20 Feb 2025 22:40:38 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques</title>
+      <link>https://incogbyte.github.io/posts/flutter-encryption-bypass/</link>
+      <pubDate>Thu, 20 Feb 2025 22:40:38 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/flutter-encryption-bypass/</guid>
+      <description>&lt;p&gt;In my previous post &lt;a href=&#34;https://incogbyte.github.io/posts/bypassmtlsflutter/&#34;&gt;Bypassing MTLS in Flutter&lt;/a&gt;, I discussed how MTLS is &lt;strong&gt;generaly&lt;/strong&gt; implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: &lt;em&gt;&amp;ldquo;It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open.&amp;rdquo;&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Nasa Path Traversal and XSS (waf bypass)</title>
       <link>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</link>

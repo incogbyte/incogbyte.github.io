@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques // incogbyte ⚔️ 🚩</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.142.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques">
+  <meta name="twitter:description" content="In my previous post Bypassing MTLS in Flutter, I discussed how MTLS is generaly implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: “It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open.”">
+
+    <meta property="og:url" content="https://incogbyte.github.io/posts/flutter-encryption-bypass/">
+  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:title" content="Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques">
+  <meta property="og:description" content="In my previous post Bypassing MTLS in Flutter, I discussed how MTLS is generaly implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: “It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open.”">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-02-20T22:40:38-03:00">
+    <meta property="article:modified_time" content="2025-02-20T22:40:38-03:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
+      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/cve/">CVEs</a>
+      </nav>
+      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
+  <title>x</title>
+  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>linkedin</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+          <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
+  <title>keybase</title>
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>
+          </a>
+        
+          <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
+  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Feb 20, 2025
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          5 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>In my previous post <a href="https://incogbyte.github.io/posts/bypassmtlsflutter/">Bypassing MTLS in Flutter</a>, I discussed how MTLS is <strong>generaly</strong> implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: <em>&ldquo;It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open.&rdquo;</em></p>
+<p>In this blog post, I will explain how to bypass scenarios where the application encrypts the request body (RSA) before sending it to the server. This technique is commonly seen in banking applications or other apps with mature security practices in mobile development.</p>
+<h3 id="understanding-rsa-encryption">Understanding RSA Encryption</h3>
+<p>The most commonly used encryption method in such cases is RSA. Let’s break it down in simple terms:</p>
+<p>In mobile applications, <em>RSA</em> is generally used for communication security and authentication (and, in some cases, even authorization). TL;DR:</p>
+<ol>
+<li><strong>Secure Key Exchange:</strong> RSA is often used to exchange symmetric encryption keys (like AES). Since RSA is slow for large data volumes, it primarily secures the transmission of a faster encryption key.</li>
+<li><strong>Authentication and Digital Signatures:</strong> Apps use RSA to ensure messages or transactions originate from a trusted source. This is achieved by signing content with a private key and verifying it with a public key.</li>
+<li><strong>Secure Communication (HTTPS/TLS):</strong> When an app connects to a secure server, RSA is used to establish a TLS/SSL connection. The server sends its public key, the app encrypts a session key with it, and subsequent communication is encrypted with a more efficient algorithm.</li>
+<li><strong>Sensitive Data Protection:</strong> Some apps store encrypted information locally, using RSA to safeguard credentials or critical data.</li>
+</ol>
+<p>RSA plays a crucial role in app security but is often combined with faster methods (like AES) to ensure both security and performance. The following image illustrates how RSA works:</p>
+<p><img src="/images/rsa-01.png" alt=""></p>
+<h3 id="implementing-rsa-in-flutter">Implementing RSA in Flutter</h3>
+<p>Now that we understand how RSA works, let’s explore how Flutter apps implement it. Based on empirical research, most Flutter applications use the following libraries:</p>
+<ul>
+<li><a href="https://pub.dev/packages/dio">dio</a> - A powerful HTTP networking package.</li>
+<li><a href="https://pub.dev/packages/pointycastle">pointycastle</a> - A Dart library for encryption and decryption.</li>
+</ul>
+<p>In general, there are two common implementation approaches:</p>
+<ol>
+<li>The application requests the public key from the backend, which is then encrypted and stored in <em>SharedPreferences</em> on Android using another widely used Flutter package: <a href="https://pub.dev/packages/flutter_secure_storage">flutter_secure_storage</a>.</li>
+<li>The public key is hardcoded in the Flutter code, meaning you would need to reverse-engineer the app or identify the exact function call that utilizes the key.</li>
+</ol>
+<p>To simulate this scenario, I developed a Flutter app with a Node.js backend. The backend holds the private key, while the Flutter app contains the public key to encrypt the request body. This is a common setup in REST API or GraphQL applications.</p>
+<p>However, to make it more realistic, I compiled the Flutter app in <em>release mode</em> rather than <em>debug mode</em> (More easy to reverse). When a Flutter app is built for production (e.g., for Google Play Store), several optimizations are applied to the binary (<code>libflutter.so</code> and <code>libapp.so</code>), including:</p>
+<ul>
+<li>Dart Ahead-Of-Time (AOT) compilation.</li>
+<li>Execution inside a Dart Virtual Machine (VM).</li>
+<li>Serialization of code and data into a binary snapshot.</li>
+<li>Stripping of symbols in release mode.</li>
+<li>Full optimization.</li>
+</ul>
+<p>For more details, check out the talk by Worawit: <a href="https://www.youtube.com/watch?v=EU3KOzNkCdI">B(l)utter Reversing Flutter Application Using Dart Runtime</a>.</p>
+<h3 id="analyzing-the-android-apk">Analyzing the Android APK</h3>
+<p>In a real scenario, obtaining the APK file is the first step. Once you have the APK, you can use tools like <a href="https://apktool.org/">APKTool</a> with the command <code>apktool d foo.apk</code> to decompile it.</p>
+<p>Since I built the app myself, I simply compiled it in release mode, signed it, and installed it on a physical device:</p>
+<ul>
+<li>
+<p><strong>Build and sign:</strong>
+<img src="/images/build-01.png" alt=""></p>
+</li>
+<li>
+<p><strong>Install with ADB:</strong>
+<img src="/images/adb-01.png" alt=""></p>
+</li>
+</ul>
+<p>With the APK in hand, we can use Worawit’s <a href="https://github.com/worawit/blutter">Blutter tool</a>. Blutter locally initializes the Dart app and inspects objects like the Object Pool and Thread Pool, helping us understand its structure.</p>
+<p><img src="/images/blutter_decrypt_app.png" alt=""></p>
+<p><img src="/images/flutter_decrypted_folders.png" alt=""></p>
+<p>The next step is to analyze Blutter’s output and identify function addresses for hooking. Each application is different and may require a unique approach (shoutout to @edunovella 🍻 for this reminder!).</p>
+<p>Since we aim to intercept the request before encryption, we first attempt to capture it using a proxy. Flutter has some quirks in this area; I recommend reading <a href="https://blog.nviso.eu/2020/05/20/intercepting-flutter-traffic-on-android-x64/">this blog</a> for insights into Flutter and HTTP proxying.</p>
+<p><img src="/images/http-enc.png" alt=""></p>
+<p>A good reversing approach is to search for the app’s entry points. Using Blutter, we can inspect the main package (<code>flutter_body_encrypt_rsa</code>) and locate the relevant class:</p>
+<p><img src="/images/flutter_decrypted_main_class.png" alt=""></p>
+<p>In this case, we find <code>rsa_helper.dart</code>, which appears to handle encryption:</p>
+<p><img src="/images/encrypted_function_blutter.png" alt=""></p>
+<h3 id="hooking-flutters-encryption-function">Hooking Flutter’s Encryption Function</h3>
+<p>To proceed, I analyze the loaded libraries and locate the <code>libapp.so</code> and <code>libflutter.so</code> addresses using Frida:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">Java</span>.<span style="color:#a6e22e">perform</span>(<span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;[*] Waiting for libraries to load...&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">setTimeout</span>(<span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">warn</span>(<span style="color:#e6db74">&#34;[*] Loaded libraries:&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">modules</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Process</span>.<span style="color:#a6e22e">enumerateModules</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">modules</span>.<span style="color:#a6e22e">forEach</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">m</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">name</span>.<span style="color:#a6e22e">toLowerCase</span>() <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;libflutter.so&#34;</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">warn</span>(<span style="color:#e6db74">&#34;[*] libflutter found!&#34;</span>, <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">name</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;[*] &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">name</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; -&gt; &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">base</span>);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }, <span style="color:#ae81ff">1000</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><p><img src="/images/hook-flutter-01.png" alt=""></p>
+<p><img src="/images/hook-flutter-02.png" alt=""></p>
+<p>Finally, we successfully intercept the data before encryption:</p>
+<p><img src="/images/jodson-flutter.png.png" alt=""></p>
+<p><img src="/images/burp-encrypted-flutter-req.png" alt=""></p>
+<p><img src="/images/e1.png" alt=""></p>
+<p><img src="/images/e2.png" alt=""></p>
+<p>If you enjoyed this post, send feedback on X (@incogbyte) or email me at <a href="mailto:incogbyte@protonmail.com">incogbyte@protonmail.com</a>. Let me know if you&rsquo;d like a part 2!</p>
+<p><strong>References:</strong></p>
+<ul>
+<li><a href="https://github.com/worawit/blutter">Blutter</a></li>
+<li><a href="https://frida.re/">Frida</a></li>
+<li><a href="https://flutter.dev/">Flutter</a></li>
+<li><a href="https://filestore.fortinet.com/fortiguard/research/nullcon.pdf">Nullcon cryptax</a></li>
+</ul>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
