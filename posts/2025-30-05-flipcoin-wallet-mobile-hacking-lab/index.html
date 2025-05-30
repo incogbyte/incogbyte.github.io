@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Flipcoin Wallet Mobile Hacking Lab // incogbyte ⚔️ 🚩</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Jodson 0.142.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Flipcoin Wallet Mobile Hacking Lab">
+  <meta name="twitter:description" content="Flipcoin Wallet CTF - SQL Injection Challenge In this CTF challenge, I’ll explore a SQL Injection vulnerability ( Client Side) in the Flipcoin Wallet iOS app. I’ll walk you through my process of identifying and exploiting the vulnerability to retrieve a recovery phrase from the application’s database (this is the chall 👌).
+Intro When I first opened the app, I found a typical crypto wallet interface with features for buying, sending, and receiving cryptocurrencies. It also shows crypto news and displays balances for different coins. Since I couldn’t find any obvious way to get the recovery phrase through the normal interface, I decided to dig into the app’s code to find a way in.">
+
+    <meta property="og:url" content="https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/">
+  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:title" content="Flipcoin Wallet Mobile Hacking Lab">
+  <meta property="og:description" content="Flipcoin Wallet CTF - SQL Injection Challenge In this CTF challenge, I’ll explore a SQL Injection vulnerability ( Client Side) in the Flipcoin Wallet iOS app. I’ll walk you through my process of identifying and exploiting the vulnerability to retrieve a recovery phrase from the application’s database (this is the chall 👌).
+Intro When I first opened the app, I found a typical crypto wallet interface with features for buying, sending, and receiving cryptocurrencies. It also shows crypto news and displays balances for different coins. Since I couldn’t find any obvious way to get the recovery phrase through the normal interface, I decided to dig into the app’s code to find a way in.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-30T18:57:03-03:00">
+    <meta property="article:modified_time" content="2025-05-30T18:57:03-03:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
+      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/cve/">CVEs</a>
+      </nav>
+      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
+  <title>x</title>
+  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>linkedin</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+          <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
+  <title>keybase</title>
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>
+          </a>
+        
+          <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
+  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Flipcoin Wallet Mobile Hacking Lab</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 30, 2025
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="flipcoin-wallet-ctf---sql-injection-challenge">Flipcoin Wallet CTF - SQL Injection Challenge</h1>
+<p>In this CTF challenge, I&rsquo;ll explore a SQL Injection vulnerability ( Client Side) in the Flipcoin Wallet iOS app. I&rsquo;ll walk you through my process of identifying and exploiting the vulnerability to retrieve a recovery phrase from the application&rsquo;s database (this is the chall 👌).</p>
+<h1 id="intro">Intro</h1>
+<p>When I first opened the app, I found a typical crypto wallet interface with features for buying, sending, and receiving cryptocurrencies. It also shows crypto news and displays balances for different coins. Since I couldn&rsquo;t find any obvious way to get the recovery phrase through the normal interface, I decided to dig into the app&rsquo;s code to find a way in.</p>
+<p><img src="/images/flipCoin01.png" alt=""></p>
+<h1 id="static-analysis">Static Analysis</h1>
+<p>Let&rsquo;s start with static analysis. First, I&rsquo;ll check the Info.plist file to understand the app&rsquo;s configuration. This file contains important information like URL schemes (deep links) that the app uses. To begin, we need to get the IPA file. If you have a jailbroken device, you can install it using ideviceinstaller.</p>
+<p><img src="/images/installer01.png" alt=""></p>
+<p>After extracting the IPA file, I used the ipsw tool to examine the Info.plist contents:</p>
+<p><img src="/images/schema02.png" alt=""></p>
+<p>After examining the contents of the extracted IPA, I discovered that the app is built using Swift and Objective-C. This is interesting because it means we&rsquo;ll need to analyze both languages.</p>
+<blockquote>
+<p>Pro tip: You can use ipsw to get class-dump information for both Swift and Objective-C classes</p>
+</blockquote>
+<p><img src="/images/db01.png" alt=""></p>
+<p>While class-dump gives us method signatures and class structures, it doesn&rsquo;t show us the actual implementation. To understand what these methods do, we need to look at the decompiled code. There are several free tools available for this:</p>
+<ul>
+<li>Ghidra</li>
+<li>Radare2</li>
+<li>IDA Free (limited features)</li>
+<li>Hopper Free (limited features)</li>
+</ul>
+<p>For this analysis, I&rsquo;ll use IDA Free. Let&rsquo;s load the Flipcoin binary extracted from the IPA into IDA for deeper analysis. After analyzing the code, I found the class responsible for handling the data:</p>
+<p><img src="/images/ida-code-01.png" alt=""></p>
+<p><img src="/images/ida-code-02.png" alt=""></p>
+<h1 id="vulnerability-analysis">Vulnerability Analysis</h1>
+<p>Let&rsquo;s break down what I found in the code:</p>
+<h2 id="deep-link-handler">Deep Link Handler</h2>
+<p>The app uses a <code>SceneDelegate.scene(_:openURLContexts:)</code> method to handle deep links. This is a standard iOS method that gets triggered when the app is opened via a URL scheme (in this case, <code>flipcoin://</code>).</p>
+<h2 id="url-processing">URL Processing</h2>
+<p>The app accepts URLs in this format:</p>
+<pre tabindex="0"><code>flipcoin://send?amount=42.0&amp;network=testnet
+</code></pre><p>The function processes these URLs in three steps:</p>
+<ol>
+<li>
+<p><strong>URL Parsing</strong></p>
+<ul>
+<li>Extracts the absolute string from the URL</li>
+<li>Searches for specific parameters:
+<ul>
+<li>&ldquo;amount&rdquo; (numeric value)</li>
+<li>&ldquo;testnet&rdquo; (string value)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Parameter Validation</strong></p>
+<ul>
+<li>Checks if &ldquo;amount&rdquo; equals 42</li>
+<li>Verifies if &ldquo;testnet&rdquo; is present in the URL</li>
+<li>If both conditions are met, it assumes the request is valid</li>
+</ul>
+</li>
+<li>
+<p><strong>View Controller Selection</strong></p>
+<ul>
+<li>Based on the validated parameters, it determines which screen to display</li>
+</ul>
+</li>
+</ol>
+<h1 id="testing-the-vulnerability">Testing the Vulnerability</h1>
+<p>Let&rsquo;s create a simple HTML payload to test this functionality:</p>
+<p><img src="/images/deeplink-flip-00.png" alt=""></p>
+<p><img src="/images/deeplink-flip-01.png" alt=""></p>
+<p>I intercepted the request using Burp Suite:</p>
+<p><img src="/images/deeplink-flip-02.png" alt=""></p>
+<p>This request revealed the account address, but our goal is to retrieve the recovery key. Let&rsquo;s go back to IDA and search for database-related strings and iOS methods, particularly focusing on NSManager.</p>
+<p><img src="/images/ida-manager-01.png" alt=""></p>
+<p><img src="/images/ida-manager-02.png" alt=""></p>
+<h1 id="exploitation">Exploitation</h1>
+<p>After analyzing the code in IDA, I found both the flag and recovery pass, but the challenge specifically requires a SQL injection at the front end. Continuing the analysis, I discovered the database name:</p>
+<p><strong>your_database_name.sqlite</strong></p>
+<p>I copied the database to localhost for further analysis:</p>
+<p><img src="/images/localhost-01.png" alt=""></p>
+<p>Returning to IDA, I searched for SQL commands and found a potential SQL injection point:</p>
+<p><img src="/images/SQL-01.png" alt=""></p>
+<p>Let&rsquo;s test our deep link exploit:</p>
+<p><img src="/images/SQL-02.png" alt=""></p>
+<p><img src="/images/SQL-03.png" alt=""></p>
+<p>Success! We got the first entry. Since this is a mobile app and not a web application, using <code>OR 1=1</code> is safe in this context.</p>
+<p><img src="/images/SQL-04.png" alt=""></p>
+<p>Finally, we obtained the flag:</p>
+<p><img src="/images/SQL-05.png" alt=""></p>
+<p><img src="/images/SQL-06.png" alt=""></p>
+<h1 id="conclusion">Conclusion</h1>
+<p>This lab demonstrates a critical security vulnerability in mobile applications: SQL injection + deep links. The lack of proper input validation in the URL handling mechanism allowed us to inject SQL commands and retrieve sensitive data. This type of vulnerability  can lead to the exposure of sensitive information.</p>
+<p>For those interested in learning more about mobile security and practicing these concepts, I recommend visiting the MobileHackingLab - Flipcoin Wallet challenge. It&rsquo;s an excellent opportunity to enhance your skills in mobile application security testing and vulnerability assessment.</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

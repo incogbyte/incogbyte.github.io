@@ -4,10 +4,17 @@
     <title>Posts on incogbyte ⚔️ 🚩</title>
     <link>https://incogbyte.github.io/posts/</link>
     <description>Recent content in Posts on incogbyte ⚔️ 🚩</description>
-    <generator>test</generator>
+    <generator>Jodson</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 20 Feb 2025 22:40:38 -0300</lastBuildDate>
+    <lastBuildDate>Fri, 30 May 2025 18:57:03 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Flipcoin Wallet Mobile Hacking Lab</title>
+      <link>https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/</link>
+      <pubDate>Fri, 30 May 2025 18:57:03 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/</guid>
+      <description>&lt;h1 id=&#34;flipcoin-wallet-ctf---sql-injection-challenge&#34;&gt;Flipcoin Wallet CTF - SQL Injection Challenge&lt;/h1&gt;&#xA;&lt;p&gt;In this CTF challenge, I&amp;rsquo;ll explore a SQL Injection vulnerability ( Client Side) in the Flipcoin Wallet iOS app. I&amp;rsquo;ll walk you through my process of identifying and exploiting the vulnerability to retrieve a recovery phrase from the application&amp;rsquo;s database (this is the chall 👌).&lt;/p&gt;&#xA;&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;When I first opened the app, I found a typical crypto wallet interface with features for buying, sending, and receiving cryptocurrencies. It also shows crypto news and displays balances for different coins. Since I couldn&amp;rsquo;t find any obvious way to get the recovery phrase through the normal interface, I decided to dig into the app&amp;rsquo;s code to find a way in.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques</title>
       <link>https://incogbyte.github.io/posts/flutter-encryption-bypass/</link>
