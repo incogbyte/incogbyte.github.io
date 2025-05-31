@@ -6,8 +6,15 @@
     <description>Recent content on incogbyte ⚔️ 🚩</description>
     <generator>jodson</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 31 May 2025 14:10:48 -0300</lastBuildDate>
+    <lastBuildDate>Sat, 31 May 2025 19:35:40 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Captain No Hook Mobile Hacking Labs</title>
+      <link>https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/</link>
+      <pubDate>Sat, 31 May 2025 19:35:40 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/</guid>
+      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;The Captain No Hooks lab provides an in-depth exploration of iOS RASP (Runtime Application Self-Protection) defenses. This comprehensive guide focuses on how we can bypass these security mechanisms.&lt;/p&gt;&#xA;&lt;p&gt;The lab description:&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Welcome to the iOS Application Security Lab: Captain No Hook Anti-Debugging Challenge. This challenge focuses on a fictitious app called Captain No Hook, which implements advanced anti-debugging and jailbreak detection techniques. Your objective is to bypass these protections and retrieve the hidden flag within the app.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Time Trap Mobile Hacking Labs</title>
       <link>https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/</link>
