@@ -4,10 +4,17 @@
     <title>Posts on incogbyte ⚔️ 🚩</title>
     <link>https://incogbyte.github.io/posts/</link>
     <description>Recent content in Posts on incogbyte ⚔️ 🚩</description>
-    <generator>Jodson</generator>
+    <generator>jodson</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 30 May 2025 18:57:03 -0300</lastBuildDate>
+    <lastBuildDate>Sat, 31 May 2025 10:14:01 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gotham Times MobileHacking Labs</title>
+      <link>https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/</link>
+      <pubDate>Sat, 31 May 2025 10:14:01 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/</guid>
+      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.&lt;/p&gt;&#xA;&lt;p&gt;In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;How webviews function in iOS applications&lt;/li&gt;&#xA;&lt;li&gt;Understanding deep links and their implementation&lt;/li&gt;&#xA;&lt;li&gt;Identifying open redirect vulnerabilities&lt;/li&gt;&#xA;&lt;li&gt;Techniques for exploiting these security flaws&lt;/li&gt;&#xA;&lt;li&gt;Methods for extracting session tokens&lt;/li&gt;&#xA;&lt;li&gt;Best practices for preventing such attacks&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Let&amp;rsquo;s break down the initial application flow and interface:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Flipcoin Wallet Mobile Hacking Lab</title>
       <link>https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/</link>
