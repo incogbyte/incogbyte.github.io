@@ -6,14 +6,21 @@
     <description>Recent content on incogbyte ⚔️ 🚩</description>
     <generator>jodson</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 31 May 2025 10:14:01 -0300</lastBuildDate>
+    <lastBuildDate>Sat, 31 May 2025 14:10:48 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Gotham Times MobileHacking Labs</title>
+      <title>Time Trap Mobile Hacking Labs</title>
+      <link>https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/</link>
+      <pubDate>Sat, 31 May 2025 14:10:48 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/</guid>
+      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;In this challenge, you will explore the vulnerabilities in an internally used application named Time Trap, focusing on Command Injection. Time Trap is a fictional application that showcases insecure practices commonly found in internal applications. Your objective is to exploit the Command Injection vulnerability to gain unauthorized access and execute commands on the iOS device.&lt;/p&gt;&#xA;&lt;h3 id=&#34;initial-setup&#34;&gt;Initial Setup&lt;/h3&gt;&#xA;&lt;p&gt;First, let&amp;rsquo;s install the .ipa file on our jailbroken device:&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://incogbyte.github.io/images/time-01.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;analysis-process&#34;&gt;Analysis Process&lt;/h3&gt;&#xA;&lt;h4 id=&#34;1-automated-analysis-setup&#34;&gt;1. Automated Analysis Setup&lt;/h4&gt;&#xA;&lt;p&gt;We&amp;rsquo;ll use the following bash script to automate the class-dump analysis and .IPA extraction:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Gotham Times Mobile Hacking Labs</title>
       <link>https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/</link>
       <pubDate>Sat, 31 May 2025 10:14:01 -0300</pubDate>
       <guid>https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/</guid>
-      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.&lt;/p&gt;&#xA;&lt;p&gt;In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;How webviews function in iOS applications&lt;/li&gt;&#xA;&lt;li&gt;Understanding deep links and their implementation&lt;/li&gt;&#xA;&lt;li&gt;Identifying open redirect vulnerabilities&lt;/li&gt;&#xA;&lt;li&gt;Techniques for exploiting these security flaws&lt;/li&gt;&#xA;&lt;li&gt;Methods for extracting session tokens&lt;/li&gt;&#xA;&lt;li&gt;Best practices for preventing such attacks&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Let&amp;rsquo;s break down the initial application flow and interface:&lt;/p&gt;</description>
+      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.&lt;/p&gt;&#xA;&lt;p&gt;In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;How webviews function in iOS applications&lt;/li&gt;&#xA;&lt;li&gt;Understanding deep links and their implementation&lt;/li&gt;&#xA;&lt;li&gt;Identifying open redirect vulnerabilities&lt;/li&gt;&#xA;&lt;li&gt;Techniques for exploiting these security flaws&lt;/li&gt;&#xA;&lt;li&gt;Methods for extracting session tokens&lt;/li&gt;&#xA;&lt;li&gt;Best practices for preventing such attacks&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Flipcoin Wallet Mobile Hacking Lab</title>

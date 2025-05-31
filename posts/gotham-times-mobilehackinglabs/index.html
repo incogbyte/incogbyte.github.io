@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-us">
   <head>
-    <title>Gotham Times MobileHacking Labs // incogbyte ⚔️ 🚩</title>
+    <title>Gotham Times Mobile Hacking Labs // incogbyte ⚔️ 🚩</title>
     <link rel="shortcut icon" href="/favicon.ico" />
     <meta charset="utf-8" />
     <meta name="generator" content="jodson 0.142.0">
@@ -14,17 +14,17 @@
     
     
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Gotham Times MobileHacking Labs">
+  <meta name="twitter:title" content="Gotham Times Mobile Hacking Labs">
   <meta name="twitter:description" content="Introduction The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.
 In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:
-How webviews function in iOS applications Understanding deep links and their implementation Identifying open redirect vulnerabilities Techniques for exploiting these security flaws Methods for extracting session tokens Best practices for preventing such attacks Let’s break down the initial application flow and interface:">
+How webviews function in iOS applications Understanding deep links and their implementation Identifying open redirect vulnerabilities Techniques for exploiting these security flaws Methods for extracting session tokens Best practices for preventing such attacks This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.">
 
     <meta property="og:url" content="https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/">
   <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
-  <meta property="og:title" content="Gotham Times MobileHacking Labs">
+  <meta property="og:title" content="Gotham Times Mobile Hacking Labs">
   <meta property="og:description" content="Introduction The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.
 In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:
-How webviews function in iOS applications Understanding deep links and their implementation Identifying open redirect vulnerabilities Techniques for exploiting these security flaws Methods for extracting session tokens Best practices for preventing such attacks Let’s break down the initial application flow and interface:">
+How webviews function in iOS applications Understanding deep links and their implementation Identifying open redirect vulnerabilities Techniques for exploiting these security flaws Methods for extracting session tokens Best practices for preventing such attacks This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -93,7 +93,7 @@ How webviews function in iOS applications Understanding deep links and their imp
       
   <article class="post">
     <header class="post-header">
-      <h1 class ="post-title">Gotham Times MobileHacking Labs</h1>
+      <h1 class ="post-title">Gotham Times Mobile Hacking Labs</h1>
       <div class="post-meta">
         <div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
@@ -107,7 +107,7 @@ How webviews function in iOS applications Understanding deep links and their imp
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          9 min read
+          10 min read
         </div>
       </div>
     </header>
@@ -123,6 +123,9 @@ How webviews function in iOS applications Understanding deep links and their imp
 <li>Methods for extracting session tokens</li>
 <li>Best practices for preventing such attacks</li>
 </ul>
+<p>This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.</p>
+<h3 id="initial-application-analysis">Initial Application Analysis</h3>
+<p>Upon launching the application, we are presented with a login screen and an option to navigate to the registration screen. After creating an account and logging in, we are taken to the authenticated section of the app where we can view a list of news articles and profile information. Nothing seems unusual at first, so let&rsquo;s dig deeper into the application.</p>
 <p>Let&rsquo;s break down the initial application flow and interface:</p>
 <ol>
 <li>
@@ -130,6 +133,7 @@ How webviews function in iOS applications Understanding deep links and their imp
 <ul>
 <li>Initial login screen with credentials input</li>
 <li>Registration option for new users</li>
+<li>Secure authentication process</li>
 </ul>
 </li>
 <li>
@@ -141,6 +145,7 @@ How webviews function in iOS applications Understanding deep links and their imp
 </ul>
 </li>
 </ol>
+<h3 id="technical-analysis">Technical Analysis</h3>
 <p>First, with the .ipa file we can use the following script to extract the contents and get the class-dump information:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
@@ -182,7 +187,7 @@ How webviews function in iOS applications Understanding deep links and their imp
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>BINARY<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$APP_PATH<span style="color:#e6db74">/</span><span style="color:#66d9ef">$(</span>basename <span style="color:#e6db74">&#34;</span>$APP_PATH<span style="color:#e6db74">&#34;</span> .app<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check if the binary exists (file without an extension in the .app folder)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check if the binary exists</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span>$BINARY<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
 </span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;[@] No binary found in </span>$APP_PATH<span style="color:#e6db74">, exiting...&#34;</span>
 </span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
@@ -207,108 +212,107 @@ How webviews function in iOS applications Understanding deep links and their imp
 </span></span></code></pre></div><p>We can inspect the binary extracted contents and class-dump information:</p>
 <p><img src="/images/gothamt-01.png" alt=""></p>
 <p>This information show us some interesting things&hellip; but the mainly information is the name of the Gotham_Times classes/interfaces</p>
-<p>We can use the <code>ipsw</code> to  verify the plist files:</p>
-<pre tabindex="0"><code>ipsw plist Info.plist
-{
-  &#34;BuildMachineOSBuild&#34;: &#34;23D60&#34;,
-  &#34;CFBundleDevelopmentRegion&#34;: &#34;en&#34;,
-  &#34;CFBundleExecutable&#34;: &#34;Gotham Times&#34;,
-  &#34;CFBundleIcons&#34;: {
-    &#34;CFBundlePrimaryIcon&#34;: {
-      &#34;CFBundleIconFiles&#34;: [
-        &#34;AppIcon60x60&#34;
-      ],
-      &#34;CFBundleIconName&#34;: &#34;AppIcon&#34;
-    }
-  },
-  &#34;CFBundleIcons~ipad&#34;: {
-    &#34;CFBundlePrimaryIcon&#34;: {
-      &#34;CFBundleIconFiles&#34;: [
-        &#34;AppIcon60x60&#34;,
-        &#34;AppIcon76x76&#34;
-      ],
-      &#34;CFBundleIconName&#34;: &#34;AppIcon&#34;
-    }
-  },
-  &#34;CFBundleIdentifier&#34;: &#34;com.mobilehackinglab.Gotham-Times&#34;,
-  &#34;CFBundleInfoDictionaryVersion&#34;: &#34;6.0&#34;,
-  &#34;CFBundleName&#34;: &#34;Gotham Times&#34;,
-  &#34;CFBundlePackageType&#34;: &#34;APPL&#34;,
-  &#34;CFBundleShortVersionString&#34;: &#34;1.0&#34;,
-  &#34;CFBundleSupportedPlatforms&#34;: [
-    &#34;iPhoneOS&#34;
-  ],
-  &#34;CFBundleURLTypes&#34;: [
-    {
-      &#34;CFBundleTypeRole&#34;: &#34;Viewer&#34;,
-      &#34;CFBundleURLName&#34;: &#34;com.mobilehackinglab.Gotham-Times&#34;,
-      &#34;CFBundleURLSchemes&#34;: [
-        &#34;gothamtimes&#34;
-      ]
-    }
-  ],
-  &#34;CFBundleVersion&#34;: &#34;1&#34;,
-  &#34;DTCompiler&#34;: &#34;com.apple.compilers.llvm.clang.1_0&#34;,
-  &#34;DTPlatformBuild&#34;: &#34;21C52&#34;,
-  &#34;DTPlatformName&#34;: &#34;iphoneos&#34;,
-  &#34;DTPlatformVersion&#34;: &#34;17.2&#34;,
-  &#34;DTSDKBuild&#34;: &#34;21C52&#34;,
-  &#34;DTSDKName&#34;: &#34;iphoneos17.2&#34;,
-  &#34;DTXcode&#34;: &#34;1520&#34;,
-  &#34;DTXcodeBuild&#34;: &#34;15C500b&#34;,
-  &#34;LSRequiresIPhoneOS&#34;: true,
-  &#34;MinimumOSVersion&#34;: &#34;15.4&#34;,
-  &#34;NSAccentColorName&#34;: &#34;AccentColor&#34;,
-  &#34;UIApplicationSceneManifest&#34;: {
-    &#34;UIApplicationSupportsMultipleScenes&#34;: false,
-    &#34;UISceneConfigurations&#34;: {
-      &#34;UIWindowSceneSessionRoleApplication&#34;: [
-        {
-          &#34;UISceneConfigurationName&#34;: &#34;Default Configuration&#34;,
-          &#34;UISceneDelegateClassName&#34;: &#34;Gotham_Times.SceneDelegate&#34;,
-          &#34;UISceneStoryboardFile&#34;: &#34;Main&#34;
-        }
-      ]
-    }
-  },
-  &#34;UIApplicationSupportsIndirectInputEvents&#34;: true,
-  &#34;UIDeviceFamily&#34;: [
-    1,
-    2
-  ],
-  &#34;UILaunchStoryboardName&#34;: &#34;LaunchScreen&#34;,
-  &#34;UIMainStoryboardFile&#34;: &#34;Main&#34;,
-  &#34;UIRequiredDeviceCapabilities&#34;: [
-    &#34;arm64&#34;
-  ],
-  &#34;UISupportedInterfaceOrientations~ipad&#34;: [
-    &#34;UIInterfaceOrientationPortrait&#34;,
-    &#34;UIInterfaceOrientationPortraitUpsideDown&#34;,
-    &#34;UIInterfaceOrientationLandscapeLeft&#34;,
-    &#34;UIInterfaceOrientationLandscapeRight&#34;
-  ],
-  &#34;UISupportedInterfaceOrientations~iphone&#34;: [
-    &#34;UIInterfaceOrientationPortrait&#34;,
-    &#34;UIInterfaceOrientationLandscapeLeft&#34;,
-    &#34;UIInterfaceOrientationLandscapeRight&#34;
-  ]
-}
-</code></pre><p>The only interesting thing.. for this chall is the following scheme:</p>
-<pre tabindex="0"><code>&#34;CFBundleURLTypes&#34;: [
-    {
-      &#34;CFBundleTypeRole&#34;: &#34;Viewer&#34;,
-      &#34;CFBundleURLName&#34;: &#34;com.mobilehackinglab.Gotham-Times&#34;,
-      &#34;CFBundleURLSchemes&#34;: [
-        &#34;gothamtimes&#34;
-      ]
-    }
-  ],
-</code></pre><p><code>gothamtimes</code> can be used as <code>deeplink</code> with the following schema <code>gothamtimes://data</code>.</p>
+<p>We can use the <code>ipsw</code> to verify the plist files:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ipsw plist Info.plist
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;BuildMachineOSBuild&#34;</span>: <span style="color:#e6db74">&#34;23D60&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleDevelopmentRegion&#34;</span>: <span style="color:#e6db74">&#34;en&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleExecutable&#34;</span>: <span style="color:#e6db74">&#34;Gotham Times&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleIcons&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;CFBundlePrimaryIcon&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleIconFiles&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;AppIcon60x60&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleIconName&#34;</span>: <span style="color:#e6db74">&#34;AppIcon&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleIcons~ipad&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;CFBundlePrimaryIcon&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleIconFiles&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;AppIcon60x60&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;AppIcon76x76&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleIconName&#34;</span>: <span style="color:#e6db74">&#34;AppIcon&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleIdentifier&#34;</span>: <span style="color:#e6db74">&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleInfoDictionaryVersion&#34;</span>: <span style="color:#e6db74">&#34;6.0&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleName&#34;</span>: <span style="color:#e6db74">&#34;Gotham Times&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundlePackageType&#34;</span>: <span style="color:#e6db74">&#34;APPL&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleShortVersionString&#34;</span>: <span style="color:#e6db74">&#34;1.0&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleSupportedPlatforms&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;iPhoneOS&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleURLTypes&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleTypeRole&#34;</span>: <span style="color:#e6db74">&#34;Viewer&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleURLName&#34;</span>: <span style="color:#e6db74">&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleURLSchemes&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;gothamtimes&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;CFBundleVersion&#34;</span>: <span style="color:#e6db74">&#34;1&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;DTCompiler&#34;</span>: <span style="color:#e6db74">&#34;com.apple.compilers.llvm.clang.1_0&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;DTPlatformBuild&#34;</span>: <span style="color:#e6db74">&#34;21C52&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;DTPlatformName&#34;</span>: <span style="color:#e6db74">&#34;iphoneos&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;DTPlatformVersion&#34;</span>: <span style="color:#e6db74">&#34;17.2&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;DTSDKBuild&#34;</span>: <span style="color:#e6db74">&#34;21C52&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;DTSDKName&#34;</span>: <span style="color:#e6db74">&#34;iphoneos17.2&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;DTXcode&#34;</span>: <span style="color:#e6db74">&#34;1520&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;DTXcodeBuild&#34;</span>: <span style="color:#e6db74">&#34;15C500b&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;LSRequiresIPhoneOS&#34;</span>: true,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;MinimumOSVersion&#34;</span>: <span style="color:#e6db74">&#34;15.4&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;NSAccentColorName&#34;</span>: <span style="color:#e6db74">&#34;AccentColor&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;UIApplicationSceneManifest&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;UIApplicationSupportsMultipleScenes&#34;</span>: false,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;UISceneConfigurations&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;UIWindowSceneSessionRoleApplication&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;UISceneConfigurationName&#34;</span>: <span style="color:#e6db74">&#34;Default Configuration&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;UISceneDelegateClassName&#34;</span>: <span style="color:#e6db74">&#34;Gotham_Times.SceneDelegate&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;UISceneStoryboardFile&#34;</span>: <span style="color:#e6db74">&#34;Main&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;UIApplicationSupportsIndirectInputEvents&#34;</span>: true,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;UIDeviceFamily&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    1,
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;UILaunchStoryboardName&#34;</span>: <span style="color:#e6db74">&#34;LaunchScreen&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;UIMainStoryboardFile&#34;</span>: <span style="color:#e6db74">&#34;Main&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;UIRequiredDeviceCapabilities&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;arm64&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;UISupportedInterfaceOrientations~ipad&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;UIInterfaceOrientationPortrait&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;UIInterfaceOrientationPortraitUpsideDown&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;UIInterfaceOrientationLandscapeLeft&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;UIInterfaceOrientationLandscapeRight&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;UISupportedInterfaceOrientations~iphone&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;UIInterfaceOrientationPortrait&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;UIInterfaceOrientationLandscapeLeft&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;UIInterfaceOrientationLandscapeRight&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>The only interesting thing.. for this chall is the following scheme:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#e6db74">&#34;CFBundleURLTypes&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleTypeRole&#34;</span>: <span style="color:#e6db74">&#34;Viewer&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleURLName&#34;</span>: <span style="color:#e6db74">&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleURLSchemes&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;gothamtimes&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">]</span>,
+</span></span></code></pre></div><p><code>gothamtimes</code> can be used as <code>deeplink</code> with the following schema <code>gothamtimes://data</code>.</p>
 <p>Now we can open the Gothman Mach-O binary inside Ghidra and verify the decompiled binary:</p>
 <p><img src="/images/gothamt-02.png" alt=""></p>
-<p>The following function is responsible for open the the <code>deeplink</code> with the parameter URL</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">/* Gotham_Times.SceneDelegate.scene(_: __C.UIScene, openURLContexts:
+<p>The following function is responsible for open the the <code>deeplink</code> with the parameter URL:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* Gotham_Times.SceneDelegate.scene(_: __C.UIScene, openURLContexts:
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">   Swift.Set&lt;__C.UIOpenURLContext&gt;) -&gt; () */</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> __thiscall
@@ -759,8 +763,8 @@ How webviews function in iOS applications Understanding deep links and their imp
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>Explaination:</p>
 <p>The scene(_:openURLContexts:) method in the SceneDelegate handles deep links when the app is opened via a custom URL scheme like:</p>
-<pre tabindex="0"><code>gotham://open?url=http://example.com
-</code></pre><p><strong>Main steps:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gotham://open?url<span style="color:#f92672">=</span>http://example.com
+</span></span></code></pre></div><p><strong>Main steps:</strong></p>
 <ol>
 <li>
 <p><strong>Iterates over UIOpenURLContext items</strong> passed by the system.</p>
@@ -789,6 +793,9 @@ How webviews function in iOS applications Understanding deep links and their imp
 <p>If the selected tab view controller is of type NewsController, it passes the extracted URL to it.</p>
 </li>
 </ol>
+<blockquote>
+<p>You can create a qrcode too.. and set the malicious deep linking</p>
+</blockquote>
 <h3 id="exploit">Exploit</h3>
 <pre tabindex="0"><code>&lt;html&gt;
 
@@ -797,16 +804,13 @@ How webviews function in iOS applications Understanding deep links and their imp
 &lt;a href=&#34;gothamtimes://open?url=https://incogbyte.github.io&#34;&gt; Click me Daddy! &lt;/a&gt;
 
 &lt;/html&gt;
-</code></pre><blockquote>
-<p>We can create a qrcode with that deeplink too</p>
-</blockquote>
-<p><img src="/images/gothamt-03.png" alt=""></p>
+</code></pre><p><img src="/images/gothamt-03.png" alt=""></p>
 <p><img src="/images/gothamt-04.png" alt=""></p>
 <p><img src="/images/gothamt-05.png" alt=""></p>
 <p><img src="/images/gothamt-06.png" alt=""></p>
-<p>As we can see.. the app could be exploited with a <code>open redirect vulnerability</code> that &ldquo;could&rdquo; be leak the Session token..</p>
-<p>This lab demonstrates the importance of secure WebView implementation in iOS applications. For a comprehensive learning experience, visit the MobileHackingLab.</p>
-<p>Thanks!</p>
+<p>As we can see, the app could be exploited with an <code>open redirect vulnerability</code> that could leak the Session token. This vulnerability exists in the WebView implementation, where insufficient URL validation allows for malicious redirects.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>This lab serves as a valuable lesson in understanding the security implications of loading URLs within a WebView in iOS applications. By exploiting vulnerabilities like this, it&rsquo;s possible to load malicious sites and steal session tokens. For a hands-on experience with these concepts, visit the lab at MobileHackingLab - Gotham Times.</p>
 
     </div>
     <div class="post-footer">

