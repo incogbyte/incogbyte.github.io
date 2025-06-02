@@ -6,8 +6,15 @@
     <description>Recent content in Posts on incogbyte ⚔️ 🚩</description>
     <generator>jodson</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 31 May 2025 19:35:40 -0300</lastBuildDate>
+    <lastBuildDate>Mon, 02 Jun 2025 09:29:08 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Runner Mobile Hacking Labs</title>
+      <link>https://incogbyte.github.io/posts/runner-mobilehackinglabs/</link>
+      <pubDate>Mon, 02 Jun 2025 09:29:08 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/runner-mobilehackinglabs/</guid>
+      <description>&lt;p&gt;In this challenge, you’ll be working with a fictitious app called &lt;strong&gt;Run Time&lt;/strong&gt;, which tracks your steps while running. Your objective is to &lt;strong&gt;bypass the app’s protections, inject a dynamic library, and achieve code execution&lt;/strong&gt;. &lt;a href=&#34;https://www.mobilehackinglab.com/path-player?courseid=lab-runtime&#34;&gt;https://www.mobilehackinglab.com/path-player?courseid=lab-runtime&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;On a &lt;strong&gt;jailbroken device&lt;/strong&gt;, you can install the .ipa file using:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ideviceinstaller -i com.mobilehackinglab.runtime.ipa&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We’ll start by analyzing the app’s binary using class-dump, examining its Info.plist, and extracting class metadata.&lt;/p&gt;&#xA;&lt;p&gt;You can use the following script to automate the extraction:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Captain No Hook Mobile Hacking Labs</title>
       <link>https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/</link>
