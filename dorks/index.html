@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Git Dork Helper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content='vsec7' name='author'/>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            resize: vertical;
+            min-height: 150px;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(86, 171, 47, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .results-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .results-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e5e9;
+            vertical-align: middle;
+        }
+
+        .results-table tr:hover {
+            background: #f0f8ff;
+        }
+
+        .results-table a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .results-table a:hover {
+            text-decoration: underline;
+        }
+
+        .checkbox-cell {
+            width: 50px;
+            text-align: center;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .stats {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #a8e6cf 0%, #56ab2f 100%);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: #a8e6cf;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Git Dork Helper</h1>
+            <p>Advanced tool for GitHub vulnerability discovery</p>
+        </div>
+
+        <div class="card">
+            <div class="input-group">
+                <label for="url">Keywords URL:</label>
+                <div class="input-row">
+                    <input type="text" id="url" value="https://gist.githubusercontent.com/incogbyte/aac265fa260b6529f1f6e03369c6df48/raw/f8ecc3bd03a57c9a5a9202f97ce702c312201004/dorks.txt" placeholder="Paste URL with keywords...">
+                    <button class="btn btn-primary" onclick="getKeywords()">
+                        <span id="loadBtn">Load Keywords</span>
+                        <span id="loadSpinner" class="spinner" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="target">Target:</label>
+                <div class="input-row">
+                    <input type="text" id="target" placeholder='e.g., "paypal" or org:paypal'>
+                    <button class="btn btn-success" onclick="Generate()">Generate Links</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="keywords">Keywords (one per line):</label>
+                <textarea id="keywords" placeholder="Paste your keywords here, one per line..."></textarea>
+            </div>
+        </div>
+
+        <div id="statsContainer" style="display: none;">
+            <div class="stats">
+                <span id="statsText">0 links generated</span>
+            </div>
+        </div>
+
+        <div id="controlsContainer" style="display: none;">
+            <div class="card">
+                <div class="control-buttons">
+                    <button class="btn btn-info" onclick="selectAll()">Select All</button>
+                    <button class="btn btn-warning" onclick="deselectAll()">Deselect All</button>
+                    <button class="btn btn-success" onclick="openSelected()">Open Selected</button>
+                    <button class="btn btn-primary" onclick="openAll()">Open All</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultsContainer" style="display: none;">
+            <div class="card">
+                <div class="results-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-cell">
+                                    <input type="checkbox" id="masterCheckbox" onchange="toggleAll()">
+                                </th>
+                                <th>Search Link</th>
+                                <th>Keyword</th>
+                            </tr>
+                        </thead>
+                        <tbody id="result">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Created by <a href="https://github.com/incogbyte">@incogbyte</a></p>
+        </div>
+    </div>
+
+    <script>
+        function showLoading(show) {
+            document.getElementById('loadBtn').style.display = show ? 'none' : 'inline';
+            document.getElementById('loadSpinner').style.display = show ? 'inline-block' : 'none';
+        }
+
+        function getKeywords() {
+            const url = $('#url').val().trim();
+            if (!url) {
+                alert('Please enter a valid URL!');
+                return;
+            }
+
+            showLoading(true);
+            
+            $.get(url)
+                .done(function(resp) {
+                    document.getElementById('keywords').value = resp;
+                    showLoading(false);
+                    
+                    const keywordCount = resp.split('\n').filter(line => line.trim()).length;
+                    alert(`${keywordCount} keywords loaded successfully!`);
+                })
+                .fail(function() {
+                    showLoading(false);
+                    alert('Error loading keywords. Please check the URL and try again.');
+                });
+        }
+
+        function Generate() {
+            const target = $('#target').val().trim();
+            const keywords = $('#keywords').val().trim();
+            
+            if (!target) {
+                alert('Please enter a target!');
+                return;
+            }
+            
+            if (!keywords) {
+                alert('Please enter some keywords!');
+                return;
+            }
+
+            $("#result").empty();
+            
+            const keywordList = keywords.split('\n').filter(line => line.trim());
+            let linkCount = 0;
+            
+            $.each(keywordList, function(index, keyword) {
+                keyword = keyword.trim();
+                if (keyword) {
+                    const link = "https://github.com/search?q=" + encodeURIComponent(target + " " + keyword) + "&type=Code";
+                    $('#result').append(`
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="link-checkbox" data-link="${link}">
+                            </td>
+                            <td>
+                                <a href="${link}" target="_blank">${link}</a>
+                            </td>
+                            <td>
+                                <code>${keyword}</code>
+                            </td>
+                        </tr>
+                    `);
+                    linkCount++;
+                }
+            });
+            
+            if (linkCount > 0) {
+                document.getElementById('statsText').textContent = `${linkCount} links generated for target: ${target}`;
+                document.getElementById('statsContainer').style.display = 'block';
+                document.getElementById('controlsContainer').style.display = 'block';
+                document.getElementById('resultsContainer').style.display = 'block';
+            } else {
+                alert('No links were generated. Please check your keywords.');
+            }
+        }
+
+        function selectAll() {
+            $('.link-checkbox').prop('checked', true);
+            $('#masterCheckbox').prop('checked', true);
+        }
+
+        function deselectAll() {
+            $('.link-checkbox').prop('checked', false);
+            $('#masterCheckbox').prop('checked', false);
+        }
+
+        function toggleAll() {
+            const isChecked = $('#masterCheckbox').prop('checked');
+            $('.link-checkbox').prop('checked', isChecked);
+        }
+
+        function openSelected() {
+            const selectedLinks = $('.link-checkbox:checked');
+            
+            if (selectedLinks.length === 0) {
+                alert('No links selected!');
+                return;
+            }
+            
+            if (selectedLinks.length > 10) {
+                if (!confirm(`Warning: You are about to open ${selectedLinks.length} tabs. Continue?`)) {
+                    return;
+                }
+            }
+            
+            selectedLinks.each(function() {
+                const link = $(this).data('link');
+                window.open(link, '_blank');
+            });
+            
+            alert(`${selectedLinks.length} tabs opened!`);
+        }
+
+        function openAll() {
+            const allLinks = $('.link-checkbox');
+            
+            if (allLinks.length === 0) {
+                alert('No links available!');
+                return;
+            }
+            
+            if (allLinks.length > 10) {
+                if (!confirm(`Warning: You are about to open ${allLinks.length} tabs. Continue?`)) {
+                    return;
+                }
+            }
+            
+            allLinks.each(function() {
+                const link = $(this).data('link');
+                window.open(link, '_blank');
+            });
+            
+            alert(`${allLinks.length} tabs opened!`);
+        }
+
+        $(document).keydown(function(e) {
+            if (e.ctrlKey) {
+                switch(e.which) {
+                    case 13: // Ctrl + Enter
+                        Generate();
+                        e.preventDefault();
+                        break;
+                    case 65: // Ctrl + A
+                        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                            selectAll();
+                            e.preventDefault();
+                        }
+                        break;
+                }
+            }
+        });
+
+        $('#keywords').on('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.max(150, this.scrollHeight) + 'px';
+        });
+    </script>
+</body>
+</html>
