@@ -432,6 +432,18 @@
                 <button class="service-tab" data-service="duckduckgo">
                     <i class="fas fa-duck"></i> DuckDuckGo
                 </button>
+                <button class="service-tab" data-service="aws">
+                    <i class="fab fa-aws"></i> AWS
+                </button>
+                <button class="service-tab" data-service="azure">
+                    <i class="fab fa-microsoft"></i> Azure
+                </button>
+                <button class="service-tab" data-service="gcp">
+                    <i class="fab fa-google"></i> GCP
+                </button>
+                <button class="service-tab" data-service="firebase">
+                    <i class="fab fa-google"></i> Firebase
+                </button>
             </div>
         </div>
 
@@ -772,6 +784,166 @@
             </div>
         </div>
 
+        <!-- AWS Service Content -->
+        <div id="aws-content" class="service-content">
+            <div class="card">
+                <div class="input-group">
+                    <label for="aws-target">Target:</label>
+                    <div class="input-row">
+                        <input type="text" id="aws-target" placeholder='e.g., "company-name" or specific bucket name'>
+                        <button class="btn btn-success" onclick="GenerateAWS()">Generate AWS Dorks</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="category-tabs">
+                        <button class="tab-button active" data-category="all">
+                            All Dorks <span class="count" id="aws-count-all">0</span>
+                        </button>
+                        <button class="tab-button" data-category="s3_buckets">
+                            S3 Buckets <span class="count" id="aws-count-s3_buckets">0</span>
+                        </button>
+                        <button class="tab-button" data-category="cloudfront">
+                            CloudFront <span class="count" id="aws-count-cloudfront">0</span>
+                        </button>
+                        <button class="tab-button" data-category="lambda">
+                            Lambda <span class="count" id="aws-count-lambda">0</span>
+                        </button>
+                        <button class="tab-button" data-category="api_gateway">
+                            API Gateway <span class="count" id="aws-count-api_gateway">0</span>
+                        </button>
+                    </div>
+
+                    <div id="awsCategoryDescription" class="category-description">
+                        <h4>All AWS Dorks</h4>
+                        <p>Complete collection of AWS dorks for cloud asset discovery and security assessment.</p>
+                    </div>
+
+                    <textarea id="aws-keywords" placeholder="AWS dorks will be loaded here based on selected category..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Azure Service Content -->
+        <div id="azure-content" class="service-content">
+            <div class="card">
+                <div class="input-group">
+                    <label for="azure-target">Target:</label>
+                    <div class="input-row">
+                        <input type="text" id="azure-target" placeholder='e.g., "company-name" or specific resource name'>
+                        <button class="btn btn-success" onclick="GenerateAzure()">Generate Azure Dorks</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="category-tabs">
+                        <button class="tab-button active" data-category="all">
+                            All Dorks <span class="count" id="azure-count-all">0</span>
+                        </button>
+                        <button class="tab-button" data-category="blob_storage">
+                            Blob Storage <span class="count" id="azure-count-blob_storage">0</span>
+                        </button>
+                        <button class="tab-button" data-category="functions">
+                            Functions <span class="count" id="azure-count-functions">0</span>
+                        </button>
+                        <button class="tab-button" data-category="app_services">
+                            App Services <span class="count" id="azure-count-app_services">0</span>
+                        </button>
+                        <button class="tab-button" data-category="databases">
+                            Databases <span class="count" id="azure-count-databases">0</span>
+                        </button>
+                    </div>
+
+                    <div id="azureCategoryDescription" class="category-description">
+                        <h4>All Azure Dorks</h4>
+                        <p>Complete collection of Azure dorks for cloud asset discovery and security assessment.</p>
+                    </div>
+
+                    <textarea id="azure-keywords" placeholder="Azure dorks will be loaded here based on selected category..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- GCP Service Content -->
+        <div id="gcp-content" class="service-content">
+            <div class="card">
+                <div class="input-group">
+                    <label for="gcp-target">Target:</label>
+                    <div class="input-row">
+                        <input type="text" id="gcp-target" placeholder='e.g., "company-name" or specific bucket name'>
+                        <button class="btn btn-success" onclick="GenerateGCP()">Generate GCP Dorks</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="category-tabs">
+                        <button class="tab-button active" data-category="all">
+                            All Dorks <span class="count" id="gcp-count-all">0</span>
+                        </button>
+                        <button class="tab-button" data-category="cloud_storage">
+                            Cloud Storage <span class="count" id="gcp-count-cloud_storage">0</span>
+                        </button>
+                        <button class="tab-button" data-category="functions">
+                            Cloud Functions <span class="count" id="gcp-count-functions">0</span>
+                        </button>
+                        <button class="tab-button" data-category="app_engine">
+                            App Engine <span class="count" id="gcp-count-app_engine">0</span>
+                        </button>
+                        <button class="tab-button" data-category="compute">
+                            Compute Engine <span class="count" id="gcp-count-compute">0</span>
+                        </button>
+                    </div>
+
+                    <div id="gcpCategoryDescription" class="category-description">
+                        <h4>All GCP Dorks</h4>
+                        <p>Complete collection of GCP dorks for cloud asset discovery and security assessment.</p>
+                    </div>
+
+                    <textarea id="gcp-keywords" placeholder="GCP dorks will be loaded here based on selected category..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firebase Service Content -->
+        <div id="firebase-content" class="service-content">
+            <div class="card">
+                <div class="input-group">
+                    <label for="firebase-target">Target:</label>
+                    <div class="input-row">
+                        <input type="text" id="firebase-target" placeholder='e.g., "app-name" or "company-name"'>
+                        <button class="btn btn-success" onclick="GenerateFirebase()">Generate Firebase Dorks</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="category-tabs">
+                        <button class="tab-button active" data-category="all">
+                            All Dorks <span class="count" id="firebase-count-all">0</span>
+                        </button>
+                        <button class="tab-button" data-category="storage">
+                            Storage <span class="count" id="firebase-count-storage">0</span>
+                        </button>
+                        <button class="tab-button" data-category="databases">
+                            Databases <span class="count" id="firebase-count-databases">0</span>
+                        </button>
+                        <button class="tab-button" data-category="hosting">
+                            Hosting <span class="count" id="firebase-count-hosting">0</span>
+                        </button>
+                        <button class="tab-button" data-category="config">
+                            Config Files <span class="count" id="firebase-count-config">0</span>
+                        </button>
+                    </div>
+
+                    <div id="firebaseCategoryDescription" class="category-description">
+                        <h4>All Firebase Dorks</h4>
+                        <p>Complete collection of Firebase dorks for cloud asset discovery and security assessment.</p>
+                    </div>
+
+                    <textarea id="firebase-keywords" placeholder="Firebase dorks will be loaded here based on selected category..."></textarea>
+                </div>
+            </div>
+        </div>
+
         <div id="statsContainer" style="display: none;">
             <div class="stats">
                 <span id="statsText">0 links generated</span>
@@ -946,6 +1118,190 @@
                 'mail_port', 'mailchimp', 'mix_pusher_app_cluster', 'mix_pusher_app_key'
             ]
         };
+
+        // Cloud asset dorks data
+        const awsDorks = {
+            s3_buckets: [
+                'site:s3.amazonaws.com TARGET',
+                'site:s3-us-west-1.amazonaws.com TARGET',
+                'site:s3-us-west-2.amazonaws.com TARGET',
+                'site:s3.us-east-2.amazonaws.com TARGET',
+                'site:s3.eu-west-1.amazonaws.com TARGET',
+                'site:s3.eu-central-1.amazonaws.com TARGET',
+                'site:s3.ap-southeast-1.amazonaws.com TARGET',
+                'site:s3.ap-northeast-1.amazonaws.com TARGET',
+                '"TARGET-backup" site:s3.amazonaws.com',
+                '"TARGET-prod" site:s3.amazonaws.com',
+                '"TARGET-staging" site:s3.amazonaws.com',
+                '"TARGET-dev" site:s3.amazonaws.com',
+                '"TARGET-static" site:s3.amazonaws.com',
+                '"TARGET-assets" site:s3.amazonaws.com',
+                '"TARGET-logs" site:s3.amazonaws.com',
+                '"TARGET-data" site:s3.amazonaws.com',
+                'inurl:TARGET site:s3.amazonaws.com',
+                'intitle:"Index of" "TARGET" site:s3.amazonaws.com',
+                'filetype:xml "TARGET" site:s3.amazonaws.com'
+            ],
+            cloudfront: [
+                'site:cloudfront.net TARGET',
+                'site:d*.cloudfront.net TARGET',
+                '"TARGET" site:cloudfront.net',
+                'inurl:TARGET site:cloudfront.net',
+                '"TARGET-assets" site:cloudfront.net',
+                '"TARGET-static" site:cloudfront.net',
+                '"TARGET-cdn" site:cloudfront.net'
+            ],
+            lambda: [
+                'site:lambda-url.*.on.aws TARGET',
+                'site:execute-api.*.amazonaws.com TARGET',
+                '"TARGET" site:lambda-url.us-east-1.on.aws',
+                '"TARGET" site:lambda-url.us-west-2.on.aws',
+                '"TARGET" site:lambda-url.eu-west-1.on.aws',
+                '"TARGET-api" site:execute-api.us-east-1.amazonaws.com',
+                '"TARGET-function" site:lambda-url.*.on.aws'
+            ],
+            api_gateway: [
+                'site:execute-api.*.amazonaws.com TARGET',
+                '"TARGET" site:execute-api.us-east-1.amazonaws.com',
+                '"TARGET" site:execute-api.us-west-2.amazonaws.com',
+                '"TARGET" site:execute-api.eu-west-1.amazonaws.com',
+                '"TARGET-api" site:execute-api.*.amazonaws.com',
+                'inurl:TARGET site:execute-api.*.amazonaws.com'
+            ]
+        };
+
+        const azureDorks = {
+            blob_storage: [
+                'site:blob.core.windows.net TARGET',
+                'site:TARGET.blob.core.windows.net',
+                '"TARGET-storage" site:blob.core.windows.net',
+                '"TARGET-backup" site:blob.core.windows.net',
+                '"TARGET-assets" site:blob.core.windows.net',
+                '"TARGET-files" site:blob.core.windows.net',
+                'inurl:TARGET site:blob.core.windows.net',
+                'intitle:"Index of" "TARGET" site:blob.core.windows.net'
+            ],
+            functions: [
+                'site:azurewebsites.net TARGET',
+                'site:TARGET.azurewebsites.net',
+                '"TARGET-function" site:azurewebsites.net',
+                '"TARGET-api" site:azurewebsites.net',
+                'inurl:TARGET site:azurewebsites.net'
+            ],
+            app_services: [
+                'site:azurewebsites.net TARGET',
+                'site:TARGET.azurewebsites.net',
+                '"TARGET-app" site:azurewebsites.net',
+                '"TARGET-web" site:azurewebsites.net',
+                '"TARGET-service" site:azurewebsites.net',
+                'inurl:TARGET site:azurewebsites.net'
+            ],
+            databases: [
+                'site:database.windows.net TARGET',
+                'site:TARGET.database.windows.net',
+                '"TARGET-db" site:database.windows.net',
+                '"TARGET-sql" site:database.windows.net',
+                'inurl:TARGET site:database.windows.net'
+            ]
+        };
+
+        const gcpDorks = {
+            cloud_storage: [
+                'site:storage.googleapis.com TARGET',
+                'site:storage.cloud.google.com TARGET',
+                '"TARGET-bucket" site:storage.googleapis.com',
+                '"TARGET-backup" site:storage.googleapis.com',
+                '"TARGET-assets" site:storage.googleapis.com',
+                '"TARGET-static" site:storage.googleapis.com',
+                'inurl:TARGET site:storage.googleapis.com',
+                'intitle:"Index of" "TARGET" site:storage.googleapis.com'
+            ],
+            functions: [
+                'site:cloudfunctions.net TARGET',
+                'site:*.cloudfunctions.net TARGET',
+                '"TARGET-function" site:cloudfunctions.net',
+                '"TARGET-api" site:cloudfunctions.net',
+                'inurl:TARGET site:cloudfunctions.net'
+            ],
+            app_engine: [
+                'site:appspot.com TARGET',
+                'site:TARGET.appspot.com',
+                '"TARGET-app" site:appspot.com',
+                '"TARGET-api" site:appspot.com',
+                'inurl:TARGET site:appspot.com'
+            ],
+            compute: [
+                'site:googleusercontent.com TARGET',
+                'site:compute.googleapis.com TARGET',
+                '"TARGET-vm" site:googleusercontent.com',
+                '"TARGET-instance" site:googleusercontent.com',
+                'inurl:TARGET site:googleusercontent.com'
+            ]
+        };
+
+        const firebaseDorks = {
+            storage: [
+                'site:firebasestorage.googleapis.com TARGET',
+                '"TARGET" site:firebasestorage.googleapis.com',
+                '"TARGET-files" site:firebasestorage.googleapis.com',
+                '"TARGET-images" site:firebasestorage.googleapis.com',
+                '"TARGET-uploads" site:firebasestorage.googleapis.com',
+                'inurl:TARGET site:firebasestorage.googleapis.com',
+                'intitle:"Index of" "TARGET" site:firebasestorage.googleapis.com'
+            ],
+            databases: [
+                'site:firebaseio.com TARGET',
+                'site:TARGET.firebaseio.com',
+                '"TARGET-default-rtdb" site:firebaseio.com',
+                'inurl:TARGET site:firebaseio.com',
+                '"TARGET.json" site:firebaseio.com'
+            ],
+            hosting: [
+                'site:web.app TARGET',
+                'site:firebaseapp.com TARGET',
+                'site:TARGET.web.app',
+                'site:TARGET.firebaseapp.com',
+                'inurl:TARGET site:web.app',
+                'inurl:TARGET site:firebaseapp.com'
+            ],
+            config: [
+                '"TARGET" filetype:json "firebase"',
+                '"TARGET" filetype:js "firebase"',
+                '"firebase" "apiKey" "TARGET"',
+                '"firebase" "authDomain" "TARGET"',
+                '"firebase" "projectId" "TARGET"',
+                '"firebaseConfig" "TARGET"'
+            ]
+        };
+
+        // Combined dorks for each cloud service
+        const allAWSDorks = [].concat(
+            awsDorks.s3_buckets,
+            awsDorks.cloudfront,
+            awsDorks.lambda,
+            awsDorks.api_gateway
+        );
+
+        const allAzureDorks = [].concat(
+            azureDorks.blob_storage,
+            azureDorks.functions,
+            azureDorks.app_services,
+            azureDorks.databases
+        );
+
+        const allGCPDorks = [].concat(
+            gcpDorks.cloud_storage,
+            gcpDorks.functions,
+            gcpDorks.app_engine,
+            gcpDorks.compute
+        );
+
+        const allFirebaseDorks = [].concat(
+            firebaseDorks.storage,
+            firebaseDorks.databases,
+            firebaseDorks.hosting,
+            firebaseDorks.config
+        );
 
         // Shodan queries data
         const shodanQueries = {
@@ -1606,6 +1962,27 @@
                 const category = $(this).data('category');
                 switchDuckDuckGoCategory(category);
             });
+
+            // Cloud service tabs
+            $('#aws-content .tab-button').click(function() {
+                const category = $(this).data('category');
+                switchAWSCategory(category);
+            });
+
+            $('#azure-content .tab-button').click(function() {
+                const category = $(this).data('category');
+                switchAzureCategory(category);
+            });
+
+            $('#gcp-content .tab-button').click(function() {
+                const category = $(this).data('category');
+                switchGCPCategory(category);
+            });
+
+            $('#firebase-content .tab-button').click(function() {
+                const category = $(this).data('category');
+                switchFirebaseCategory(category);
+            });
         }
 
         function updateCounts() {
@@ -1656,6 +2033,30 @@
             Object.keys(duckduckgoDorks).forEach(category => {
                 $(`#duckduckgo-count-${category}`).text(duckduckgoDorks[category].length);
             });
+
+            // AWS counts
+            $('#aws-count-all').text(allAWSDorks.length);
+            Object.keys(awsDorks).forEach(category => {
+                $(`#aws-count-${category}`).text(awsDorks[category].length);
+            });
+
+            // Azure counts
+            $('#azure-count-all').text(allAzureDorks.length);
+            Object.keys(azureDorks).forEach(category => {
+                $(`#azure-count-${category}`).text(azureDorks[category].length);
+            });
+
+            // GCP counts
+            $('#gcp-count-all').text(allGCPDorks.length);
+            Object.keys(gcpDorks).forEach(category => {
+                $(`#gcp-count-${category}`).text(gcpDorks[category].length);
+            });
+
+            // Firebase counts
+            $('#firebase-count-all').text(allFirebaseDorks.length);
+            Object.keys(firebaseDorks).forEach(category => {
+                $(`#firebase-count-${category}`).text(firebaseDorks[category].length);
+            });
         }
 
         function switchService(service) {
@@ -1687,6 +2088,14 @@
                 loadYandexCategory('all');
             } else if (service === 'duckduckgo') {
                 loadDuckDuckGoCategory('all');
+            } else if (service === 'aws') {
+                loadAWSCategory('all');
+            } else if (service === 'azure') {
+                loadAzureCategory('all');
+            } else if (service === 'gcp') {
+                loadGCPCategory('all');
+            } else if (service === 'firebase') {
+                loadFirebaseCategory('all');
             }
         }
 
@@ -1840,6 +2249,83 @@
             
             $('#duckduckgo-keywords').val(dorks.join('\n'));
             updateDuckDuckGoCategoryDescription(category);
+        }
+
+        // Cloud service switch and load functions
+        function switchAWSCategory(category) {
+            $('#aws-content .tab-button').removeClass('active');
+            $(`#aws-content .tab-button[data-category="${category}"]`).addClass('active');
+            currentCategory = category;
+            loadAWSCategory(category);
+        }
+
+        function loadAWSCategory(category) {
+            let dorks = [];
+            if (category === 'all') {
+                dorks = allAWSDorks;
+            } else {
+                dorks = awsDorks[category] || [];
+            }
+            
+            $('#aws-keywords').val(dorks.join('\n'));
+            updateAWSCategoryDescription(category);
+        }
+
+        function switchAzureCategory(category) {
+            $('#azure-content .tab-button').removeClass('active');
+            $(`#azure-content .tab-button[data-category="${category}"]`).addClass('active');
+            currentCategory = category;
+            loadAzureCategory(category);
+        }
+
+        function loadAzureCategory(category) {
+            let dorks = [];
+            if (category === 'all') {
+                dorks = allAzureDorks;
+            } else {
+                dorks = azureDorks[category] || [];
+            }
+            
+            $('#azure-keywords').val(dorks.join('\n'));
+            updateAzureCategoryDescription(category);
+        }
+
+        function switchGCPCategory(category) {
+            $('#gcp-content .tab-button').removeClass('active');
+            $(`#gcp-content .tab-button[data-category="${category}"]`).addClass('active');
+            currentCategory = category;
+            loadGCPCategory(category);
+        }
+
+        function loadGCPCategory(category) {
+            let dorks = [];
+            if (category === 'all') {
+                dorks = allGCPDorks;
+            } else {
+                dorks = gcpDorks[category] || [];
+            }
+            
+            $('#gcp-keywords').val(dorks.join('\n'));
+            updateGCPCategoryDescription(category);
+        }
+
+        function switchFirebaseCategory(category) {
+            $('#firebase-content .tab-button').removeClass('active');
+            $(`#firebase-content .tab-button[data-category="${category}"]`).addClass('active');
+            currentCategory = category;
+            loadFirebaseCategory(category);
+        }
+
+        function loadFirebaseCategory(category) {
+            let dorks = [];
+            if (category === 'all') {
+                dorks = allFirebaseDorks;
+            } else {
+                dorks = firebaseDorks[category] || [];
+            }
+            
+            $('#firebase-keywords').val(dorks.join('\n'));
+            updateFirebaseCategoryDescription(category);
         }
 
         function updateCategoryDescription(category) {
@@ -2084,6 +2570,123 @@
             const desc = descriptions[category] || descriptions.all;
             $('#duckduckgoCategoryDescription h4').text(desc.title);
             $('#duckduckgoCategoryDescription p').text(desc.description);
+        }
+
+        // Cloud service category description functions
+        function updateAWSCategoryDescription(category) {
+            const descriptions = {
+                all: {
+                    title: 'All AWS Dorks',
+                    description: 'Complete collection of AWS dorks for cloud asset discovery and security assessment.'
+                },
+                s3_buckets: {
+                    title: 'S3 Buckets',
+                    description: 'Find Amazon S3 buckets and storage assets exposed on the internet.'
+                },
+                cloudfront: {
+                    title: 'CloudFront',
+                    description: 'Discover CloudFront CDN distributions and cached content.'
+                },
+                lambda: {
+                    title: 'Lambda',
+                    description: 'Find AWS Lambda function URLs and serverless endpoints.'
+                },
+                api_gateway: {
+                    title: 'API Gateway',
+                    description: 'Discover AWS API Gateway endpoints and REST APIs.'
+                }
+            };
+
+            const desc = descriptions[category] || descriptions.all;
+            $('#awsCategoryDescription h4').text(desc.title);
+            $('#awsCategoryDescription p').text(desc.description);
+        }
+
+        function updateAzureCategoryDescription(category) {
+            const descriptions = {
+                all: {
+                    title: 'All Azure Dorks',
+                    description: 'Complete collection of Azure dorks for cloud asset discovery and security assessment.'
+                },
+                blob_storage: {
+                    title: 'Blob Storage',
+                    description: 'Find Azure Blob Storage containers and file assets.'
+                },
+                functions: {
+                    title: 'Functions',
+                    description: 'Discover Azure Functions and serverless endpoints.'
+                },
+                app_services: {
+                    title: 'App Services',
+                    description: 'Find Azure App Services and web applications.'
+                },
+                databases: {
+                    title: 'Databases',
+                    description: 'Discover Azure SQL databases and data services.'
+                }
+            };
+
+            const desc = descriptions[category] || descriptions.all;
+            $('#azureCategoryDescription h4').text(desc.title);
+            $('#azureCategoryDescription p').text(desc.description);
+        }
+
+        function updateGCPCategoryDescription(category) {
+            const descriptions = {
+                all: {
+                    title: 'All GCP Dorks',
+                    description: 'Complete collection of GCP dorks for cloud asset discovery and security assessment.'
+                },
+                cloud_storage: {
+                    title: 'Cloud Storage',
+                    description: 'Find Google Cloud Storage buckets and file assets.'
+                },
+                functions: {
+                    title: 'Cloud Functions',
+                    description: 'Discover Google Cloud Functions and serverless endpoints.'
+                },
+                app_engine: {
+                    title: 'App Engine',
+                    description: 'Find Google App Engine applications and services.'
+                },
+                compute: {
+                    title: 'Compute Engine',
+                    description: 'Discover Google Compute Engine instances and resources.'
+                }
+            };
+
+            const desc = descriptions[category] || descriptions.all;
+            $('#gcpCategoryDescription h4').text(desc.title);
+            $('#gcpCategoryDescription p').text(desc.description);
+        }
+
+        function updateFirebaseCategoryDescription(category) {
+            const descriptions = {
+                all: {
+                    title: 'All Firebase Dorks',
+                    description: 'Complete collection of Firebase dorks for cloud asset discovery and security assessment.'
+                },
+                storage: {
+                    title: 'Storage',
+                    description: 'Find Firebase Storage assets and file uploads.'
+                },
+                databases: {
+                    title: 'Databases',
+                    description: 'Discover Firebase Realtime Database and Firestore instances.'
+                },
+                hosting: {
+                    title: 'Hosting',
+                    description: 'Find Firebase Hosting sites and web applications.'
+                },
+                config: {
+                    title: 'Config Files',
+                    description: 'Discover Firebase configuration files and API keys.'
+                }
+            };
+
+            const desc = descriptions[category] || descriptions.all;
+            $('#firebaseCategoryDescription h4').text(desc.title);
+            $('#firebaseCategoryDescription p').text(desc.description);
         }
 
         function Generate() {
@@ -2342,6 +2945,135 @@
             showControls();
         }
 
+        // Cloud service generate functions
+        function GenerateAWS() {
+            const target = $('#aws-target').val().trim();
+            if (!target) {
+                alert('Please enter a target (e.g., "company-name" or specific bucket name)');
+                return;
+            }
+
+            const dorks = $('#aws-keywords').val().split('\n').filter(d => d.trim());
+            if (dorks.length === 0) {
+                alert('No dorks available for the selected category');
+                return;
+            }
+
+            const results = [];
+            dorks.forEach(dork => {
+                const trimmedDork = dork.trim();
+                if (trimmedDork) {
+                    const searchQuery = trimmedDork.replace(/TARGET/g, target);
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                    results.push({
+                        url: searchUrl,
+                        keyword: trimmedDork,
+                        category: getAWSCategoryForDork(trimmedDork)
+                    });
+                }
+            });
+
+            displayResults(results);
+            updateStats(results.length);
+            showControls();
+        }
+
+        function GenerateAzure() {
+            const target = $('#azure-target').val().trim();
+            if (!target) {
+                alert('Please enter a target (e.g., "company-name" or specific resource name)');
+                return;
+            }
+
+            const dorks = $('#azure-keywords').val().split('\n').filter(d => d.trim());
+            if (dorks.length === 0) {
+                alert('No dorks available for the selected category');
+                return;
+            }
+
+            const results = [];
+            dorks.forEach(dork => {
+                const trimmedDork = dork.trim();
+                if (trimmedDork) {
+                    const searchQuery = trimmedDork.replace(/TARGET/g, target);
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                    results.push({
+                        url: searchUrl,
+                        keyword: trimmedDork,
+                        category: getAzureCategoryForDork(trimmedDork)
+                    });
+                }
+            });
+
+            displayResults(results);
+            updateStats(results.length);
+            showControls();
+        }
+
+        function GenerateGCP() {
+            const target = $('#gcp-target').val().trim();
+            if (!target) {
+                alert('Please enter a target (e.g., "company-name" or specific bucket name)');
+                return;
+            }
+
+            const dorks = $('#gcp-keywords').val().split('\n').filter(d => d.trim());
+            if (dorks.length === 0) {
+                alert('No dorks available for the selected category');
+                return;
+            }
+
+            const results = [];
+            dorks.forEach(dork => {
+                const trimmedDork = dork.trim();
+                if (trimmedDork) {
+                    const searchQuery = trimmedDork.replace(/TARGET/g, target);
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                    results.push({
+                        url: searchUrl,
+                        keyword: trimmedDork,
+                        category: getGCPCategoryForDork(trimmedDork)
+                    });
+                }
+            });
+
+            displayResults(results);
+            updateStats(results.length);
+            showControls();
+        }
+
+        function GenerateFirebase() {
+            const target = $('#firebase-target').val().trim();
+            if (!target) {
+                alert('Please enter a target (e.g., "app-name" or "company-name")');
+                return;
+            }
+
+            const dorks = $('#firebase-keywords').val().split('\n').filter(d => d.trim());
+            if (dorks.length === 0) {
+                alert('No dorks available for the selected category');
+                return;
+            }
+
+            const results = [];
+            dorks.forEach(dork => {
+                const trimmedDork = dork.trim();
+                if (trimmedDork) {
+                    const searchQuery = trimmedDork.replace(/TARGET/g, target);
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                    results.push({
+                        url: searchUrl,
+                        keyword: trimmedDork,
+                        category: getFirebaseCategoryForDork(trimmedDork)
+                    });
+                }
+            });
+
+            displayResults(results);
+            updateStats(results.length);
+            showControls();
+        }
+
         function getCategoryForKeyword(keyword) {
             for (const [category, keywords] of Object.entries(dorkCategories)) {
                 if (keywords.includes(keyword)) {
@@ -2414,6 +3146,42 @@
             return 'other';
         }
 
+        function getAWSCategoryForDork(dork) {
+            for (const [category, dorks] of Object.entries(awsDorks)) {
+                if (dorks.includes(dork)) {
+                    return category.replace('_', ' ');
+                }
+            }
+            return 'other';
+        }
+
+        function getAzureCategoryForDork(dork) {
+            for (const [category, dorks] of Object.entries(azureDorks)) {
+                if (dorks.includes(dork)) {
+                    return category.replace('_', ' ');
+                }
+            }
+            return 'other';
+        }
+
+        function getGCPCategoryForDork(dork) {
+            for (const [category, dorks] of Object.entries(gcpDorks)) {
+                if (dorks.includes(dork)) {
+                    return category.replace('_', ' ');
+                }
+            }
+            return 'other';
+        }
+
+        function getFirebaseCategoryForDork(dork) {
+            for (const [category, dorks] of Object.entries(firebaseDorks)) {
+                if (dorks.includes(dork)) {
+                    return category.replace('_', ' ');
+                }
+            }
+            return 'other';
+        }
+
         function displayResults(results) {
             const tbody = $('#result');
             tbody.empty();
@@ -2470,8 +3238,12 @@
                 return;
             }
 
-            selectedUrls.forEach(url => {
-                window.open(url, '_blank');
+            selectedUrls.forEach((url, index) => {
+                // Random delay between 100ms and 1000ms
+                const delay = Math.random() * 900 + 100;
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, delay + (index * 50)); // Add small additional delay per tab
             });
         }
 
@@ -2486,8 +3258,12 @@
                 return;
             }
 
-            allUrls.forEach(url => {
-                window.open(url, '_blank');
+            allUrls.forEach((url, index) => {
+                // Random delay between 100ms and 1000ms
+                const delay = Math.random() * 900 + 100;
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, delay + (index * 50)); // Add small additional delay per tab
             });
         }
     </script>
