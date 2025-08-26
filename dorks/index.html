@@ -444,6 +444,18 @@
                 <button class="service-tab" data-service="firebase">
                     <i class="fab fa-google"></i> Firebase
                 </button>
+                <button class="service-tab" data-service="grok">
+                    <i class="fas fa-robot"></i> Grok
+                </button>
+                <button class="service-tab" data-service="chatgpt">
+                    <i class="fas fa-comments"></i> ChatGPT
+                </button>
+                <button class="service-tab" data-service="urlscan">
+                    <i class="fas fa-search"></i> URLScan.io
+                </button>
+                <button class="service-tab" data-service="virustotal">
+                    <i class="fas fa-shield-alt"></i> VirusTotal
+                </button>
             </div>
         </div>
 
@@ -944,6 +956,149 @@
             </div>
         </div>
 
+        <!-- Grok Service Content -->
+        <div id="grok-content" class="service-content">
+            <div class="card">
+                <div class="input-group">
+                    <label for="grok-target">Target:</label>
+                    <div class="input-row">
+                        <input type="text" id="grok-target" placeholder='e.g., "app-name" or "company-name"'>
+                        <button class="btn btn-success" onclick="GenerateGrok()">Generate Grok Dorks</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="category-tabs">
+                        <button class="tab-button active" data-category="all">
+                            All Dorks <span class="count" id="grok-count-all">0</span>
+                        </button>
+                        <button class="tab-button" data-category="configs">
+                            Configs <span class="count" id="grok-count-configs">0</span>
+                        </button>
+                        <button class="tab-button" data-category="tokens">
+                            Tokens <span class="count" id="grok-count-tokens">0</span>
+                        </button>
+                        <button class="tab-button" data-category="docs">
+                            Docs <span class="count" id="grok-count-docs">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="category-info">
+                    <div class="info-card">
+                        <h4>All Grok Dorks</h4>
+                        <p>Complete collection of Grok dorks for configuration files, tokens, and documentation discovery.</p>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="grok-keywords">Generated Dorks:</label>
+                    <textarea id="grok-keywords" placeholder="Grok dorks will be loaded here based on selected category..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="copyToClipboard('grok-keywords')">Copy to Clipboard</button>
+                    <button class="btn btn-secondary" onclick="downloadDorks('grok-keywords', 'grok-dorks.txt')">Download as File</button>
+                    <button class="btn btn-info" onclick="openAllGrokLinks()">Open All in Browser</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ChatGPT Service Content -->
+        <div id="chatgpt-content" class="service-content">
+            <div class="card">
+                <div class="input-group">
+                    <label for="chatgpt-target">Target:</label>
+                    <div class="input-row">
+                        <input type="text" id="chatgpt-target" placeholder='e.g., "app-name" or "company-name"'>
+                        <button class="btn btn-success" onclick="GenerateChatGPT()">Generate ChatGPT Dorks</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="category-tabs">
+                        <button class="tab-button active" data-category="all">
+                            All Dorks <span class="count" id="chatgpt-count-all">0</span>
+                        </button>
+                        <button class="tab-button" data-category="configs">
+                            Configs <span class="count" id="chatgpt-count-configs">0</span>
+                        </button>
+                        <button class="tab-button" data-category="tokens">
+                            Tokens <span class="count" id="chatgpt-count-tokens">0</span>
+                        </button>
+                        <button class="tab-button" data-category="docs">
+                            Docs <span class="count" id="chatgpt-count-docs">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="category-info">
+                    <div class="info-card">
+                        <h4>All ChatGPT Dorks</h4>
+                        <p>Complete collection of ChatGPT dorks for configuration files, tokens, and documentation discovery.</p>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="chatgpt-keywords">Generated Dorks:</label>
+                    <textarea id="chatgpt-keywords" placeholder="ChatGPT dorks will be loaded here based on selected category..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="copyToClipboard('chatgpt-keywords')">Copy to Clipboard</button>
+                    <button class="btn btn-secondary" onclick="downloadDorks('chatgpt-keywords', 'chatgpt-dorks.txt')">Download as File</button>
+                    <button class="btn btn-info" onclick="openAllChatGPTLinks()">Open All in Browser</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- URLScan Service Content -->
+        <div id="urlscan-content" class="service-content">
+            <div class="card">
+                <div class="input-group">
+                    <label for="urlscan-target">Domain:</label>
+                    <div class="input-row">
+                        <input type="text" id="urlscan-target" placeholder='e.g., "example.com"'>
+                        <button class="btn btn-success" onclick="GenerateURLScan()">Search URLScan.io</button>
+                    </div>
+                </div>
+
+                <div class="category-info">
+                    <div class="info-card">
+                        <h4>URLScan.io Domain Search</h4>
+                        <p>Search for domain activity and scans on URLScan.io platform.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VirusTotal Service Content -->
+        <div id="virustotal-content" class="service-content">
+            <div class="card">
+                <div class="input-group">
+                    <label for="virustotal-apikey">API Key:</label>
+                    <div class="input-row">
+                        <input type="text" id="virustotal-apikey" placeholder='Enter your VirusTotal API key'>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="virustotal-target">Domain:</label>
+                    <div class="input-row">
+                        <input type="text" id="virustotal-target" placeholder='e.g., "example.com"'>
+                        <button class="btn btn-success" onclick="GenerateVirusTotal()">Search VirusTotal</button>
+                    </div>
+                </div>
+
+                <div class="category-info">
+                    <div class="info-card">
+                        <h4>VirusTotal Domain Report</h4>
+                        <p>Get domain reputation and security analysis from VirusTotal API. Requires a valid API key.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="statsContainer" style="display: none;">
             <div class="stats">
                 <span id="statsText">0 links generated</span>
@@ -1303,6 +1458,144 @@
             firebaseDorks.config
         );
 
+        const grokDorks = {
+            'configs': [
+                'config.yaml',
+                'config.yml',
+                'config.json',
+                'configuration.json',
+                'app.config',
+                'settings.json',
+                'settings.yaml',
+                'environment.json',
+                'env.json',
+                '.env.example',
+                'docker-compose.yml',
+                'docker-compose.yaml',
+                'Dockerfile.config',
+                'nginx.conf',
+                'apache.conf',
+                'web.config',
+                'database.yml',
+                'db.json'
+            ],
+            'tokens': [
+                'access_token',
+                'api_token',
+                'auth_token',
+                'bearer_token',
+                'jwt_token',
+                'refresh_token',
+                'oauth_token',
+                'session_token',
+                'private_key',
+                'public_key',
+                'api_key',
+                'secret_key',
+                'client_secret',
+                'client_id',
+                'authentication',
+                'authorization',
+                'credentials.json',
+                'token.txt'
+            ],
+            'docs': [
+                'api_documentation',
+                'api_docs',
+                'README.md',
+                'DOCUMENTATION.md',
+                'API.md',
+                'docs/api',
+                'swagger.json',
+                'openapi.json',
+                'postman_collection',
+                'api_reference',
+                'endpoints.json',
+                'routes.json',
+                'api_guide',
+                'integration_guide',
+                'setup_guide',
+                'configuration_guide',
+                'deployment_guide',
+                'troubleshooting.md'
+            ]
+        };
+
+        const allGrokDorks = [].concat(
+            grokDorks['configs'],
+            grokDorks['tokens'],
+            grokDorks['docs']
+        );
+
+        const chatgptDorks = {
+            'configs': [
+                'config.yaml',
+                'config.yml',
+                'config.json',
+                'configuration.json',
+                'app.config',
+                'settings.json',
+                'settings.yaml',
+                'environment.json',
+                'env.json',
+                '.env.example',
+                'docker-compose.yml',
+                'docker-compose.yaml',
+                'Dockerfile.config',
+                'nginx.conf',
+                'apache.conf',
+                'web.config',
+                'database.yml',
+                'db.json'
+            ],
+            'tokens': [
+                'access_token',
+                'api_token',
+                'auth_token',
+                'bearer_token',
+                'jwt_token',
+                'refresh_token',
+                'oauth_token',
+                'session_token',
+                'private_key',
+                'public_key',
+                'api_key',
+                'secret_key',
+                'client_secret',
+                'client_id',
+                'authentication',
+                'authorization',
+                'credentials.json',
+                'token.txt'
+            ],
+            'docs': [
+                'api_documentation',
+                'api_docs',
+                'README.md',
+                'DOCUMENTATION.md',
+                'API.md',
+                'docs/api',
+                'swagger.json',
+                'openapi.json',
+                'postman_collection',
+                'api_reference',
+                'endpoints.json',
+                'routes.json',
+                'api_guide',
+                'integration_guide',
+                'setup_guide',
+                'configuration_guide',
+                'deployment_guide',
+                'troubleshooting.md'
+            ]
+        };
+
+        const allChatGPTDorks = [].concat(
+            chatgptDorks['configs'],
+            chatgptDorks['tokens'],
+            chatgptDorks['docs']
+        );
+
         // Shodan queries data
         const shodanQueries = {
             web_servers: [
@@ -1410,52 +1703,52 @@
         // Censys queries data
         const censysQueries = {
             web_servers: [
-                'services.http.response.headers: "example.com"',
-                'services.http.response.body: "example.com"',
-                'services.http.response.title: "example.com"',
-                'services.http.response.favicon: "example.com"',
-                'services.http.response.headers.server: "example.com"',
-                'services.http.response.headers.location: "example.com"',
-                'services.http.response.headers.host: "example.com"',
-                'services.http.response.headers.x_powered_by: "example.com"',
-                'services.http.response.headers.x_frame_options: "example.com"',
-                'services.http.response.headers.x_content_type_options: "example.com"'
+                'host.services.endpoints.http.html_title = "TARGET"',
+                'host.services.endpoints.http.body = "TARGET"',
+                'host.services.endpoints.http.body: "TARGET"',
+                'host.services.endpoints.http.status_code = "200" and host.services.endpoints.http.body: "TARGET"',
+                'web.endpoints.http.headers: (key:"Server" and value:"TARGET")',
+                'web.endpoints.http.headers: (key:"X-Powered-By" and value:"TARGET")',
+                'host.services: (software.product = "nginx" and endpoints.http.html_title: "TARGET")',
+                'web.endpoints: (http.status_code >= "200" and http.status_code <= "299") and web.endpoints.http.body: "TARGET"',
+                'host.services.endpoints.http.html_title: "TARGET"',
+                'host.services.software.vendor: "TARGET"'
             ],
             databases: [
-                'services.mysql: "example.com"',
-                'services.postgresql: "example.com"',
-                'services.mongodb: "example.com"',
-                'services.redis: "example.com"',
-                'services.elasticsearch: "example.com"',
-                'services.cassandra: "example.com"',
-                'services.couchdb: "example.com"',
-                'services.riak: "example.com"',
-                'services.influxdb: "example.com"',
-                'services.timescaledb: "example.com"'
+                'host.services.port = 3306 and host.services.software.product = "mysql"',
+                'host.services.port = 5432 and host.services.software.product = "postgresql"',
+                'host.services.port = 27017 and host.services.software.product = "mongodb"',
+                'host.services.port = 6379 and host.services.software.product = "redis"',
+                'host.services.port = 9200 and host.services.software.product = "elasticsearch"',
+                'host.services.software.vendor = "TARGET"',
+                'host.services.software.product = "TARGET"',
+                'host.location.country = "TARGET" and host.services.software.product = "mysql"',
+                'host.services.port = 1433 and host.services.software.product = "microsoft sql server"',
+                'host.services.port = 1521 and host.services.software.product = "oracle"'
             ],
             services: [
-                'services.ssh: "example.com"',
-                'services.ftp: "example.com"',
-                'services.telnet: "example.com"',
-                'services.smtp: "example.com"',
-                'services.pop3: "example.com"',
-                'services.imap: "example.com"',
-                'services.rdp: "example.com"',
-                'services.vnc: "example.com"',
-                'services.sip: "example.com"',
-                'services.ldap: "example.com"'
+                'host.services.software.vendor = "TARGET"',
+                'host.services.software.product = "TARGET"',
+                'host.location.country = "TARGET"',
+                'host.services.port = 22 and host.services.software.product = "openssh"',
+                'host.services.port = 21 and host.services.software.product = "ftp"',
+                'host.services.port = 80 and host.services.software.product: "TARGET"',
+                'host.services.port = 443 and host.services.software.product: "TARGET"',
+                'host.services: (software.product = "TARGET" and endpoints.http.html_title: "Welcome")',
+                'host.services.software.vendor = "TARGET" and host.services.port = 80',
+                'host.services.software.product = "TARGET" and host.location.country = "United States"'
             ],
             certificates: [
-                'services.tls.certificates.leaf_data.subject.common_name: "example.com"',
-                'services.tls.certificates.leaf_data.subject.organization: "example.com"',
-                'services.tls.certificates.leaf_data.subject.organizational_unit: "example.com"',
-                'services.tls.certificates.leaf_data.subject.country: "example.com"',
-                'services.tls.certificates.leaf_data.subject.locality: "example.com"',
-                'services.tls.certificates.leaf_data.subject.province: "example.com"',
-                'services.tls.certificates.leaf_data.issuer.common_name: "example.com"',
-                'services.tls.certificates.leaf_data.issuer.organization: "example.com"',
-                'services.tls.certificates.leaf_data.issuer.organizational_unit: "example.com"',
-                'services.tls.certificates.leaf_data.issuer.country: "example.com"'
+                'host.services.cert.names = "TARGET"',
+                'host.services.cert.names: "TARGET"',
+                'host.services.cert.parsed.subject_dn = "TARGET"',
+                'host.services.cert.parsed.subject.common_name = "TARGET"',
+                'host.services.cert.parsed.issuer_dn = "TARGET"',
+                'host.services.cert.parsed.issuer.common_name = "TARGET"',
+                'host.services.cert.parsed.subject.common_name: "TARGET"',
+                'web.tls.presented_chain.issuer_dn: "TARGET"',
+                'host.services.cert.parsed.subject.common_name =~ "TARGET"',
+                'host.services.cert.parsed.subject.organization = "TARGET"'
             ]
         };
 
@@ -1983,6 +2276,16 @@
                 const category = $(this).data('category');
                 switchFirebaseCategory(category);
             });
+
+            $('#grok-content .tab-button').click(function() {
+                const category = $(this).data('category');
+                switchGrokCategory(category);
+            });
+
+            $('#chatgpt-content .tab-button').click(function() {
+                const category = $(this).data('category');
+                switchChatGPTCategory(category);
+            });
         }
 
         function updateCounts() {
@@ -2057,6 +2360,18 @@
             Object.keys(firebaseDorks).forEach(category => {
                 $(`#firebase-count-${category}`).text(firebaseDorks[category].length);
             });
+
+            // Grok counts
+            $('#grok-count-all').text(allGrokDorks.length);
+            Object.keys(grokDorks).forEach(category => {
+                $(`#grok-count-${category}`).text(grokDorks[category].length);
+            });
+
+            // ChatGPT counts
+            $('#chatgpt-count-all').text(allChatGPTDorks.length);
+            Object.keys(chatgptDorks).forEach(category => {
+                $(`#chatgpt-count-${category}`).text(chatgptDorks[category].length);
+            });
         }
 
         function switchService(service) {
@@ -2096,6 +2411,14 @@
                 loadGCPCategory('all');
             } else if (service === 'firebase') {
                 loadFirebaseCategory('all');
+            } else if (service === 'grok') {
+                loadGrokCategory('all');
+            } else if (service === 'chatgpt') {
+                loadChatGPTCategory('all');
+            } else if (service === 'urlscan') {
+                // URLScan doesn't need category loading
+            } else if (service === 'virustotal') {
+                // VirusTotal doesn't need category loading
             }
         }
 
@@ -2326,6 +2649,44 @@
             
             $('#firebase-keywords').val(dorks.join('\n'));
             updateFirebaseCategoryDescription(category);
+        }
+
+        function switchGrokCategory(category) {
+            $('#grok-content .tab-button').removeClass('active');
+            $(`#grok-content .tab-button[data-category="${category}"]`).addClass('active');
+            currentCategory = category;
+            loadGrokCategory(category);
+        }
+
+        function loadGrokCategory(category) {
+            let dorks = [];
+            if (category === 'all') {
+                dorks = allGrokDorks;
+            } else {
+                dorks = grokDorks[category] || [];
+            }
+            
+            $('#grok-keywords').val(dorks.join('\n'));
+            updateGrokCategoryDescription(category);
+        }
+
+        function switchChatGPTCategory(category) {
+            $('#chatgpt-content .tab-button').removeClass('active');
+            $(`#chatgpt-content .tab-button[data-category="${category}"]`).addClass('active');
+            currentCategory = category;
+            loadChatGPTCategory(category);
+        }
+
+        function loadChatGPTCategory(category) {
+            let dorks = [];
+            if (category === 'all') {
+                dorks = allChatGPTDorks;
+            } else {
+                dorks = chatgptDorks[category] || [];
+            }
+            
+            $('#chatgpt-keywords').val(dorks.join('\n'));
+            updateChatGPTCategoryDescription(category);
         }
 
         function updateCategoryDescription(category) {
@@ -2689,6 +3050,56 @@
             $('#firebaseCategoryDescription p').text(desc.description);
         }
 
+        function updateGrokCategoryDescription(category) {
+            const descriptions = {
+                all: {
+                    title: 'All Grok Dorks',
+                    description: 'Complete collection of Grok dorks for configuration files, tokens, and documentation discovery.'
+                },
+                'configs': {
+                    title: 'Configuration Files',
+                    description: 'Find configuration files like config.yaml, settings.json, and environment configurations.'
+                },
+                'tokens': {
+                    title: 'Tokens & Keys',
+                    description: 'Discover API tokens, access keys, authentication credentials, and secrets.'
+                },
+                'docs': {
+                    title: 'Documentation',
+                    description: 'Find API documentation, setup guides, and technical documentation files.'
+                }
+            };
+
+            const desc = descriptions[category] || descriptions.all;
+            $('#grok-content .info-card h4').text(desc.title);
+            $('#grok-content .info-card p').text(desc.description);
+        }
+
+        function updateChatGPTCategoryDescription(category) {
+            const descriptions = {
+                all: {
+                    title: 'All ChatGPT Dorks',
+                    description: 'Complete collection of ChatGPT dorks for configuration files, tokens, and documentation discovery.'
+                },
+                'configs': {
+                    title: 'Configuration Files',
+                    description: 'Find configuration files like config.yaml, settings.json, and environment configurations.'
+                },
+                'tokens': {
+                    title: 'Tokens & Keys',
+                    description: 'Discover API tokens, access keys, authentication credentials, and secrets.'
+                },
+                'docs': {
+                    title: 'Documentation',
+                    description: 'Find API documentation, setup guides, and technical documentation files.'
+                }
+            };
+
+            const desc = descriptions[category] || descriptions.all;
+            $('#chatgpt-content .info-card h4').text(desc.title);
+            $('#chatgpt-content .info-card p').text(desc.description);
+        }
+
         function Generate() {
             const target = $('#target').val().trim();
             if (!target) {
@@ -2802,11 +3213,11 @@
             queries.forEach(query => {
                 const trimmedQuery = query.trim();
                 if (trimmedQuery) {
-                    const searchQuery = trimmedQuery.replace(/example\.com/g, target);
+                    const searchQuery = trimmedQuery.replace(/TARGET/g, target);
                     const searchUrl = `https://platform.censys.io/search?q=${encodeURIComponent(searchQuery)}`;
                     results.push({
                         url: searchUrl,
-                        keyword: trimmedQuery,
+                        keyword: searchQuery,
                         category: getCensysCategoryForQuery(trimmedQuery)
                     });
                 }
@@ -3074,6 +3485,99 @@
             showControls();
         }
 
+        function GenerateGrok() {
+            const target = $('#grok-target').val().trim();
+            if (!target) {
+                alert('Please enter a target (e.g., "app-name" or "company-name")');
+                return;
+            }
+
+            const dorks = $('#grok-keywords').val().split('\n').filter(d => d.trim());
+            if (dorks.length === 0) {
+                alert('No dorks available for the selected category');
+                return;
+            }
+
+            const results = [];
+            dorks.forEach(dork => {
+                const trimmedDork = dork.trim();
+                if (trimmedDork) {
+                    const searchQuery = `site:grok.com/share "${target}" ${trimmedDork}`;
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                    results.push({
+                        url: searchUrl,
+                        keyword: trimmedDork,
+                        category: getGrokCategoryForDork(trimmedDork)
+                    });
+                }
+            });
+
+            displayResults(results);
+            updateStats(results.length);
+            showControls();
+        }
+
+        function GenerateChatGPT() {
+            const target = $('#chatgpt-target').val().trim();
+            if (!target) {
+                alert('Please enter a target (e.g., "app-name" or "company-name")');
+                return;
+            }
+
+            const dorks = $('#chatgpt-keywords').val().split('\n').filter(d => d.trim());
+            if (dorks.length === 0) {
+                alert('No dorks available for the selected category');
+                return;
+            }
+
+            const results = [];
+            dorks.forEach(dork => {
+                const trimmedDork = dork.trim();
+                if (trimmedDork) {
+                    const searchQuery = `site:chatgpt.com/share "${target}" ${trimmedDork}`;
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                    results.push({
+                        url: searchUrl,
+                        keyword: trimmedDork,
+                        category: getChatGPTCategoryForDork(trimmedDork)
+                    });
+                }
+            });
+
+            displayResults(results);
+            updateStats(results.length);
+            showControls();
+        }
+
+        function GenerateURLScan() {
+            const target = $('#urlscan-target').val().trim();
+            if (!target) {
+                alert('Please enter a domain (e.g., "example.com")');
+                return;
+            }
+
+            const searchUrl = `https://urlscan.io/search/#${target}`;
+            window.open(searchUrl, '_blank');
+        }
+
+        function GenerateVirusTotal() {
+            const apiKey = $('#virustotal-apikey').val().trim();
+            const target = $('#virustotal-target').val().trim();
+            
+            if (!apiKey) {
+                alert('Please enter your VirusTotal API key');
+                return;
+            }
+            
+            if (!target) {
+                alert('Please enter a domain (e.g., "example.com")');
+                return;
+            }
+
+            const searchUrl = `https://www.virustotal.com/vtapi/v2/domain/report?apikey=${apiKey}&domain=${target}`;
+            window.open(searchUrl, '_blank');
+        }
+
         function getCategoryForKeyword(keyword) {
             for (const [category, keywords] of Object.entries(dorkCategories)) {
                 if (keywords.includes(keyword)) {
@@ -3182,6 +3686,70 @@
             return 'other';
         }
 
+        function getGrokCategoryForDork(dork) {
+            for (const [category, dorks] of Object.entries(grokDorks)) {
+                if (dorks.includes(dork)) {
+                    return category.replace('_', ' ');
+                }
+            }
+            return 'other';
+        }
+
+        function openAllGrokLinks() {
+            const dorks = $('#grok-keywords').val().split('\n').filter(d => d.trim());
+            const target = $('#grok-target').val().trim();
+            
+            if (!target) {
+                alert('Please enter a target first');
+                return;
+            }
+            
+            if (dorks.length === 0) {
+                alert('No dorks available');
+                return;
+            }
+            
+            dorks.forEach(dork => {
+                if (dork.trim()) {
+                    const searchQuery = `site:grok.com/share "${target}" ${dork.trim()}`;
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                    window.open(searchUrl, '_blank');
+                }
+            });
+        }
+
+        function getChatGPTCategoryForDork(dork) {
+            for (const [category, dorks] of Object.entries(chatgptDorks)) {
+                if (dorks.includes(dork)) {
+                    return category.replace('_', ' ');
+                }
+            }
+            return 'other';
+        }
+
+        function openAllChatGPTLinks() {
+            const dorks = $('#chatgpt-keywords').val().split('\n').filter(d => d.trim());
+            const target = $('#chatgpt-target').val().trim();
+            
+            if (!target) {
+                alert('Please enter a target first');
+                return;
+            }
+            
+            if (dorks.length === 0) {
+                alert('No dorks available');
+                return;
+            }
+            
+            dorks.forEach(dork => {
+                if (dork.trim()) {
+                    const searchQuery = `site:chatgpt.com/share "${target}" ${dork.trim()}`;
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                    window.open(searchUrl, '_blank');
+                }
+            });
+        }
+
         function displayResults(results) {
             const tbody = $('#result');
             tbody.empty();
@@ -3233,12 +3801,16 @@
                 selectedUrls.push($(this).data('url'));
             });
 
+            console.log('Selected URLs:', selectedUrls);
+
             if (selectedUrls.length === 0) {
                 alert('Please select at least one link to open');
                 return;
             }
 
+            console.log('Opening', selectedUrls.length, 'URLs');
             selectedUrls.forEach((url, index) => {
+                console.log('Opening URL:', url);
                 // Random delay between 100ms and 1000ms
                 const delay = Math.random() * 900 + 100;
                 setTimeout(() => {
