@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on incogbyte ⚔️ 🚩</title>
+    <title>Posts on incogbyte</title>
     <link>https://incogbyte.github.io/posts/</link>
-    <description>Recent content in Posts on incogbyte ⚔️ 🚩</description>
-    <generator>jodson</generator>
+    <description>Recent content in Posts on incogbyte</description>
+    <generator></generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 02 Jun 2025 09:29:08 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/posts/index.xml" rel="self" type="application/rss+xml" />

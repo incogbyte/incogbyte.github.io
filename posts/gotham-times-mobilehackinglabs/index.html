@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en-us">
   <head>
-    <title>Gotham Times Mobile Hacking Labs // incogbyte ⚔️ 🚩</title>
+    <title>Gotham Times Mobile Hacking Labs // incogbyte</title>
     <link rel="shortcut icon" href="/favicon.ico" />
     <meta charset="utf-8" />
-    <meta name="generator" content="jodson 0.142.0">
+    <meta name="generator" content=" 0.142.0">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="Rodolfo &#39;incogbyte&#39; Tavares" />
     <meta name="description" content="" />
@@ -20,7 +20,7 @@ In this article, we will walk through the complete process, from initial vulnera
 How webviews function in iOS applications Understanding deep links and their implementation Identifying open redirect vulnerabilities Techniques for exploiting these security flaws Methods for extracting session tokens Best practices for preventing such attacks This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.">
 
     <meta property="og:url" content="https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/">
-  <meta property="og:site_name" content="incogbyte ⚔️ 🚩">
+  <meta property="og:site_name" content="incogbyte">
   <meta property="og:title" content="Gotham Times Mobile Hacking Labs">
   <meta property="og:description" content="Introduction The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.
 In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:
@@ -36,7 +36,7 @@ How webviews function in iOS applications Understanding deep links and their imp
   <body>
     <header class="app-header">
       <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Rodolfo &#39;incogbyte&#39; Tavares" /></a>
-      <span class="app-header-title">incogbyte ⚔️ 🚩</span>
+      <span class="app-header-title">incogbyte</span>
       <nav class="app-header-menu">
           <a class="app-header-menu-item" href="/">Home</a>
              - 
@@ -49,7 +49,7 @@ How webviews function in iOS applications Understanding deep links and their imp
           
           <a class="app-header-menu-item" href="/cve/">CVEs</a>
       </nav>
-      <p>Just another bit inside the matrix. (Infosec/Dev/🕸️⚔)</p>
+      <p>reverse engineering, appsec, mobile security.. and that sort of stuff..</p>
       <div class="app-header-social">
         
           <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
@@ -107,7 +107,7 @@ How webviews function in iOS applications Understanding deep links and their imp
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          10 min read
+          6 min read
         </div>
       </div>
     </header>
@@ -328,212 +328,9 @@ How webviews function in iOS applications Understanding deep links and their imp
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> iVar7;
 </span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>puVar8;
 </span></span><span style="display:flex;"><span>  Iterator IVar9;
-</span></span><span style="display:flex;"><span>  URL UVar10;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>piVar11;
-</span></span><span style="display:flex;"><span>  URL UVar12;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>pUVar13;
-</span></span><span style="display:flex;"><span>  UIWindow <span style="color:#f92672">*</span>pUVar14;
-</span></span><span style="display:flex;"><span>  NewsController <span style="color:#f92672">*</span>pNVar15;
-</span></span><span style="display:flex;"><span>  Set SVar16;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>pcVar17;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>pvVar18;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>in_x5;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> extraout_x8;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> extraout_x8_00;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> extraout_x8_01;
-</span></span><span style="display:flex;"><span>  undefined auVar19 [<span style="color:#ae81ff">16</span>];
-</span></span><span style="display:flex;"><span>  tuple2.conflict1 tVar20;
-</span></span><span style="display:flex;"><span>  String SVar21;
-</span></span><span style="display:flex;"><span>  String SVar22;
-</span></span><span style="display:flex;"><span>  String SVar23;
-</span></span><span style="display:flex;"><span>  String SVar24;
-</span></span><span style="display:flex;"><span>  undefined auStack_3b0 [<span style="color:#ae81ff">8</span>];
-</span></span><span style="display:flex;"><span>  undefined8 uStack_3a8;
-</span></span><span style="display:flex;"><span>  undefined4 auStack_3a0 [<span style="color:#ae81ff">4</span>];
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_390;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_388;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_380;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_378;
-</span></span><span style="display:flex;"><span>  UIWindow <span style="color:#f92672">**</span>local_370;
-</span></span><span style="display:flex;"><span>  UIWindow <span style="color:#f92672">*</span>local_368;
-</span></span><span style="display:flex;"><span>  UIWindow <span style="color:#f92672">**</span>local_360;
-</span></span><span style="display:flex;"><span>  UIWindow <span style="color:#f92672">*</span>local_358;
-</span></span><span style="display:flex;"><span>  undefined4 local_34c;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_348;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_340;
-</span></span><span style="display:flex;"><span>  NSString <span style="color:#f92672">*</span>local_338;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_330;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_328;
-</span></span><span style="display:flex;"><span>  undefined8 local_320;
-</span></span><span style="display:flex;"><span>  UINavigationController <span style="color:#f92672">*</span>local_318;
-</span></span><span style="display:flex;"><span>  dword local_30c;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_308;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_300;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_2f8;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_2f0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_2e8;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_2e0;
-</span></span><span style="display:flex;"><span>  dword local_2d4;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_2d0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_2c8;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_2c0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_2b8;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">**</span>local_2b0;
-</span></span><span style="display:flex;"><span>  dword local_2a8;
-</span></span><span style="display:flex;"><span>  dword local_2a4;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>local_2a0;
-</span></span><span style="display:flex;"><span>  undefined8 local_298;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_290;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_288;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_280;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_278;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_270;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">protocol_t</span> <span style="color:#f92672">*</span>local_268;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_260;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_258;
-</span></span><span style="display:flex;"><span>  code <span style="color:#f92672">*</span>local_250;
-</span></span><span style="display:flex;"><span>  code <span style="color:#f92672">*</span>local_248;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_240;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_238;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_230;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_228;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_220;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_218;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_210;
-</span></span><span style="display:flex;"><span>  undefined8 local_208;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_200;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_1f8;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_1f0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_1e8;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_1e0;
-</span></span><span style="display:flex;"><span>  SceneDelegate <span style="color:#f92672">*</span>local_1d8;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_1d0;
-</span></span><span style="display:flex;"><span>  uint <span style="color:#f92672">*</span>local_1c8;
-</span></span><span style="display:flex;"><span>  StaticString local_1c0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_1b8;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_1b0;
-</span></span><span style="display:flex;"><span>  Set local_1a8;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_1a0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_198;
-</span></span><span style="display:flex;"><span>  uint local_190;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_188;
-</span></span><span style="display:flex;"><span>  uint local_180;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_178;
-</span></span><span style="display:flex;"><span>  uint local_170;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_168;
-</span></span><span style="display:flex;"><span>  uint local_160;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_158;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_150;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_148;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_140;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_138;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_130;
-</span></span><span style="display:flex;"><span>  UIWindow <span style="color:#f92672">*</span>local_128;
-</span></span><span style="display:flex;"><span>  UIWindow <span style="color:#f92672">*</span>local_120;
-</span></span><span style="display:flex;"><span>  UINavigationController <span style="color:#f92672">*</span>local_118;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_110;
-</span></span><span style="display:flex;"><span>  UIStoryboard <span style="color:#f92672">*</span>local_108;
-</span></span><span style="display:flex;"><span>  undefined8 uStack_100;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_f8;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_f0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_e8;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_e0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_d8;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_d0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_c8;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_c0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>local_b8;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_b0;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_a8;
-</span></span><span style="display:flex;"><span>  uint auStack_a0 [<span style="color:#ae81ff">5</span>];
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_78;
-</span></span><span style="display:flex;"><span>  SceneDelegate <span style="color:#f92672">*</span>local_70;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#f92672">*</span>local_68;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> local_60;
-</span></span><span style="display:flex;"><span>  undefined auStack_58 [<span style="color:#ae81ff">40</span>];
-</span></span><span style="display:flex;"><span>  undefined7 extraout_var;
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>  local_1d0 <span style="color:#f92672">=</span> PTR_<span style="color:#960050;background-color:#1e0010">$$</span>type_metadata_for_Any_100028708 <span style="color:#f92672">+</span> <span style="color:#ae81ff">8</span>;
-</span></span><span style="display:flex;"><span>  local_1c8 <span style="color:#f92672">=</span> (uint <span style="color:#f92672">*</span>)PTR__swift_isaMask_100028640;
-</span></span><span style="display:flex;"><span>  local_1c0.unknown <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Fatal error&#34;</span>;
-</span></span><span style="display:flex;"><span>  local_1b8 <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Unexpectedly found nil while unwrapping an Optional value&#34;</span>;
-</span></span><span style="display:flex;"><span>  local_1b0 <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Gotham_Times/SceneDelegate.swift&#34;</span>;
-</span></span><span style="display:flex;"><span>  local_60 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>  local_68 <span style="color:#f92672">=</span> (undefined <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>;
-</span></span><span style="display:flex;"><span>  local_70 <span style="color:#f92672">=</span> (SceneDelegate <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>;
-</span></span><span style="display:flex;"><span>  local_78 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>  local_1d8 <span style="color:#f92672">=</span> this;
-</span></span><span style="display:flex;"><span>  local_1a8.unknown <span style="color:#f92672">=</span> openURLContexts;
-</span></span><span style="display:flex;"><span>  local_150 <span style="color:#f92672">=</span> param_1;
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">_memset</span>(auStack_a0,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0x28</span>);
-</span></span><span style="display:flex;"><span>  local_b0 <span style="color:#f92672">=</span> (undefined <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>;
-</span></span><span style="display:flex;"><span>  local_e0 <span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>;
-</span></span><span style="display:flex;"><span>  local_d8 <span style="color:#f92672">=</span> (<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>;
-</span></span><span style="display:flex;"><span>  local_108 <span style="color:#f92672">=</span> (UIStoryboard <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>;
-</span></span><span style="display:flex;"><span>  local_110 <span style="color:#f92672">=</span> (UIStoryboard <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>;
-</span></span><span style="display:flex;"><span>  local_118 <span style="color:#f92672">=</span> (UINavigationController <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>;
-</span></span><span style="display:flex;"><span>  local_130 <span style="color:#f92672">=</span> (UIStoryboard <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>;
-</span></span><span style="display:flex;"><span>  local_1a0 <span style="color:#f92672">=</span> (undefined <span style="color:#f92672">*</span>)Foundation<span style="color:#f92672">::</span>URL<span style="color:#f92672">::</span><span style="color:#a6e22e">typeMetadataAccessor</span>();
-</span></span><span style="display:flex;"><span>  local_198 <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>(<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>)(local_1a0 <span style="color:#f92672">+</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>);
-</span></span><span style="display:flex;"><span>  local_190 <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>(<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>)(local_198 <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x40</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">0xfU</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xfffffffffffffff0</span>;
-</span></span><span style="display:flex;"><span>  iVar7 <span style="color:#f92672">=</span> local_150;
-</span></span><span style="display:flex;"><span>  SVar16.unknown <span style="color:#f92672">=</span> local_1a8.unknown;
-</span></span><span style="display:flex;"><span>  (<span style="color:#f92672">*</span>(code <span style="color:#f92672">*</span>)PTR____chkstk_darwin_1000281f0)();
-</span></span><span style="display:flex;"><span>  puVar8 <span style="color:#f92672">=</span> (undefined <span style="color:#f92672">*</span>)((<span style="color:#66d9ef">int</span>)<span style="color:#f92672">&amp;</span>local_390 <span style="color:#f92672">-</span> local_190);
-</span></span><span style="display:flex;"><span>  local_180 <span style="color:#f92672">=</span> extraout_x8 <span style="color:#f92672">+</span> <span style="color:#ae81ff">0xfU</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xfffffffffffffff0</span>;
-</span></span><span style="display:flex;"><span>  local_188 <span style="color:#f92672">=</span> puVar8;
-</span></span><span style="display:flex;"><span>  (<span style="color:#f92672">*</span>(code <span style="color:#f92672">*</span>)PTR____chkstk_darwin_1000281f0)();
-</span></span><span style="display:flex;"><span>  puVar8 <span style="color:#f92672">=</span> puVar8 <span style="color:#f92672">+</span> <span style="color:#f92672">-</span>local_180;
-</span></span><span style="display:flex;"><span>  local_170 <span style="color:#f92672">=</span> extraout_x8_00 <span style="color:#f92672">+</span> <span style="color:#ae81ff">0xfU</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xfffffffffffffff0</span>;
-</span></span><span style="display:flex;"><span>  local_178 <span style="color:#f92672">=</span> puVar8;
-</span></span><span style="display:flex;"><span>  (<span style="color:#f92672">*</span>(code <span style="color:#f92672">*</span>)PTR____chkstk_darwin_1000281f0)();
-</span></span><span style="display:flex;"><span>  iVar1 <span style="color:#f92672">=</span> (<span style="color:#66d9ef">int</span>)puVar8 <span style="color:#f92672">-</span> local_170;
-</span></span><span style="display:flex;"><span>  local_160 <span style="color:#f92672">=</span> extraout_x8_01 <span style="color:#f92672">+</span> <span style="color:#ae81ff">0xfU</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xfffffffffffffff0</span>;
-</span></span><span style="display:flex;"><span>  local_168 <span style="color:#f92672">=</span> iVar1;
-</span></span><span style="display:flex;"><span>  (<span style="color:#f92672">*</span>(code <span style="color:#f92672">*</span>)PTR____chkstk_darwin_1000281f0)();
-</span></span><span style="display:flex;"><span>  iVar1 <span style="color:#f92672">=</span> iVar1 <span style="color:#f92672">-</span> local_160;
-</span></span><span style="display:flex;"><span>  local_158 <span style="color:#f92672">=</span> iVar1;
-</span></span><span style="display:flex;"><span>  local_70 <span style="color:#f92672">=</span> this;
-</span></span><span style="display:flex;"><span>  local_68 <span style="color:#f92672">=</span> SVar16.unknown;
-</span></span><span style="display:flex;"><span>  local_60 <span style="color:#f92672">=</span> iVar7;
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">_objc_retain</span>();
-</span></span><span style="display:flex;"><span>  puVar8 <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>_OBJC_CLASS_<span style="color:#960050;background-color:#1e0010">$</span>_UIWindowScene;
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">_objc_opt_self</span>(<span style="color:#f92672">&amp;</span>_OBJC_CLASS_<span style="color:#960050;background-color:#1e0010">$</span>_UIWindowScene);
-</span></span><span style="display:flex;"><span>  iVar7 <span style="color:#f92672">=</span> local_150;
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">_swift_dynamicCastObjCClass</span>(local_150,puVar8);
-</span></span><span style="display:flex;"><span>  local_1e0 <span style="color:#f92672">=</span> iVar7;
-</span></span><span style="display:flex;"><span>  local_148 <span style="color:#f92672">=</span> iVar7;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (iVar7 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
-</span></span><span style="display:flex;"><span>    local_1e8 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_objc_release</span>(local_150);
-</span></span><span style="display:flex;"><span>    local_1e0 <span style="color:#f92672">=</span> local_1e8;
-</span></span><span style="display:flex;"><span>  }
-</span></span><span style="display:flex;"><span>  local_1f0 <span style="color:#f92672">=</span> local_1e0;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (local_1e0 <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
-</span></span><span style="display:flex;"><span>    local_1f8 <span style="color:#f92672">=</span> local_1e0;
-</span></span><span style="display:flex;"><span>    local_210 <span style="color:#f92672">=</span> local_1e0;
-</span></span><span style="display:flex;"><span>    local_78 <span style="color:#f92672">=</span> local_1e0;
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_swift_bridgeObjectRetain</span>(local_1a8.unknown);
-</span></span><span style="display:flex;"><span>    auVar19 <span style="color:#f92672">=</span> __C<span style="color:#f92672">::</span>UIOpenURLContext<span style="color:#f92672">::</span><span style="color:#a6e22e">typeMetadataAccessor</span>();
-</span></span><span style="display:flex;"><span>    local_208 <span style="color:#f92672">=</span> auVar19._0_8_;
-</span></span><span style="display:flex;"><span>    __C<span style="color:#f92672">::</span>UIOpenURLContext<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">lazy_protocol_witness_table_accessor</span>();
-</span></span><span style="display:flex;"><span>    local_200 <span style="color:#f92672">=</span> auStack_58;
-</span></span><span style="display:flex;"><span>    Swift<span style="color:#f92672">::</span>Set<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">makeIterator</span>(local_1a8);
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_memcpy</span>(auStack_a0,local_200,<span style="color:#ae81ff">0x28</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>( true ) {
-</span></span><span style="display:flex;"><span>      IVar9.unknown <span style="color:#f92672">=</span>
-</span></span><span style="display:flex;"><span>           (undefined <span style="color:#f92672">*</span>)
-</span></span><span style="display:flex;"><span>           <span style="color:#a6e22e">___swift_instantiateConcreteTypeFromMangledName</span>
-</span></span><span style="display:flex;"><span>                     (<span style="color:#f92672">&amp;</span>
-</span></span><span style="display:flex;"><span>                      <span style="color:#960050;background-color:#1e0010">$$</span>demangling_cache_variable_for_type_metadata_for_Swift.Set<span style="color:#f92672">&lt;</span>__C.UIOpenURLConte xt<span style="color:#f92672">&gt;</span>.Iterator
-</span></span><span style="display:flex;"><span>                     );
-</span></span><span style="display:flex;"><span>      Swift<span style="color:#f92672">::</span>Set<span style="color:#f92672">::</span>Iterator<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">next</span>(IVar9);
-</span></span><span style="display:flex;"><span>      UVar12.unknown <span style="color:#f92672">=</span> local_178;
-</span></span><span style="display:flex;"><span>      local_218 <span style="color:#f92672">=</span> local_a8;
-</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (local_a8 <span style="color:#f92672">==</span> (undefined <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>) <span style="color:#66d9ef">break</span>;
-</span></span><span style="display:flex;"><span>      local_220 <span style="color:#f92672">=</span> local_a8;
-</span></span><span style="display:flex;"><span>      local_260 <span style="color:#f92672">=</span> local_a8;
-</span></span><span style="display:flex;"><span>      local_b0 <span style="color:#f92672">=</span> local_a8;
+</span></span><span style="display:flex;"><span>.....
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
 </span></span><span style="display:flex;"><span>      tVar20 <span style="color:#f92672">=</span> Swift<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">_allocateUninitializedArray</span>(<span style="color:#ae81ff">1</span>);
 </span></span><span style="display:flex;"><span>      local_2a0 <span style="color:#f92672">=</span> (<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>)tVar20<span style="color:#ae81ff">.1</span>;
 </span></span><span style="display:flex;"><span>      local_298 <span style="color:#f92672">=</span> tVar20._0_8_;
@@ -550,33 +347,6 @@ How webviews function in iOS applications Understanding deep links and their imp
 </span></span><span style="display:flex;"><span>      local_270 <span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)Swift<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">_finalizeUninitializedArray</span>(local_298);
 </span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_objc_release</span>(local_290);
 </span></span><span style="display:flex;"><span>      SVar21 <span style="color:#f92672">=</span> Swift<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">print</span>();
-</span></span><span style="display:flex;"><span>      local_278 <span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)SVar21.bridgeObject;
-</span></span><span style="display:flex;"><span>      local_288 <span style="color:#f92672">=</span> SVar21.str;
-</span></span><span style="display:flex;"><span>      SVar21 <span style="color:#f92672">=</span> Swift<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">print</span>();
-</span></span><span style="display:flex;"><span>      pcVar17 <span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)SVar21.bridgeObject;
-</span></span><span style="display:flex;"><span>      SVar22.bridgeObject <span style="color:#f92672">=</span> local_288;
-</span></span><span style="display:flex;"><span>      SVar22.str <span style="color:#f92672">=</span> local_270;
-</span></span><span style="display:flex;"><span>      SVar21.bridgeObject <span style="color:#f92672">=</span> SVar21.str;
-</span></span><span style="display:flex;"><span>      SVar21.str <span style="color:#f92672">=</span> local_278;
-</span></span><span style="display:flex;"><span>      local_280 <span style="color:#f92672">=</span> pcVar17;
-</span></span><span style="display:flex;"><span>      Swift<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">print</span>(SVar22,SVar21);
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_280);
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_278);
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_270);
-</span></span><span style="display:flex;"><span>      UVar10.unknown <span style="color:#f92672">=</span> local_260;
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_objc_msgSend</span>(local_260,local_268[<span style="color:#ae81ff">0x2e</span>].instanceProperties);
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_objc_retainAutoreleasedReturnValue</span>();
-</span></span><span style="display:flex;"><span>      local_258 <span style="color:#f92672">=</span> UVar10.unknown;
-</span></span><span style="display:flex;"><span>      Foundation<span style="color:#f92672">::</span>URL<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">_unconditionallyBridgeFromObjectiveC</span>(UVar10);
-</span></span><span style="display:flex;"><span>      local_250 <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>(code <span style="color:#f92672">**</span>)(local_198 <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x10</span>);
-</span></span><span style="display:flex;"><span>      iVar7 <span style="color:#f92672">=</span> local_168;
-</span></span><span style="display:flex;"><span>      (<span style="color:#f92672">*</span>local_250)(UVar12.unknown,local_168,local_1a0);
-</span></span><span style="display:flex;"><span>      Foundation<span style="color:#f92672">::</span>URL<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">get_host</span>(UVar12);
-</span></span><span style="display:flex;"><span>      local_248 <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>(code <span style="color:#f92672">**</span>)(local_198 <span style="color:#f92672">+</span> <span style="color:#ae81ff">8</span>);
-</span></span><span style="display:flex;"><span>      local_238 <span style="color:#f92672">=</span> UVar12.unknown;
-</span></span><span style="display:flex;"><span>      local_230 <span style="color:#f92672">=</span> iVar7;
-</span></span><span style="display:flex;"><span>      (<span style="color:#f92672">*</span>local_248)(local_178,local_1a0);
-</span></span><span style="display:flex;"><span>      (<span style="color:#f92672">*</span>local_248)(local_168,local_1a0);
 </span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_swift_bridgeObjectRetain</span>(local_230);
 </span></span><span style="display:flex;"><span>      SVar21 <span style="color:#f92672">=</span> Swift<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span><span style="color:#a6e22e">init</span>(<span style="color:#e6db74">&#34;open&#34;</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">1</span>);
 </span></span><span style="display:flex;"><span>      local_228 <span style="color:#f92672">=</span> SVar21.bridgeObject;
@@ -595,40 +365,8 @@ How webviews function in iOS applications Understanding deep links and their imp
 </span></span><span style="display:flex;"><span>        <span style="color:#960050;background-color:#1e0010">$$</span>outlined_init_with_copy_of_Swift.String<span style="color:#f92672">?</span>(<span style="color:#f92672">&amp;</span>local_d0,<span style="color:#f92672">&amp;</span>local_140);
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (local_b8 <span style="color:#f92672">==</span> (<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>) {
 </span></span><span style="display:flex;"><span>          <span style="color:#960050;background-color:#1e0010">$$</span>outlined_destroy_of_Swift.<span style="color:#a6e22e">String</span>((<span style="color:#66d9ef">int</span>)<span style="color:#f92672">&amp;</span>local_140);
-</span></span><span style="display:flex;"><span>LAB_1000195a4:
-</span></span><span style="display:flex;"><span>          <span style="color:#960050;background-color:#1e0010">$$</span><span style="color:#a6e22e">outlined_destroy_of_</span>(Swift.String<span style="color:#f92672">?</span>,Swift.String<span style="color:#f92672">?</span>)((<span style="color:#66d9ef">int</span>)<span style="color:#f92672">&amp;</span>local_d0);
-</span></span><span style="display:flex;"><span>          local_2a4 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> {
-</span></span><span style="display:flex;"><span>          local_2d0 <span style="color:#f92672">=</span> local_140;
-</span></span><span style="display:flex;"><span>          local_2b8 <span style="color:#f92672">=</span> local_138;
-</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">_swift_bridgeObjectRetain</span>();
-</span></span><span style="display:flex;"><span>          local_2c8 <span style="color:#f92672">=</span> local_c0;
-</span></span><span style="display:flex;"><span>          local_2b0 <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>local_d0;
-</span></span><span style="display:flex;"><span>          local_2c0 <span style="color:#f92672">=</span> local_b8;
-</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">_swift_bridgeObjectRetain</span>();
-</span></span><span style="display:flex;"><span>          SVar2.bridgeObject <span style="color:#f92672">=</span> local_2c0;
-</span></span><span style="display:flex;"><span>          SVar2.str <span style="color:#f92672">=</span> local_2c8;
-</span></span><span style="display:flex;"><span>          SVar23.bridgeObject <span style="color:#f92672">=</span> local_2b8;
-</span></span><span style="display:flex;"><span>          SVar23.str <span style="color:#f92672">=</span> local_2d0;
-</span></span><span style="display:flex;"><span>          SVar24.bridgeObject <span style="color:#f92672">=</span> in_x5;
-</span></span><span style="display:flex;"><span>          SVar24.str <span style="color:#f92672">=</span> pcVar17;
-</span></span><span style="display:flex;"><span>          bVar6 <span style="color:#f92672">=</span> Swift<span style="color:#f92672">::</span>String<span style="color:#f92672">::==</span><span style="color:#a6e22e">_infix</span>(SVar23,SVar2,SVar24);
-</span></span><span style="display:flex;"><span>          local_2a8 <span style="color:#f92672">=</span> (dword)<span style="color:#a6e22e">CONCAT71</span>(extraout_var,bVar6);
-</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_2c0);
-</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_2b8);
-</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_2c0);
-</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_2b8);
-</span></span><span style="display:flex;"><span>          <span style="color:#960050;background-color:#1e0010">$$</span>outlined_destroy_of_Swift.String<span style="color:#f92672">?</span>((<span style="color:#66d9ef">int</span>)local_2b0);
-</span></span><span style="display:flex;"><span>          local_2a4 <span style="color:#f92672">=</span> local_2a8;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>      }
-</span></span><span style="display:flex;"><span>      local_2d4 <span style="color:#f92672">=</span> local_2a4;
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_228);
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_230);
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">_objc_release</span>(local_258);
-</span></span><span style="display:flex;"><span>      UVar12.unknown <span style="color:#f92672">=</span> local_188;
-</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> ((local_2d4 <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>LAB_1
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">if</span> ((local_2d4 <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
 </span></span><span style="display:flex;"><span>        UVar10.unknown <span style="color:#f92672">=</span> local_260;
 </span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">_objc_msgSend</span>(local_260,<span style="color:#e6db74">&#34;URL&#34;</span>);
 </span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">_objc_retainAutoreleasedReturnValue</span>();
@@ -643,28 +381,6 @@ How webviews function in iOS applications Understanding deep links and their imp
 </span></span><span style="display:flex;"><span>        (<span style="color:#f92672">*</span>local_248)(local_158,local_1a0);
 </span></span><span style="display:flex;"><span>        SVar21 <span style="color:#f92672">=</span> Swift<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span><span style="color:#a6e22e">init</span>(<span style="color:#e6db74">&#34;url&#34;</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">1</span>);
 </span></span><span style="display:flex;"><span>        local_300 <span style="color:#f92672">=</span> SVar21.bridgeObject;
-</span></span><span style="display:flex;"><span>        pcVar17 <span style="color:#f92672">=</span> local_308;
-</span></span><span style="display:flex;"><span>        pvVar18 <span style="color:#f92672">=</span> local_2f8;
-</span></span><span style="display:flex;"><span>        (<span style="color:#f92672">**</span>(code <span style="color:#f92672">**</span>)((<span style="color:#f92672">*</span>(uint <span style="color:#f92672">*</span>)pSVar3 <span style="color:#f92672">&amp;</span> <span style="color:#f92672">*</span>local_1c8) <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x78</span>))(local_308,local_2f8,SVar21.str);
-</span></span><span style="display:flex;"><span>        local_2e8 <span style="color:#f92672">=</span> pcVar17;
-</span></span><span style="display:flex;"><span>        local_2e0 <span style="color:#f92672">=</span> pvVar18;
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_300);
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">_swift_bridgeObjectRelease</span>(local_2f8);
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">_objc_release</span>(local_2f0);
-</span></span><span style="display:flex;"><span>        local_e0 <span style="color:#f92672">=</span> local_2e8;
-</span></span><span style="display:flex;"><span>        local_d8 <span style="color:#f92672">=</span> local_2e0;
-</span></span><span style="display:flex;"><span>        local_f0 <span style="color:#f92672">=</span> local_2e8;
-</span></span><span style="display:flex;"><span>        local_e8 <span style="color:#f92672">=</span> local_2e0;
-</span></span><span style="display:flex;"><span>        <span style="color:#960050;background-color:#1e0010">$$</span>outlined_init_with_copy_of_Swift.String<span style="color:#f92672">?</span>(<span style="color:#f92672">&amp;</span>local_f0,<span style="color:#f92672">&amp;</span>uStack_100);
-</span></span><span style="display:flex;"><span>        bVar6 <span style="color:#f92672">=</span> local_f8 <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (bVar6) {
-</span></span><span style="display:flex;"><span>          <span style="color:#960050;background-color:#1e0010">$$</span>outlined_destroy_of_Swift.String<span style="color:#f92672">?</span>((<span style="color:#66d9ef">int</span>)<span style="color:#f92672">&amp;</span>uStack_100);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        local_30c <span style="color:#f92672">=</span> (dword)bVar6;
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (local_30c <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
-</span></span><span style="display:flex;"><span>          local_320 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>          auVar19 <span style="color:#f92672">=</span> __C<span style="color:#f92672">::</span>UIStoryboard<span style="color:#f92672">::</span><span style="color:#a6e22e">typeMetadataAccessor</span>();
-</span></span><span style="display:flex;"><span>          local_34c <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
 </span></span><span style="display:flex;"><span>          SVar21 <span style="color:#f92672">=</span> Swift<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span><span style="color:#a6e22e">init</span>(<span style="color:#e6db74">&#34;Main&#34;</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">1</span>);
 </span></span><span style="display:flex;"><span>          local_340 <span style="color:#f92672">=</span> __C<span style="color:#f92672">::</span>UIStoryboard<span style="color:#f92672">::</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">__allocating_init</span>
 </span></span><span style="display:flex;"><span>                                (auVar19._0_8_,SVar21.str,SVar21.bridgeObject,local_320);
@@ -698,40 +414,6 @@ How webviews function in iOS applications Understanding deep links and their imp
 </span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">if</span> (pUVar14 <span style="color:#f92672">==</span> (UIWindow <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>) {
 </span></span><span style="display:flex;"><span>            pUVar14 <span style="color:#f92672">=</span> (UIWindow <span style="color:#f92672">*</span>)<span style="color:#960050;background-color:#1e0010">$$</span>outlined_destroy_of___C.UIWindow<span style="color:#f92672">?</span>(<span style="color:#f92672">&amp;</span>local_120);
 </span></span><span style="display:flex;"><span>          }
-</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">else</span> {
-</span></span><span style="display:flex;"><span>            local_360 <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>local_120;
-</span></span><span style="display:flex;"><span>            local_358 <span style="color:#f92672">=</span> pUVar14;
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">_objc_retain</span>();
-</span></span><span style="display:flex;"><span>            <span style="color:#960050;background-color:#1e0010">$$</span>outlined_destroy_of___C.UIWindow<span style="color:#f92672">?</span>(local_360);
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">_objc_retain</span>(local_318);
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">_objc_msgSend</span>(local_358,<span style="color:#e6db74">&#34;setRootViewController:&#34;</span>,local_318);
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">_objc_release</span>(local_318);
-</span></span><span style="display:flex;"><span>            pUVar14 <span style="color:#f92672">=</span> local_358;
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">_objc_release</span>();
-</span></span><span style="display:flex;"><span>          }
-</span></span><span style="display:flex;"><span>          (<span style="color:#f92672">**</span>(code <span style="color:#f92672">**</span>)((<span style="color:#f92672">*</span>(uint <span style="color:#f92672">*</span>)local_1d8 <span style="color:#f92672">&amp;</span> <span style="color:#f92672">*</span>local_1c8) <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x58</span>))();
-</span></span><span style="display:flex;"><span>          local_128 <span style="color:#f92672">=</span> pUVar14;
-</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">if</span> (pUVar14 <span style="color:#f92672">==</span> (UIWindow <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#960050;background-color:#1e0010">$$</span>outlined_destroy_of___C.UIWindow<span style="color:#f92672">?</span>(<span style="color:#f92672">&amp;</span>local_128);
-</span></span><span style="display:flex;"><span>          }
-</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">else</span> {
-</span></span><span style="display:flex;"><span>            local_370 <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>local_128;
-</span></span><span style="display:flex;"><span>            local_368 <span style="color:#f92672">=</span> pUVar14;
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">_objc_retain</span>();
-</span></span><span style="display:flex;"><span>            <span style="color:#960050;background-color:#1e0010">$$</span>outlined_destroy_of___C.UIWindow<span style="color:#f92672">?</span>(local_370);
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">_objc_msgSend</span>(local_368,<span style="color:#e6db74">&#34;makeKeyAndVisible&#34;</span>);
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">_objc_release</span>(local_368);
-</span></span><span style="display:flex;"><span>          }
-</span></span><span style="display:flex;"><span>          pUVar13 <span style="color:#f92672">=</span> local_328;
-</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">_objc_msgSend</span>(local_328,<span style="color:#e6db74">&#34;selectedViewController&#34;</span>);
-</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">_objc_retainAutoreleasedReturnValue</span>();
-</span></span><span style="display:flex;"><span>          pcVar17 <span style="color:#f92672">=</span> local_1b8;
-</span></span><span style="display:flex;"><span>          SVar4.unknown <span style="color:#f92672">=</span> local_1c0.unknown;
-</span></span><span style="display:flex;"><span>          local_378 <span style="color:#f92672">=</span> pUVar13;
-</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">if</span> (pUVar13 <span style="color:#f92672">==</span> (UIStoryboard <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">*</span>(undefined <span style="color:#f92672">*</span>)(iVar1 <span style="color:#f92672">+</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0x20</span>) <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">*</span>(undefined8 <span style="color:#f92672">*</span>)(iVar1 <span style="color:#f92672">+</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0x18</span>) <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x2b</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">*</span>(undefined4 <span style="color:#f92672">*</span>)(iVar1 <span style="color:#f92672">+</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0x10</span>) <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
 </span></span><span style="display:flex;"><span>            Swift<span style="color:#f92672">::</span><span style="color:#a6e22e">_assertionFailure</span>(SVar4,(StaticString)<span style="color:#ae81ff">0xb</span>,(StaticString)<span style="color:#ae81ff">0x2</span>,(uint)pcVar17,<span style="color:#ae81ff">0x39</span>);
 </span></span><span style="display:flex;"><span>                    <span style="color:#75715e">/* WARNING: Does not return */</span>
 </span></span><span style="display:flex;"><span>            pcVar5 <span style="color:#f92672">=</span> (code <span style="color:#f92672">*</span>)<span style="color:#a6e22e">SoftwareBreakpoint</span>(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0x1000199cc</span>);
