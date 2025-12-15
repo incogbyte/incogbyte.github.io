@@ -423,6 +423,9 @@
                 <button class="service-tab" data-service="google">
                     <i class="fab fa-google"></i> Google
                 </button>
+                <button class="service-tab" data-service="google-services">
+                    <i class="fab fa-google"></i> Google Services Hunting
+                </button>
                 <button class="service-tab" data-service="bing">
                     <i class="fab fa-microsoft"></i> Bing
                 </button>
@@ -669,6 +672,28 @@
                     </div>
 
                     <textarea id="google-keywords" placeholder="Google dorks will be loaded here based on selected category..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Google Services Hunting Content -->
+        <div id="google-services-content" class="service-content">
+            <div class="card">
+                <div class="input-group">
+                    <label for="google-services-target">Target Domain:</label>
+                    <div class="input-row">
+                        <input type="text" id="google-services-target" placeholder='e.g., "domain.com"'>
+                        <button class="btn btn-success" onclick="GenerateGoogleServices()">Generate Google Services Dorks</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="google-services-keywords">Google Services Hunting Dorks:</label>
+                    <div class="category-description">
+                        <h4>Google Services Hunting</h4>
+                        <p>Search for exposed Google Sites, Docs, Groups, Drive and Sheets linked to the Workspace domain.</p>
+                    </div>
+                    <textarea id="google-services-keywords" placeholder="Google Services dorks will be loaded here..."></textarea>
                 </div>
             </div>
         </div>
@@ -1844,6 +1869,26 @@
             ]
         };
 
+        const googleServicesDorks = [
+            'site:http://sites.google.com/a/* "inurl:/a/"',
+            'site:http://sites.google.com/a/* "inurl:/a/DOMAIN"',
+            'sites.google.com/a/DOMAIN/',
+            'http://docs.google.com/a/DOMAIN/',
+            'http://groups.google.com/a/DOMAIN/',
+            'http://drive.google.com/a/DOMAIN/',
+            'http://mail.google.com/a/DOMAIN/',
+            'http://spreadsheets.google.com/a/DOMAIN/',
+            'http://spreadsheets0.google.com/a/DOMAIN/',
+            'http://spreadsheets1.google.com/a/DOMAIN/',
+            'http://spreadsheets2.google.com/a/DOMAIN/',
+            'http://spreadsheets3.google.com/a/DOMAIN/',
+            'http://spreadsheets4.google.com/a/DOMAIN/',
+            'http://spreadsheets5.google.com/a/DOMAIN/',
+            'http://spreadsheets6.google.com/a/DOMAIN/',
+            'http://spreadsheets7.google.com/a/DOMAIN/',
+            'http://spreadsheets8.google.com/a/DOMAIN/'
+        ];
+
         // Bing dorks data
         const bingDorks = {
             files: [
@@ -2139,6 +2184,7 @@
             initializeTabs();
             updateCounts();
             loadCategory('all');
+            loadGoogleServicesDorks();
         });
 
         function loadAllDorks() {
@@ -2397,6 +2443,8 @@
                 loadCensysCategory('all');
             } else if (service === 'google') {
                 loadGoogleCategory('all');
+            } else if (service === 'google-services') {
+                loadGoogleServicesDorks();
             } else if (service === 'bing') {
                 loadBingCategory('all');
             } else if (service === 'yandex') {
@@ -2572,6 +2620,10 @@
             
             $('#duckduckgo-keywords').val(dorks.join('\n'));
             updateDuckDuckGoCategoryDescription(category);
+        }
+
+        function loadGoogleServicesDorks() {
+            $('#google-services-keywords').val(googleServicesDorks.join('\n'));
         }
 
         // Cloud service switch and load functions
@@ -3251,6 +3303,42 @@
                         url: searchUrl,
                         keyword: trimmedDork,
                         category: getGoogleCategoryForDork(trimmedDork)
+                    });
+                }
+            });
+
+            displayResults(results);
+            updateStats(results.length);
+            showControls();
+        }
+
+        function GenerateGoogleServices() {
+            const target = $('#google-services-target').val().trim();
+            if (!target) {
+                alert('Please enter a domain (e.g., "domain.com")');
+                return;
+            }
+
+            const dorks = $('#google-services-keywords').val().split('\n').filter(d => d.trim());
+            if (dorks.length === 0) {
+                alert('No dorks available');
+                return;
+            }
+
+            const results = [];
+            dorks.forEach(dork => {
+                const trimmedDork = dork.trim();
+                if (trimmedDork) {
+                    // Replace both generic DOMAIN placeholder and domain.com variants with user input
+                    const searchQuery = trimmedDork
+                        .replace(/\*/g, target)
+                        .replace(/DOMAIN/gi, target)
+                        .replace(/domain\.com/gi, target);
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                    results.push({
+                        url: searchUrl,
+                        keyword: searchQuery,
+                        category: 'google services'
                     });
                 }
             });
