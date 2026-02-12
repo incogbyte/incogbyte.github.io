@@ -16,13 +16,6 @@
       <description>&lt;h1 id=&#34;exploit-path-traversal-and-xss-in-nasa-subdomains&#34;&gt;Exploit Path Traversal and XSS in NASA Subdomains&lt;/h1&gt;&#xA;&lt;p&gt;In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>PortSwigger Practice Exam</title>
-      <link>https://incogbyte.github.io/posts/portswigger-practice-exam/</link>
-      <pubDate>Fri, 01 Dec 2023 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/portswigger-practice-exam/</guid>
-      <description>&lt;p&gt;In this blog post, we&amp;rsquo;ll embark on a journey to dissect the solution to a challenging practice exam question provided by PortSwigger. We&amp;rsquo;ll delve deep into the intricacies of web security, emphasizing the critical importance of understanding vulnerabilities, exploitation techniques, and mitigation strategies. By the time you finish reading this article, you&amp;rsquo;ll have gained valuable insights into real-world web security scenarios, equipping yourself with the knowledge required to effectively protect digital assets.&lt;/p&gt;</description>
-    </item>
-    <item>
       <title>Template Injection Kitctf</title>
       <link>https://incogbyte.github.io/posts/kitctf2023/</link>
       <pubDate>Mon, 19 Jun 2023 17:12:34 -0300</pubDate>
@@ -37,13 +30,6 @@
       <description>&lt;p&gt;TL;DR&lt;/p&gt;&#xA;&lt;p&gt;This write up is about a SQL injection which I found 4 days after another researcher reported it :/, however, because of the fact that I haven’t found any write ups or publicly available exploits, I decided to write about it.&#xA;Exploit at the end!&lt;/p&gt;&#xA;&lt;p&gt;PHPIPAM is a software widely used internally by several companies. And by being so, it is relatively common for you to find a running instance to manage IT assets, networks, etc. &lt;strong&gt;1.4.4&lt;/strong&gt; is the vulnerable version and a fix has already been made public with the arrival of version &lt;strong&gt;1.4.5&lt;/strong&gt;. The request responsible for triggering the SQLi is presented below, but if you want to look at the rest, feel free.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>Detect burp suite</title>
-      <link>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</link>
-      <pubDate>Fri, 11 Nov 2022 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2023-01-01-detect-burp/</guid>
-      <description>&lt;p&gt;tl;dr&lt;/p&gt;&#xA;&lt;p&gt;You can see the result here :)&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://incogbyte.github.io/images/burp-dection.html&#34;&gt;Click here 👀&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;Hey guys, I’m here to show you a little simple technique, but it’s a tip that maybe someday help someone. The question is how to identify that someone is using web proxy (BURP)? well, a friend of mine aka Jerry was with me one afternoon and we decided to do a PoC, maybe a lot of people already know, but when starting BURP it automatically goes up to a “light” web server where you can for example download the BURP certificate to import into your browser or device at the following address http://burp/ The following image illustrates this interface:&lt;/p&gt;</description>
-    </item>
-    <item>
       <title>Reversing Nim Binary With Radare</title>
       <link>https://incogbyte.github.io/posts/reverse-nim-binary/</link>
       <pubDate>Thu, 09 Jun 2022 10:12:34 -0300</pubDate>
@@ -56,27 +42,6 @@
       <pubDate>Sat, 19 Mar 2022 17:12:34 -0300</pubDate>
       <guid>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Hi everyone, in this blog i&amp;rsquo;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&#34;&gt;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;ptrace&lt;/li&gt;&#xA;&lt;li&gt;sysctl&lt;/li&gt;&#xA;&lt;li&gt;strstr&lt;/li&gt;&#xA;&lt;li&gt;geppid&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;In this blog, I will only talk about how I did it to bypass, using only &lt;a href=&#34;https://frida.re&#34;&gt;frida&lt;/a&gt;  with &lt;a href=&#34;https://github.com/radare2&#34;&gt;radare2&lt;/a&gt;. So let&amp;rsquo;s go.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Bypass NAC ( Network Access Control )</title>
-      <link>https://incogbyte.github.io/posts/2020-02-02-bypass-nac/</link>
-      <pubDate>Thu, 04 Feb 2021 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2020-02-02-bypass-nac/</guid>
-      <description>&lt;p&gt;In this post i’ll describe how to bypass NAC ( Network Access Control ). During an internal pentest, I had a problem connecting to the client network ( all network devices 802.1x (including VoIP devices), after a few hours trying to find out why, I found out that the client had implemented NAC, but what is Network access protocol (NAC) ?&lt;/p&gt;&#xA;&lt;p&gt;Network Access Control (NAC) is a solution used on corporate networks to prevent, or even hinder, unauthorized hosts from accessing internally available services and systems. This access restriction can occur only at the network layer, preventing an IP address from being obtained through the DHCP service, or completely segmenting the wrong hosts from the valid ones at the link layer level. Below are descriptive steps to circumvent NAC, remembering that this does not work in all cases.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Whoami!</title>
-      <link>https://incogbyte.github.io/posts/whoami/</link>
-      <pubDate>Sun, 02 Feb 2020 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/whoami/</guid>
-      <description>&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;root:#  cowsay &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;hi, incogbyte here&amp;#39;&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt; hi,rodnt here! &amp;gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  --------------&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#ae81ff&#34;&gt;\ &lt;/span&gt;  ^__^ &#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;\ &lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;oo&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\_&lt;/span&gt;______&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;             &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;__&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\ &lt;/span&gt;      &lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\/\\&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                 &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;----w |&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                 &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;     &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
-    </item>
-    <item>
-      <title>RCE using Path Traversal</title>
-      <link>https://incogbyte.github.io/posts/2020-01-02-rce-path-traversal/</link>
-      <pubDate>Tue, 05 Feb 2019 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2020-01-02-rce-path-traversal/</guid>
-      <description>&lt;p&gt;Hey guys, in this post i’ll describe how i used path traversal to explore a file upload, that enable me an RCE, during a private pentesting. I’ll blur the sensitive contents.&lt;/p&gt;&#xA;&lt;p&gt;firstly, while browsing i found a paramater that caugth my attention, frameManagerPath a base64 parameter. This path always return a javascript code. like the image bellow:&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://incogbyte.github.io/images/rce01.png&#34; alt=&#34;rce&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;After decode the the value, i could notice that value was a relative path to a file.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
