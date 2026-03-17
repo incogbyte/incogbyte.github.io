@@ -6,8 +6,15 @@
     <description>Recent content in Writeup on ls $HOME</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Oct 2024 07:12:34 -0300</lastBuildDate>
+    <lastBuildDate>Tue, 17 Mar 2026 10:00:00 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/tags/writeup/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</title>
+      <link>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</link>
+      <pubDate>Tue, 17 Mar 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</guid>
+      <description>&lt;h1 id=&#34;second-order-sql-injection-in-phpipam-174-cve-2026-4189&#34;&gt;Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)&lt;/h1&gt;&#xA;&lt;p&gt;Back in 2022, I found a &lt;a href=&#34;https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/&#34;&gt;SQL injection in phpIPAM 1.4.4&lt;/a&gt; (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection  user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a &lt;strong&gt;Second Order SQL Injection&lt;/strong&gt; in version &lt;strong&gt;1.7.4&lt;/strong&gt;, where the payload is stored first and executed later in a completely different context.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Nasa Path Traversal and XSS (waf bypass)</title>
       <link>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</link>
