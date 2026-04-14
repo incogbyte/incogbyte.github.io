@@ -1,139 +1,63 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-us">
-
-<head>
-  <title>Bypass MTLS Flutter // ls $HOME</title>
-  <link rel="shortcut icon" href="%20/favicon.ico" />
-  <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.142.0">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="Rodolfo Tavares" />
-  <meta name="description"
-    content="" />
-
-  
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1314&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bypass MTLS Flutter | incogbyte</title>
+  <meta name="description" content="Offensive Security | Mobile Hacking | Reverse Engineering">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"
-    rel="stylesheet">
-
-  <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
-
-  
-  <link rel="stylesheet" href="/css/custom.min.d6deeb83eff354eeff1d492556314c2f87fea3a001739934a8e7caa4e9c53a0c.css" />
-
-  
-
-  
-  
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Bypass MTLS Flutter">
-  <meta name="twitter:description" content="Overview In this blog post, we’ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\(ツ)/¯ ) from developers. Before we continue.. into the specifics, it’s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.
-Our journey will begin with an exploration of Flutter’s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.">
-
-  <meta property="og:url" content="https://incogbyte.github.io/posts/bypassmtlsflutter/">
-  <meta property="og:site_name" content="ls $HOME">
-  <meta property="og:title" content="Bypass MTLS Flutter">
-  <meta property="og:description" content="Overview In this blog post, we’ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\(ツ)/¯ ) from developers. Before we continue.. into the specifics, it’s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.
-Our journey will begin with an exploration of Flutter’s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2024-04-18T22:40:38-03:00">
-    <meta property="article:modified_time" content="2024-04-18T22:40:38-03:00">
-
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
-
 <body>
-  <header class="app-header">
+  <canvas id="matrix-bg"></canvas>
+  <div class="scanline"></div>
+
+  <header class="site-header">
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <span class="logo-bracket">[</span>
+      <span class="logo-text">incogbyte</span>
+      <span class="logo-bracket">]</span>
+      <span class="cursor">_</span>
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links">
+      
+      <li><a href="/" class="nav-link">Home</a></li>
+      
+      <li><a href="/posts/" class="nav-link">Posts</a></li>
+      
+      <li><a href="/cve/" class="nav-link">CVEs</a></li>
+      
+      <li><a href="/about/" class="nav-link">About</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+
+  <main class="container">
     
-    <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/images/avatar.jpg"
-        alt="Rodolfo Tavares" /></a>
-    <span class="app-header-title">Rodolfo Tavares</span>
-    <p class="app-header-subtitle">
-      
-      <span class="alias">incogbyte</span>
-      
-       | <span class="alias">rodtvs</span>
-      
-    </p>
-    <nav class="app-header-menu">
-      <a class="app-header-menu-item" href="/">Home</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/tags/">Tags</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/about/">About</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/cve/">CVEs</a>
-    </nav>
-    <p>Offensive Security | Mobile Hacking | Reverse Engineering</p>
-    <div class="app-header-social">
-      
-      <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
-  <title>Github</title>
-  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-</svg>
-      </a>
-      
-      <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
-  <title>x</title>
-  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-</svg>
-      </a>
-      
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
-  <title>linkedin</title>
-  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
-</svg>
-      </a>
-      
-      <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
-  <title>keybase</title>
-  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-</svg>
-      </a>
-      
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
-  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-</svg>
-      </a>
-      
+<article class="post-single">
+  <header class="post-header fade-in">
+    <h1 class="post-single-title">Bypass MTLS Flutter</h1>
+    
+    <div class="post-single-meta">
+      <time>April 18, 2024</time>
+      <span class="reading-time">7 min read</span>
     </div>
-  </header>
-  <main class="app-container">
     
-  <article class="post">
-    <header class="post-header">
-      <h1 class ="post-title">Bypass MTLS Flutter</h1>
-      <div class="post-meta">
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-          Apr 18, 2024
-        </div>
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-          7 min read
-        </div>
-      </div>
-    </header>
-    <div class="post-content">
-      <h4 id="overview">Overview</h4>
+    
+  </header>
+
+  <div class="post-content fade-in">
+    <h4 id="overview">Overview</h4>
 <p>In this blog post, we&rsquo;ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\<em>(ツ)</em>/¯  ) from developers. Before we continue.. into the specifics, it&rsquo;s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.</p>
 <p>Our journey will begin with an exploration of Flutter&rsquo;s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.</p>
 <h4 id="mtls--mutual-tls-">MTLS ( Mutual TLS )</h4>
@@ -155,18 +79,18 @@ Our journey will begin with an exploration of Flutter’s network layer, focusin
 <p>In this pattern, private keys and certificates are loaded from environment variables, which is considered a secure practice as it avoids hardcoding sensitive information directly in the application’s source code. Here&rsquo;s an example:</p>
 </li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dart" data-lang="dart"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SecurityConfiguration</span> {
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">String</span> privateKeyBase64 <span style="color:#f92672">=</span> <span style="color:#66d9ef">String</span>.fromEnvironment(<span style="color:#e6db74">&#39;PRIVATE_KEY_BASE64&#39;</span>);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">String</span> certificateBase64 <span style="color:#f92672">=</span> <span style="color:#66d9ef">String</span>.fromEnvironment(<span style="color:#e6db74">&#39;CERTIFICATE_BASE64&#39;</span>);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dart" data-lang="dart"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">class</span> <span style="color:#50fa7b">SecurityConfiguration</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#8be9fd;font-style:italic">const</span> <span style="color:#8be9fd">String</span> privateKeyBase64 <span style="color:#ff79c6">=</span> <span style="color:#8be9fd">String</span>.fromEnvironment(<span style="color:#f1fa8c">&#39;PRIVATE_KEY_BASE64&#39;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#8be9fd;font-style:italic">const</span> <span style="color:#8be9fd">String</span> certificateBase64 <span style="color:#ff79c6">=</span> <span style="color:#8be9fd">String</span>.fromEnvironment(<span style="color:#f1fa8c">&#39;CERTIFICATE_BASE64&#39;</span>);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> Uint8List <span style="color:#66d9ef">get</span> privateKeyBytes <span style="color:#f92672">=&gt;</span> base64.decode(privateKeyBase64);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> Uint8List <span style="color:#66d9ef">get</span> certificateChainBytes <span style="color:#f92672">=&gt;</span> base64.decode(certificateBase64);
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">static</span> Uint8List <span style="color:#8be9fd;font-style:italic">get</span> privateKeyBytes <span style="color:#ff79c6">=&gt;</span> base64.decode(privateKeyBase64);
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">static</span> Uint8List <span style="color:#8be9fd;font-style:italic">get</span> certificateChainBytes <span style="color:#ff79c6">=&gt;</span> base64.decode(certificateBase64);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> Future<span style="color:#f92672">&lt;</span>SecurityContext<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">get</span> globalContext <span style="color:#66d9ef">async</span> {
-</span></span><span style="display:flex;"><span>    SecurityContext sc <span style="color:#f92672">=</span> SecurityContext(withTrustedRoots: <span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">static</span> Future<span style="color:#ff79c6">&lt;</span>SecurityContext<span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd;font-style:italic">get</span> globalContext <span style="color:#8be9fd;font-style:italic">async</span> {
+</span></span><span style="display:flex;"><span>    SecurityContext sc <span style="color:#ff79c6">=</span> SecurityContext(<span style="color:#8be9fd;font-style:italic">withTrustedRoots:</span> <span style="color:#ff79c6">false</span>);
 </span></span><span style="display:flex;"><span>    sc.usePrivateKeyBytes(privateKeyBytes);
 </span></span><span style="display:flex;"><span>    sc.useCertificateChainBytes(certificateChainBytes);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> sc;
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> sc;
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>This code snippet demonstrates how to decode private keys and certificates stored in environment variables using base64 encoding, then use these for configuring the <code>SecurityContext</code> in Flutter. The <code>withTrustedRoots: false</code> parameter ensures that the default trusted root certificates are not automatically used, which is crucial for custom security configurations.</p>
@@ -176,19 +100,19 @@ Our journey will begin with an exploration of Flutter’s network layer, focusin
 <p>Another common approach involves storing the certificate and key as files in the application&rsquo;s assets folder. This method is straightforward and often used in developmental stages:</p>
 </li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dart" data-lang="dart"><span style="display:flex;"><span>Future<span style="color:#f92672">&lt;</span>SecurityContext<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">get</span> globalContext <span style="color:#66d9ef">async</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> keyBytes <span style="color:#f92672">=</span>
-</span></span><span style="display:flex;"><span>        (<span style="color:#66d9ef">await</span> rootBundle.load(<span style="color:#e6db74">&#39;assets/resources/key.key&#39;</span>))
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dart" data-lang="dart"><span style="display:flex;"><span>Future<span style="color:#ff79c6">&lt;</span>SecurityContext<span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd;font-style:italic">get</span> globalContext <span style="color:#8be9fd;font-style:italic">async</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">final</span> List<span style="color:#ff79c6">&lt;</span><span style="color:#8be9fd">int</span><span style="color:#ff79c6">&gt;</span> keyBytes <span style="color:#ff79c6">=</span>
+</span></span><span style="display:flex;"><span>        (<span style="color:#8be9fd;font-style:italic">await</span> rootBundle.load(<span style="color:#f1fa8c">&#39;assets/resources/key.key&#39;</span>))
 </span></span><span style="display:flex;"><span>        .buffer
 </span></span><span style="display:flex;"><span>        .asInt8List();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> certificateChainBytes <span style="color:#f92672">=</span>
-</span></span><span style="display:flex;"><span>        (<span style="color:#66d9ef">await</span> rootBundle.load(<span style="color:#e6db74">&#39;assets/resources/key_crt.crt&#39;</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">final</span> List<span style="color:#ff79c6">&lt;</span><span style="color:#8be9fd">int</span><span style="color:#ff79c6">&gt;</span> certificateChainBytes <span style="color:#ff79c6">=</span>
+</span></span><span style="display:flex;"><span>        (<span style="color:#8be9fd;font-style:italic">await</span> rootBundle.load(<span style="color:#f1fa8c">&#39;assets/resources/key_crt.crt&#39;</span>))
 </span></span><span style="display:flex;"><span>        .buffer
 </span></span><span style="display:flex;"><span>        .asInt8List();
-</span></span><span style="display:flex;"><span>    SecurityContext sc <span style="color:#f92672">=</span> SecurityContext(withTrustedRoots: <span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>    SecurityContext sc <span style="color:#ff79c6">=</span> SecurityContext(<span style="color:#8be9fd;font-style:italic">withTrustedRoots:</span> <span style="color:#ff79c6">false</span>);
 </span></span><span style="display:flex;"><span>    sc.usePrivateKeyBytes(keyBytes);
 </span></span><span style="display:flex;"><span>    sc.useCertificateChainBytes(certificateChainBytes);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> sc;
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> sc;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>In this example, the <code>rootBundle.load</code> method is used to load the key and certificate files from the assets directory, converting them into byte arrays. These byte arrays are then utilized to set up the <code>SecurityContext</code>. Similar to the previous example, <code>withTrustedRoots: false</code> is used to prevent the inclusion of default certificates, providing a clear pathway for using only the specified client certificates and keys.</p>
 <p>The provided code examples illustrate two primary methods for configuring the <code>SecurityContext</code> in Flutter applications to use custom client certificates and private keys for mTLS. Both methods aim to enhance security by either isolating sensitive data (like in the environment variables method) or simplifying the development process (like in the static files method). In both cases, the <code>SecurityContext</code> setup involves specifying that only the explicitly provided certificates and keys are to be used, without relying on any pre-existing or default security configurations. This setup is essential in scenarios where mTLS is used, as it requires precise control over both client and server-side certificate validations.</p>
@@ -214,7 +138,7 @@ Our journey will begin with an exploration of Flutter’s network layer, focusin
 <p><img src="/images/flutter_07.png" alt=""></p>
 <p>If that still doesn&rsquo;t work, it&rsquo;s possible another layer of protection is in place (mTLS :p ). Suppose the developer has used static files for certificate and key storage, as one method we discussed. In that case, you can easily access the <code>.CA</code> file and <code>.key</code> in the assets folder. You can then use these files to generate a <code>.p12</code> file with the following command, which can be imported into Burp Suite to attempt the request again:</p>
 <p><img src="/images/flutter_08.png" alt=""></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Choose any password</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#6272a4"># Choose any password</span>
 </span></span><span style="display:flex;"><span>openssl pkcs12 -export -out certmtls.p12 -inkey private.key -in certificate.crt
 </span></span><span style="display:flex;"><span>Enter Export Password:
 </span></span><span style="display:flex;"><span>Verifying - Enter Export Password:
@@ -254,13 +178,42 @@ Our journey will begin with an exploration of Flutter’s network layer, focusin
 <li><a href="https://rada.re/">https://rada.re/</a></li>
 </ol>
 
-    </div>
-    <div class="post-footer">
+  </div>
+
+  <footer class="post-footer fade-in">
+    <div class="post-nav">
+      
+      <a href="http://localhost:1314/posts/decryptwhatsappmsgandroid/" class="post-nav-link prev">
+        <span>← Previous</span>
+        <span class="post-nav-title">Decrypt WhatsApp Msgs Android (Investigator)</span>
+      </a>
+      
+      
+      <a href="http://localhost:1314/posts/2024-07-10-nasa-pathtraversal-xss-tricks/" class="post-nav-link next">
+        <span>Next →</span>
+        <span class="post-nav-title">Nasa Path Traversal and XSS (waf bypass)</span>
+      </a>
       
     </div>
-  </article>
+  </footer>
+</article>
 
   </main>
-</body>
 
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
+      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
+  </div>
+</footer>
+
+
+  <script src="/js/matrix.js"></script>
+  <script src="/js/main.js"></script>
+</body>
 </html>

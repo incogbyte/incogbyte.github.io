@@ -1,141 +1,63 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-us">
-
-<head>
-  <title>Captain No Hook Mobile Hacking Labs // ls $HOME</title>
-  <link rel="shortcut icon" href="%20/favicon.ico" />
-  <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.142.0">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="Rodolfo Tavares" />
-  <meta name="description"
-    content="" />
-
-  
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1314&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Captain No Hook Mobile Hacking Labs | incogbyte</title>
+  <meta name="description" content="Offensive Security | Mobile Hacking | Reverse Engineering">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"
-    rel="stylesheet">
-
-  <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
-
-  
-  <link rel="stylesheet" href="/css/custom.min.d6deeb83eff354eeff1d492556314c2f87fea3a001739934a8e7caa4e9c53a0c.css" />
-
-  
-
-  
-  
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Captain No Hook Mobile Hacking Labs">
-  <meta name="twitter:description" content="Introduction The Captain No Hooks lab provides an in-depth exploration of iOS RASP (Runtime Application Self-Protection) defenses. This comprehensive guide focuses on how we can bypass these security mechanisms.
-The lab description:
-Welcome to the iOS Application Security Lab: Captain No Hook Anti-Debugging Challenge. This challenge focuses on a fictitious app called Captain No Hook, which implements advanced anti-debugging and jailbreak detection techniques. Your objective is to bypass these protections and retrieve the hidden flag within the app.">
-
-  <meta property="og:url" content="https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/">
-  <meta property="og:site_name" content="ls $HOME">
-  <meta property="og:title" content="Captain No Hook Mobile Hacking Labs">
-  <meta property="og:description" content="Introduction The Captain No Hooks lab provides an in-depth exploration of iOS RASP (Runtime Application Self-Protection) defenses. This comprehensive guide focuses on how we can bypass these security mechanisms.
-The lab description:
-Welcome to the iOS Application Security Lab: Captain No Hook Anti-Debugging Challenge. This challenge focuses on a fictitious app called Captain No Hook, which implements advanced anti-debugging and jailbreak detection techniques. Your objective is to bypass these protections and retrieve the hidden flag within the app.">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2025-05-31T19:35:40-03:00">
-    <meta property="article:modified_time" content="2025-05-31T19:35:40-03:00">
-
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
-
 <body>
-  <header class="app-header">
+  <canvas id="matrix-bg"></canvas>
+  <div class="scanline"></div>
+
+  <header class="site-header">
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <span class="logo-bracket">[</span>
+      <span class="logo-text">incogbyte</span>
+      <span class="logo-bracket">]</span>
+      <span class="cursor">_</span>
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links">
+      
+      <li><a href="/" class="nav-link">Home</a></li>
+      
+      <li><a href="/posts/" class="nav-link">Posts</a></li>
+      
+      <li><a href="/cve/" class="nav-link">CVEs</a></li>
+      
+      <li><a href="/about/" class="nav-link">About</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+
+  <main class="container">
     
-    <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/images/avatar.jpg"
-        alt="Rodolfo Tavares" /></a>
-    <span class="app-header-title">Rodolfo Tavares</span>
-    <p class="app-header-subtitle">
-      
-      <span class="alias">incogbyte</span>
-      
-       | <span class="alias">rodtvs</span>
-      
-    </p>
-    <nav class="app-header-menu">
-      <a class="app-header-menu-item" href="/">Home</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/tags/">Tags</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/about/">About</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/cve/">CVEs</a>
-    </nav>
-    <p>Offensive Security | Mobile Hacking | Reverse Engineering</p>
-    <div class="app-header-social">
-      
-      <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
-  <title>Github</title>
-  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-</svg>
-      </a>
-      
-      <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
-  <title>x</title>
-  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-</svg>
-      </a>
-      
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
-  <title>linkedin</title>
-  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
-</svg>
-      </a>
-      
-      <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
-  <title>keybase</title>
-  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-</svg>
-      </a>
-      
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
-  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-</svg>
-      </a>
-      
+<article class="post-single">
+  <header class="post-header fade-in">
+    <h1 class="post-single-title">Captain No Hook Mobile Hacking Labs</h1>
+    
+    <div class="post-single-meta">
+      <time>May 31, 2025</time>
+      <span class="reading-time">26 min read</span>
     </div>
-  </header>
-  <main class="app-container">
     
-  <article class="post">
-    <header class="post-header">
-      <h1 class ="post-title">Captain No Hook Mobile Hacking Labs</h1>
-      <div class="post-meta">
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-          May 31, 2025
-        </div>
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-          25 min read
-        </div>
-      </div>
-    </header>
-    <div class="post-content">
-      <h3 id="introduction">Introduction</h3>
+    
+  </header>
+
+  <div class="post-content fade-in">
+    <h3 id="introduction">Introduction</h3>
 <p>The Captain No Hooks lab provides an in-depth exploration of iOS RASP (Runtime Application Self-Protection) defenses. This comprehensive guide focuses on how we can bypass these security mechanisms.</p>
 <p>The lab description:</p>
 <blockquote>
@@ -145,68 +67,68 @@ Welcome to the iOS Application Security Lab: Captain No Hook Anti-Debugging Chal
 <p>First, we need to download the IPA from <a href="https://www.mobilehackinglab.com/path-player?courseid=lab-captain-nohook">https://www.mobilehackinglab.com/path-player?courseid=lab-captain-nohook</a></p>
 <p>The next step is to analyze the binary and the metadata in the <strong>plist.file</strong></p>
 <p>We can use the following script to automate the process:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check if an IPA file was provided</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;Usage: </span>$0<span style="color:#e6db74"> &lt;path_to_ipa_file&gt;&#34;</span>
-</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ff79c6">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#ff79c6"></span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Check if an IPA file was provided</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span> -z <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$1</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;Usage: </span><span style="color:#8be9fd;font-style:italic">$0</span><span style="color:#f1fa8c"> &lt;path_to_ipa_file&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">exit</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fi</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>IPA_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">IPA_FILE</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$1</span><span style="color:#f1fa8c">&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check if the IPA file exists</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span>$IPA_FILE<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;[@] Error: IPA file not found!&#34;</span>
-</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Check if the IPA file exists</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span> ! -f <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[@] Error: IPA file not found!&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">exit</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fi</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Get the app name from the IPA file</span>
-</span></span><span style="display:flex;"><span>APP_NAME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>basename <span style="color:#e6db74">&#34;</span>$IPA_FILE<span style="color:#e6db74">&#34;</span> .ipa<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>OUTPUT_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>dirname <span style="color:#e6db74">&#34;</span>$IPA_FILE<span style="color:#e6db74">&#34;</span> | xargs readlink -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Get the app name from the IPA file</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">APP_NAME</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">$(</span>basename <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> .ipa<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">OUTPUT_DIR</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">$(</span>dirname <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> | xargs readlink -f<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create output directory</span>
-</span></span><span style="display:flex;"><span>OUTPUT_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">/</span>$APP_NAME<span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Create output directory</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">OUTPUT_DIR</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/</span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Unzip the IPA contents</span>
-</span></span><span style="display:flex;"><span>UNZIP_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">/_extracted&#34;</span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[*] Extracting IPA contents...&#34;</span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span>$UNZIP_DIR<span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>unzip -q <span style="color:#e6db74">&#34;</span>$IPA_FILE<span style="color:#e6db74">&#34;</span> -d <span style="color:#e6db74">&#34;</span>$UNZIP_DIR<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Unzip the IPA contents</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">UNZIP_DIR</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/_extracted&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[*] Extracting IPA contents...&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$UNZIP_DIR</span><span style="color:#f1fa8c">&#34;</span>
+</span></span><span style="display:flex;"><span>unzip -q <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> -d <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$UNZIP_DIR</span><span style="color:#f1fa8c">&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Locate the .app directory</span>
-</span></span><span style="display:flex;"><span>APP_PATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find <span style="color:#e6db74">&#34;</span>$UNZIP_DIR<span style="color:#e6db74">&#34;</span> -name <span style="color:#e6db74">&#34;*.app&#34;</span> -type d<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Locate the .app directory</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">APP_PATH</span><span style="color:#ff79c6">=</span><span style="color:#ff79c6">$(</span>find <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$UNZIP_DIR</span><span style="color:#f1fa8c">&#34;</span> -name <span style="color:#f1fa8c">&#34;*.app&#34;</span> -type d<span style="color:#ff79c6">)</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$APP_PATH<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;[@] No .app found in </span>$UNZIP_DIR<span style="color:#e6db74">, exiting...&#34;</span>
-</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span> -z <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[@] No .app found in </span><span style="color:#8be9fd;font-style:italic">$UNZIP_DIR</span><span style="color:#f1fa8c">, exiting...&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">exit</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fi</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>BINARY<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$APP_PATH<span style="color:#e6db74">/</span><span style="color:#66d9ef">$(</span>basename <span style="color:#e6db74">&#34;</span>$APP_PATH<span style="color:#e6db74">&#34;</span> .app<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">BINARY</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">/</span><span style="color:#ff79c6">$(</span>basename <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">&#34;</span> .app<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check if the binary exists</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span>$BINARY<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-</span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;[@] No binary found in </span>$APP_PATH<span style="color:#e6db74">, exiting...&#34;</span>
-</span></span><span style="display:flex;"><span>  exit <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Check if the binary exists</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span> ! -f <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[@] No binary found in </span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">, exiting...&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">exit</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fi</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create directories for class dumps</span>
-</span></span><span style="display:flex;"><span>CLASS_DUMP_OUTPUT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">/class_dump&#34;</span>
-</span></span><span style="display:flex;"><span>SWIFT_DUMP_OUTPUT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$OUTPUT_DIR<span style="color:#e6db74">/swift_dump&#34;</span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span>$CLASS_DUMP_OUTPUT<span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span>$SWIFT_DUMP_OUTPUT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Create directories for class dumps</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">CLASS_DUMP_OUTPUT</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/class_dump&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">SWIFT_DUMP_OUTPUT</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/swift_dump&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$CLASS_DUMP_OUTPUT</span><span style="color:#f1fa8c">&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$SWIFT_DUMP_OUTPUT</span><span style="color:#f1fa8c">&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Dump Objective-C classes using class-dump</span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[*] Dumping Objective-C classes for </span>$APP_NAME<span style="color:#e6db74">...&#34;</span>
-</span></span><span style="display:flex;"><span>ipsw class-dump <span style="color:#e6db74">&#34;</span>$BINARY<span style="color:#e6db74">&#34;</span> --headers -o <span style="color:#e6db74">&#34;</span>$CLASS_DUMP_OUTPUT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Dump Objective-C classes using class-dump</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[*] Dumping Objective-C classes for </span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">...&#34;</span>
+</span></span><span style="display:flex;"><span>ipsw class-dump <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> --headers -o <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$CLASS_DUMP_OUTPUT</span><span style="color:#f1fa8c">&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Dump Swift classes using swift-dump</span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[*] Dumping Swift classes for </span>$APP_NAME<span style="color:#e6db74">...&#34;</span>
-</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#e6db74">&#34;</span>$BINARY<span style="color:#e6db74">&#34;</span> &gt; <span style="color:#e6db74">&#34;</span>$SWIFT_DUMP_OUTPUT<span style="color:#e6db74">/</span>$APP_NAME<span style="color:#e6db74">-mangled.txt&#34;</span>
-</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#e6db74">&#34;</span>$BINARY<span style="color:#e6db74">&#34;</span> --demangle &gt; <span style="color:#e6db74">&#34;</span>$SWIFT_DUMP_OUTPUT<span style="color:#e6db74">/</span>$APP_NAME<span style="color:#e6db74">-demangled.txt&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Dump Swift classes using swift-dump</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[*] Dumping Swift classes for </span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">...&#34;</span>
+</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> &gt; <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$SWIFT_DUMP_OUTPUT</span><span style="color:#f1fa8c">/</span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">-mangled.txt&#34;</span>
+</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> --demangle &gt; <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$SWIFT_DUMP_OUTPUT</span><span style="color:#f1fa8c">/</span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">-demangled.txt&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[+] Decompilation completed for </span>$APP_NAME<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[+] Decompilation completed for </span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">&#34;</span>
 </span></span></code></pre></div><p>In the info.plist, we didn&rsquo;t find anything particularly interesting:</p>
 <pre tabindex="0"><code>{
   &#34;BuildMachineOSBuild&#34;: &#34;23G93&#34;,
@@ -306,505 +228,505 @@ $s14Captain_Nohook30ReverseEngineeringToolsCheckerCMa()
 $s14Captain_Nohook30ReverseEngineeringToolsCheckerC20amIReverseEngineeredSbyFZ()
 $s14Captain_Nohook11FailedCheckOMa()
 </code></pre><h3 id="tldr-final-script">TL;DR Final Script</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Global error handler for ObjC decode errors
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">Process</span>.<span style="color:#a6e22e">setExceptionHandler</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">details</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Exception caught:&#39;</span>, <span style="color:#a6e22e">details</span>.<span style="color:#a6e22e">message</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Stack trace:&#39;</span>, <span style="color:#a6e22e">details</span>.<span style="color:#a6e22e">backtrace</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>; <span style="color:#75715e">// Continue execution
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>});
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#6272a4">// Global error handler for ObjC decode errors
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>Process.setExceptionHandler(<span style="color:#8be9fd;font-style:italic">function</span>(details) {
+</span></span><span style="display:flex;"><span>    console.log(<span style="color:#f1fa8c">&#39;[!] Exception caught:&#39;</span>, details.message);
+</span></span><span style="display:flex;"><span>    console.log(<span style="color:#f1fa8c">&#39;[!] Stack trace:&#39;</span>, details.backtrace);
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">true</span>; <span style="color:#6272a4">// Continue execution
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>});
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">SUSPICIOUS_PORTS</span>      <span style="color:#f92672">=</span> [<span style="color:#ae81ff">27042</span>, <span style="color:#ae81ff">27043</span>, <span style="color:#ae81ff">4444</span>, <span style="color:#ae81ff">22</span>, <span style="color:#ae81ff">44</span>];
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">SUSPICIOUS_LIBS</span>       <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;frida&#39;</span>, <span style="color:#e6db74">&#39;FridaGadget&#39;</span>, <span style="color:#e6db74">&#39;libcycript&#39;</span>, <span style="color:#e6db74">&#39;cynject&#39;</span>];
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">SUSPICIOUS_FILE_PATHS</span> <span style="color:#f92672">=</span> [
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;/usr/sbin/frida-server&#39;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;/usr/bin/frida-server&#39;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;/data/local/tmp/frida-server&#39;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;/data/local/tmp/cycript&#39;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;/usr/lib/libcycript.dylib&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> SUSPICIOUS_PORTS      <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">27042</span>, <span style="color:#bd93f9">27043</span>, <span style="color:#bd93f9">4444</span>, <span style="color:#bd93f9">22</span>, <span style="color:#bd93f9">44</span>];
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> SUSPICIOUS_LIBS       <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#39;frida&#39;</span>, <span style="color:#f1fa8c">&#39;FridaGadget&#39;</span>, <span style="color:#f1fa8c">&#39;libcycript&#39;</span>, <span style="color:#f1fa8c">&#39;cynject&#39;</span>];
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> SUSPICIOUS_FILE_PATHS <span style="color:#ff79c6">=</span> [
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#39;/usr/sbin/frida-server&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#39;/usr/bin/frida-server&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#39;/data/local/tmp/frida-server&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#39;/data/local/tmp/cycript&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#39;/usr/lib/libcycript.dylib&#39;</span>
 </span></span><span style="display:flex;"><span>];
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// Helper function to safely convert ObjC objects to strings
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">safeObjCToString</span>(<span style="color:#a6e22e">obj</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">obj</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">isNull</span>()) {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Helper function to safely convert ObjC objects to strings
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">function</span> safeObjCToString(obj) {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>obj <span style="color:#ff79c6">||</span> obj.isNull()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">null</span>;
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Try direct toString first
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">toString</span>();
-</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e1</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Try creating ObjC.Object wrapper
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">wrapper</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ObjC</span>.Object(<span style="color:#a6e22e">obj</span>);
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">wrapper</span>.<span style="color:#a6e22e">toString</span>();
-</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e2</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Try reading as raw memory
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">readUtf8String</span>(<span style="color:#a6e22e">obj</span>);
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e3</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Could not convert ObjC object to string:&#39;</span>, <span style="color:#a6e22e">e3</span>.<span style="color:#a6e22e">message</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#6272a4">// Try direct toString first
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        <span style="color:#ff79c6">return</span> obj.toString();
+</span></span><span style="display:flex;"><span>    } <span style="color:#ff79c6">catch</span> (e1) {
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#6272a4">// Try creating ObjC.Object wrapper
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>            <span style="color:#ff79c6">const</span> wrapper <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">new</span> ObjC.<span style="color:#8be9fd;font-style:italic">Object</span>(obj);
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">return</span> wrapper.toString();
+</span></span><span style="display:flex;"><span>        } <span style="color:#ff79c6">catch</span> (e2) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#6272a4">// Try reading as raw memory
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                <span style="color:#ff79c6">return</span> Memory.readUtf8String(obj);
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e3) {
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;[!] Could not convert ObjC object to string:&#39;</span>, e3.message);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">null</span>;
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// Helper function to read Swift strings
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">readSwiftString</span>(<span style="color:#a6e22e">ptr</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">ptr</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">ptr</span>.<span style="color:#a6e22e">isNull</span>()) {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Helper function to read Swift strings
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">function</span> readSwiftString(ptr) {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>ptr <span style="color:#ff79c6">||</span> ptr.isNull()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">null</span>;
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">firstWord</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ptr</span>.<span style="color:#a6e22e">readU64</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">const</span> firstWord <span style="color:#ff79c6">=</span> ptr.readU64();
 </span></span><span style="display:flex;"><span>        
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> ((<span style="color:#a6e22e">firstWord</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x8000000000000000</span>) <span style="color:#f92672">===</span> <span style="color:#ae81ff">0</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">buffer</span> <span style="color:#f92672">=</span> [];
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">15</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">byte</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ptr</span>.<span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">i</span>).<span style="color:#a6e22e">readU8</span>();
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">byte</span> <span style="color:#f92672">===</span> <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">break</span>;
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">buffer</span>.<span style="color:#a6e22e">push</span>(<span style="color:#66d9ef">byte</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> ((firstWord <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x8000000000000000</span>) <span style="color:#ff79c6">===</span> <span style="color:#bd93f9">0</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">let</span> buffer <span style="color:#ff79c6">=</span> [];
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd;font-style:italic">let</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">15</span>; i<span style="color:#ff79c6">++</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">const</span> <span style="color:#ff79c6">byte</span> <span style="color:#ff79c6">=</span> ptr.add(i).readU8();
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">byte</span> <span style="color:#ff79c6">===</span> <span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">break</span>;
+</span></span><span style="display:flex;"><span>                buffer.push(<span style="color:#ff79c6">byte</span>);
 </span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> String.<span style="color:#a6e22e">fromCharCode</span>.<span style="color:#a6e22e">apply</span>(<span style="color:#66d9ef">null</span>, <span style="color:#a6e22e">buffer</span>);
-</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">dataPtr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ptr</span>.<span style="color:#a6e22e">readPointer</span>();
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">length</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ptr</span>.<span style="color:#a6e22e">add</span>(<span style="color:#ae81ff">8</span>).<span style="color:#a6e22e">readU64</span>() <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x7FFFFFFFFFFFFFFF</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">String</span>.fromCharCode.apply(<span style="color:#ff79c6">null</span>, buffer);
+</span></span><span style="display:flex;"><span>        } <span style="color:#ff79c6">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">const</span> dataPtr <span style="color:#ff79c6">=</span> ptr.readPointer();
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">const</span> length <span style="color:#ff79c6">=</span> ptr.add(<span style="color:#bd93f9">8</span>).readU64() <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x7FFFFFFFFFFFFFFF</span>;
 </span></span><span style="display:flex;"><span>            
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000</span>) { <span style="color:#75715e">// Sanity check
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">readUtf8String</span>(<span style="color:#a6e22e">dataPtr</span>, <span style="color:#a6e22e">length</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (length <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">&amp;&amp;</span> length <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">1000</span>) { <span style="color:#6272a4">// Sanity check
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                <span style="color:#ff79c6">return</span> Memory.readUtf8String(dataPtr, length);
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Error reading Swift string:&#39;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>    } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>        console.log(<span style="color:#f1fa8c">&#39;[!] Error reading Swift string:&#39;</span>, e.message);
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Fallback: try reading as C string
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">readUtf8String</span>(<span style="color:#a6e22e">ptr</span>);
-</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// Fallback: try reading as C string
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> Memory.readUtf8String(ptr);
+</span></span><span style="display:flex;"><span>    } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">null</span>;
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">canOpenURL</span> <span style="color:#f92672">=</span> [
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;cydia&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;sileo&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;zbra&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;sileo-store&#34;</span>,
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> canOpenURL <span style="color:#ff79c6">=</span> [
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;cydia&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;sileo&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;zbra&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;sileo-store&#34;</span>,
 </span></span><span style="display:flex;"><span>]
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">bypassMainChecks</span>() {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">targets</span> <span style="color:#f92672">=</span> [
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;$s14Captain_Nohook22is_noncompliant_deviceSbyF&#39;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;$s14Captain_Nohook30ReverseEngineeringToolsCheckerC20amIReverseEngineeredSbyFZ&#39;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;$s14Captain_Nohook30ReverseEngineeringToolsCheckerC16checkOpenedPortsSSyF&#39;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;$s14Captain_Nohook30ReverseEngineeringToolsCheckerC6checkDYLDSSyF&#39;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;$s14Captain_Nohook30ReverseEngineeringToolsCheckerC32checkExistenceOfSuspiciousFilesSSyF&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">function</span> bypassMainChecks() {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">const</span> targets <span style="color:#ff79c6">=</span> [
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;$s14Captain_Nohook22is_noncompliant_deviceSbyF&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;$s14Captain_Nohook30ReverseEngineeringToolsCheckerC20amIReverseEngineeredSbyFZ&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;$s14Captain_Nohook30ReverseEngineeringToolsCheckerC16checkOpenedPortsSSyF&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;$s14Captain_Nohook30ReverseEngineeringToolsCheckerC6checkDYLDSSyF&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;$s14Captain_Nohook30ReverseEngineeringToolsCheckerC32checkExistenceOfSuspiciousFilesSSyF&#39;</span>
 </span></span><span style="display:flex;"><span>    ];
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">targets</span>.<span style="color:#a6e22e">forEach</span>(<span style="color:#a6e22e">sym</span> =&gt; {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ptr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#a6e22e">sym</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">ptr</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#a6e22e">ptr</span>,
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">NativeCallback</span>(() =&gt; (<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`[+] bypassed → </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">sym</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>), <span style="color:#ae81ff">0</span>),
-</span></span><span style="display:flex;"><span>                                   <span style="color:#e6db74">&#39;int&#39;</span>, []));
+</span></span><span style="display:flex;"><span>    targets.forEach(sym =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">const</span> ptr <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, sym);
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> (ptr)
+</span></span><span style="display:flex;"><span>            Interceptor.replace(ptr,
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">new</span> NativeCallback(() =&gt; (console.log(<span style="color:#f1fa8c">`[+] bypassed → </span><span style="color:#f1fa8c">${</span>sym<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">`</span>), <span style="color:#bd93f9">0</span>),
+</span></span><span style="display:flex;"><span>                                   <span style="color:#f1fa8c">&#39;int&#39;</span>, []));
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">bypassMainChecks</span>();
+</span></span><span style="display:flex;"><span>bypassMainChecks();
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">hookWhereIsFlag</span>() {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">sym</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">null</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;$s14Captain_Nohook14ViewControllerC11whereIsflagyySo8UIButtonCF&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">function</span> hookWhereIsFlag() {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">const</span> sym <span style="color:#ff79c6">=</span> Module.findExportByName(
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">null</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;$s14Captain_Nohook14ViewControllerC11whereIsflagyySo8UIButtonCF&#39;</span>
 </span></span><span style="display:flex;"><span>    );
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">sym</span>) <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>sym) <span style="color:#ff79c6">return</span>;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">sym</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span>() {
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Invoking whereIsflag() 🔥&#39;</span>);
+</span></span><span style="display:flex;"><span>    Interceptor.attach(sym, {
+</span></span><span style="display:flex;"><span>        onEnter() {
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;Invoking whereIsflag() 🔥&#39;</span>);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">chooseSync</span>(<span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">classes</span>.<span style="color:#a6e22e">UILabel</span>).<span style="color:#a6e22e">forEach</span>(<span style="color:#a6e22e">lbl</span> =&gt; {
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">text</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">lbl</span>.<span style="color:#a6e22e">text</span>();
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">textStr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">safeObjCToString</span>(<span style="color:#a6e22e">text</span>);
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">textStr</span>) {
-</span></span><span style="display:flex;"><span>                            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;   •&#39;</span>, <span style="color:#a6e22e">textStr</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                ObjC.chooseSync(ObjC.classes.UILabel).forEach(lbl =&gt; {
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">const</span> text <span style="color:#ff79c6">=</span> lbl.text();
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">const</span> textStr <span style="color:#ff79c6">=</span> safeObjCToString(text);
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">if</span> (textStr) {
+</span></span><span style="display:flex;"><span>                            console.log(<span style="color:#f1fa8c">&#39;   •&#39;</span>, textStr);
 </span></span><span style="display:flex;"><span>                        }
-</span></span><span style="display:flex;"><span>                    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">// Ignore individual label errors
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    }
+</span></span><span style="display:flex;"><span>                    } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#6272a4">// Ignore individual label errors
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                    }
 </span></span><span style="display:flex;"><span>                });
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Error in hookWhereIsFlag:&#39;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;[!] Error in hookWhereIsFlag:&#39;</span>, e.message);
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">hookWhereIsFlag</span>();
+</span></span><span style="display:flex;"><span>hookWhereIsFlag();
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getFlag</span>() {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">sym</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">null</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;$s14Captain_Nohook14ViewControllerC7getFlagSSyF&#39;</span> 
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">function</span> getFlag() {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">const</span> sym <span style="color:#ff79c6">=</span> Module.findExportByName(
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">null</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;$s14Captain_Nohook14ViewControllerC7getFlagSSyF&#39;</span> 
 </span></span><span style="display:flex;"><span>    );
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">sym</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[-] getFlag symbol not found&#39;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>sym) {
+</span></span><span style="display:flex;"><span>        console.log(<span style="color:#f1fa8c">&#39;[-] getFlag symbol not found&#39;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span>;
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">NSString</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">classes</span>.<span style="color:#a6e22e">NSString</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">const</span> NSString <span style="color:#ff79c6">=</span> ObjC.classes.NSString;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">sym</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span>() {
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[*] getFlag() called&#39;</span>);
+</span></span><span style="display:flex;"><span>    Interceptor.attach(sym, {
+</span></span><span style="display:flex;"><span>        onEnter() {
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;[*] getFlag() called&#39;</span>);
 </span></span><span style="display:flex;"><span>        },
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[*] getFlag() returning...&#39;</span>);
+</span></span><span style="display:flex;"><span>        onLeave(retval) {
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;[*] getFlag() returning...&#39;</span>);
 </span></span><span style="display:flex;"><span>            
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">flagStr</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#8be9fd;font-style:italic">let</span> flagStr <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span>;
 </span></span><span style="display:flex;"><span>                
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">isNull</span>()) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">flagStr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">readSwiftString</span>(<span style="color:#a6e22e">retval</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>retval.isNull()) {
+</span></span><span style="display:flex;"><span>                    flagStr <span style="color:#ff79c6">=</span> readSwiftString(retval);
 </span></span><span style="display:flex;"><span>                    
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">flagStr</span>) {
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">nsStr</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ObjC</span>.Object(<span style="color:#a6e22e">retval</span>);
-</span></span><span style="display:flex;"><span>                            <span style="color:#a6e22e">flagStr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nsStr</span>.<span style="color:#a6e22e">toString</span>();
-</span></span><span style="display:flex;"><span>                        } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Not an NSString:&#39;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>flagStr) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                            <span style="color:#ff79c6">const</span> nsStr <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">new</span> ObjC.<span style="color:#8be9fd;font-style:italic">Object</span>(retval);
+</span></span><span style="display:flex;"><span>                            flagStr <span style="color:#ff79c6">=</span> nsStr.toString();
+</span></span><span style="display:flex;"><span>                        } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                            console.log(<span style="color:#f1fa8c">&#39;[!] Not an NSString:&#39;</span>, e.message);
 </span></span><span style="display:flex;"><span>                        }
 </span></span><span style="display:flex;"><span>                    }
 </span></span><span style="display:flex;"><span>                    
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">flagStr</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">flagStr</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#39;FLAG{&#39;</span>)) {
-</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[+] Flag decrypted from return value 🙏&#39;</span>, <span style="color:#a6e22e">flagStr</span>);
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">if</span> (flagStr <span style="color:#ff79c6">&amp;&amp;</span> flagStr.includes(<span style="color:#f1fa8c">&#39;FLAG{&#39;</span>)) {
+</span></span><span style="display:flex;"><span>                        console.log(<span style="color:#f1fa8c">&#39;[+] Flag decrypted from return value 🙏&#39;</span>, flagStr);
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">return</span>;
 </span></span><span style="display:flex;"><span>                    }
 </span></span><span style="display:flex;"><span>                }
 </span></span><span style="display:flex;"><span>                
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[*]....&#39;</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">flagFound</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">labelCount</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;[*]....&#39;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#8be9fd;font-style:italic">let</span> flagFound <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#8be9fd;font-style:italic">let</span> labelCount <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
 </span></span><span style="display:flex;"><span>                
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">chooseSync</span>(<span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">classes</span>.<span style="color:#a6e22e">UILabel</span>).<span style="color:#a6e22e">forEach</span>(<span style="color:#a6e22e">label</span> =&gt; {
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">labelCount</span><span style="color:#f92672">++</span>;
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">text</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">label</span>.<span style="color:#a6e22e">text</span>();
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">text</span>) {
-</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">txt</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">text</span>.<span style="color:#a6e22e">toString</span>();
-</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">txt</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#39;FLAG{&#39;</span>)) {
-</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">flagFound</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">txt</span>;
-</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[+] Found flag in label:&#39;</span>, <span style="color:#a6e22e">txt</span>);
+</span></span><span style="display:flex;"><span>                ObjC.chooseSync(ObjC.classes.UILabel).forEach(label =&gt; {
+</span></span><span style="display:flex;"><span>                    labelCount<span style="color:#ff79c6">++</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">const</span> text <span style="color:#ff79c6">=</span> label.text();
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">if</span> (text) {
+</span></span><span style="display:flex;"><span>                            <span style="color:#ff79c6">const</span> txt <span style="color:#ff79c6">=</span> text.toString();
+</span></span><span style="display:flex;"><span>                            <span style="color:#ff79c6">if</span> (txt.includes(<span style="color:#f1fa8c">&#39;FLAG{&#39;</span>)) {
+</span></span><span style="display:flex;"><span>                                flagFound <span style="color:#ff79c6">=</span> txt;
+</span></span><span style="display:flex;"><span>                                console.log(<span style="color:#f1fa8c">&#39;[+] Found flag in label:&#39;</span>, txt);
 </span></span><span style="display:flex;"><span>                            }
 </span></span><span style="display:flex;"><span>                        }
-</span></span><span style="display:flex;"><span>                    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">// Ignore labels that can&#39;t be read
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    }
+</span></span><span style="display:flex;"><span>                    } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#6272a4">// Ignore labels that can&#39;t be read
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                    }
 </span></span><span style="display:flex;"><span>                });
 </span></span><span style="display:flex;"><span>                
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`[*] Checked </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">labelCount</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> labels`</span>);
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">`[*] Checked </span><span style="color:#f1fa8c">${</span>labelCount<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> labels`</span>);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">flagFound</span>) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[+] Flag captured from UI 🤩&#39;</span>, <span style="color:#a6e22e">flagFound</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> (flagFound) {
+</span></span><span style="display:flex;"><span>                    console.log(<span style="color:#f1fa8c">&#39;[+] Flag captured from UI 🤩&#39;</span>, flagFound);
 </span></span><span style="display:flex;"><span>                    
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">newRetval</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">NSString</span>.<span style="color:#a6e22e">stringWithString_</span>(<span style="color:#a6e22e">flagFound</span>);
-</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">// For Swift strings, we might need to return the underlying pointer
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">swiftStringPtr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">newRetval</span>.<span style="color:#a6e22e">handle</span>;
-</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#a6e22e">swiftStringPtr</span>);
-</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[+] Replaced return value with flag&#39;</span>);
-</span></span><span style="display:flex;"><span>                    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Could not replace return value:&#39;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">const</span> newRetval <span style="color:#ff79c6">=</span> NSString.stringWithString_(flagFound);
+</span></span><span style="display:flex;"><span>                        <span style="color:#6272a4">// For Swift strings, we might need to return the underlying pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                        <span style="color:#ff79c6">const</span> swiftStringPtr <span style="color:#ff79c6">=</span> newRetval.handle;
+</span></span><span style="display:flex;"><span>                        retval.replace(swiftStringPtr);
+</span></span><span style="display:flex;"><span>                        console.log(<span style="color:#f1fa8c">&#39;[+] Replaced return value with flag&#39;</span>);
+</span></span><span style="display:flex;"><span>                    } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                        console.log(<span style="color:#f1fa8c">&#39;[!] Could not replace return value:&#39;</span>, e.message);
 </span></span><span style="display:flex;"><span>                        
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">isNull</span>()) {
-</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">writeUtf8String</span>(<span style="color:#a6e22e">retval</span>, <span style="color:#a6e22e">flagFound</span>);
-</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[+] Written flag to return value memory&#39;</span>);
-</span></span><span style="display:flex;"><span>                            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e2</span>) {
-</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Could not write to memory:&#39;</span>, <span style="color:#a6e22e">e2</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>retval.isNull()) {
+</span></span><span style="display:flex;"><span>                            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                                Memory.writeUtf8String(retval, flagFound);
+</span></span><span style="display:flex;"><span>                                console.log(<span style="color:#f1fa8c">&#39;[+] Written flag to return value memory&#39;</span>);
+</span></span><span style="display:flex;"><span>                            } <span style="color:#ff79c6">catch</span> (e2) {
+</span></span><span style="display:flex;"><span>                                console.log(<span style="color:#f1fa8c">&#39;[!] Could not write to memory:&#39;</span>, e2.message);
 </span></span><span style="display:flex;"><span>                            }
 </span></span><span style="display:flex;"><span>                        }
 </span></span><span style="display:flex;"><span>                    }
-</span></span><span style="display:flex;"><span>                } <span style="color:#66d9ef">else</span> {
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[-] Flag not found in UI labels 🤔&#39;</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#ff79c6">else</span> {
+</span></span><span style="display:flex;"><span>                    console.log(<span style="color:#f1fa8c">&#39;[-] Flag not found in UI labels 🤔&#39;</span>);
 </span></span><span style="display:flex;"><span>                    
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[*] Setting up setText: hook to catch flag...&#39;</span>);
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">setTextImpl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">classes</span>.<span style="color:#a6e22e">UILabel</span>[<span style="color:#e6db74">&#39;- setText:&#39;</span>].<span style="color:#a6e22e">implementation</span>;
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">setTextImpl</span>, {
-</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">onEnter</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">text</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ObjC</span>.Object(<span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">2</span>]);
-</span></span><span style="display:flex;"><span>                                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">str</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">text</span>.<span style="color:#a6e22e">toString</span>();
-</span></span><span style="display:flex;"><span>                                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">str</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#39;FLAG{&#39;</span>)) {
-</span></span><span style="display:flex;"><span>                                    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[+] FLAG FOUND via setText:&#39;</span>, <span style="color:#a6e22e">str</span>);
+</span></span><span style="display:flex;"><span>                    console.log(<span style="color:#f1fa8c">&#39;[*] Setting up setText: hook to catch flag...&#39;</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">const</span> setTextImpl <span style="color:#ff79c6">=</span> ObjC.classes.UILabel[<span style="color:#f1fa8c">&#39;- setText:&#39;</span>].implementation;
+</span></span><span style="display:flex;"><span>                    Interceptor.attach(setTextImpl, {
+</span></span><span style="display:flex;"><span>                        onEnter(args) {
+</span></span><span style="display:flex;"><span>                            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                                <span style="color:#ff79c6">const</span> text <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">new</span> ObjC.<span style="color:#8be9fd;font-style:italic">Object</span>(args[<span style="color:#bd93f9">2</span>]);
+</span></span><span style="display:flex;"><span>                                <span style="color:#ff79c6">const</span> str <span style="color:#ff79c6">=</span> text.toString();
+</span></span><span style="display:flex;"><span>                                <span style="color:#ff79c6">if</span> (str.includes(<span style="color:#f1fa8c">&#39;FLAG{&#39;</span>)) {
+</span></span><span style="display:flex;"><span>                                    console.log(<span style="color:#f1fa8c">&#39;[+] FLAG FOUND via setText:&#39;</span>, str);
 </span></span><span style="display:flex;"><span>                                }
-</span></span><span style="display:flex;"><span>                            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                                <span style="color:#75715e">// Ignore
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            }
+</span></span><span style="display:flex;"><span>                            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                                <span style="color:#6272a4">// Ignore
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                            }
 </span></span><span style="display:flex;"><span>                        }
 </span></span><span style="display:flex;"><span>                    });
 </span></span><span style="display:flex;"><span>                }
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Error in getFlag onLeave:&#39;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">message</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Stack trace:&#39;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">stack</span>);
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;[!] Error in getFlag onLeave:&#39;</span>, e.message);
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;[!] Stack trace:&#39;</span>, e.stack);
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">getFlag</span>();
+</span></span><span style="display:flex;"><span>getFlag();
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">VERBOSE</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> VERBOSE <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span>;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">msg</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">VERBOSE</span>) <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[Bypass] &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">msg</span>);
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">function</span> log(msg) {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> (VERBOSE) console.log(<span style="color:#f1fa8c">&#39;[Bypass] &#39;</span> <span style="color:#ff79c6">+</span> msg);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">getImageName</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#39;__dyld_get_image_name&#39;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">getImageName</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">getImageName</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">isNull</span>()) <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> getImageName <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#39;__dyld_get_image_name&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (getImageName) {
+</span></span><span style="display:flex;"><span>    Interceptor.attach(getImageName, {
+</span></span><span style="display:flex;"><span>        onLeave(retval) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (retval.isNull()) <span style="color:#ff79c6">return</span>;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">name</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">readCString</span>(<span style="color:#a6e22e">retval</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">name</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">SUSPICIOUS_LIBS</span>.<span style="color:#a6e22e">some</span>(<span style="color:#a6e22e">s</span> =&gt; <span style="color:#a6e22e">name</span>.<span style="color:#a6e22e">toLowerCase</span>().<span style="color:#a6e22e">includes</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">toLowerCase</span>()))) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`Hiding dylib &#34;</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">name</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;`</span>);
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#a6e22e">ptr</span>(<span style="color:#ae81ff">0</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">const</span> name <span style="color:#ff79c6">=</span> Memory.readCString(retval);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> (name <span style="color:#ff79c6">&amp;&amp;</span> SUSPICIOUS_LIBS.some(s =&gt; name.toLowerCase().includes(s.toLowerCase()))) {
+</span></span><span style="display:flex;"><span>                    log(<span style="color:#f1fa8c">`Hiding dylib &#34;</span><span style="color:#f1fa8c">${</span>name<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;`</span>);
+</span></span><span style="display:flex;"><span>                    retval.replace(ptr(<span style="color:#bd93f9">0</span>));
 </span></span><span style="display:flex;"><span>                }
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Ignore memory read errors
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            }
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                <span style="color:#6272a4">// Ignore memory read errors
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">getImageCount</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#39;__dyld_image_count&#39;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">getImageCount</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">hidden</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">getImageName</span>, {  <span style="color:#75715e">// piggy-back to increment
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">onLeave</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">isNull</span>()) {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">name</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">readCString</span>(<span style="color:#a6e22e">retval</span>);
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">name</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">SUSPICIOUS_LIBS</span>.<span style="color:#a6e22e">some</span>(<span style="color:#a6e22e">s</span> =&gt; <span style="color:#a6e22e">name</span>.<span style="color:#a6e22e">toLowerCase</span>().<span style="color:#a6e22e">includes</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">toLowerCase</span>()))) {
-</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">hidden</span><span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> getImageCount <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#39;__dyld_image_count&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (getImageCount) {
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">let</span> hidden <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+</span></span><span style="display:flex;"><span>    Interceptor.attach(getImageName, {  <span style="color:#6272a4">// piggy-back to increment
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        onLeave(retval) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>retval.isNull()) {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">const</span> name <span style="color:#ff79c6">=</span> Memory.readCString(retval);
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">if</span> (name <span style="color:#ff79c6">&amp;&amp;</span> SUSPICIOUS_LIBS.some(s =&gt; name.toLowerCase().includes(s.toLowerCase()))) {
+</span></span><span style="display:flex;"><span>                        hidden<span style="color:#ff79c6">++</span>;
 </span></span><span style="display:flex;"><span>                    }
-</span></span><span style="display:flex;"><span>                } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// Ignore memory read errors
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                }
+</span></span><span style="display:flex;"><span>                } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#6272a4">// Ignore memory read errors
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                }
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">getImageCount</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">hidden</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">real</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">toInt32</span>();
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#a6e22e">ptr</span>(<span style="color:#a6e22e">real</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">hidden</span>));
+</span></span><span style="display:flex;"><span>    Interceptor.attach(getImageCount, {
+</span></span><span style="display:flex;"><span>        onLeave(retval) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (hidden <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">const</span> real <span style="color:#ff79c6">=</span> retval.toInt32();
+</span></span><span style="display:flex;"><span>                retval.replace(ptr(real <span style="color:#ff79c6">-</span> hidden));
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">toHostOrder</span>(<span style="color:#a6e22e">net16</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ((<span style="color:#a6e22e">net16</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xff</span>) <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">8</span>) <span style="color:#f92672">|</span> ((<span style="color:#a6e22e">net16</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xff00</span>) <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">8</span>);
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">function</span> toHostOrder(net16) {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> ((net16 <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xff</span>) <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">|</span> ((net16 <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xff00</span>) <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">8</span>);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">/* getaddrinfo(): replace suspicious port strings                       */</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">gai</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#39;getaddrinfo&#39;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">gai</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">gai</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">portStr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">readCString</span>(<span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>]);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">portStr</span>) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">port</span> <span style="color:#f92672">=</span> parseInt(<span style="color:#a6e22e">portStr</span>);
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">SUSPICIOUS_PORTS</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#a6e22e">port</span>)) {
-</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`Redirecting getaddrinfo(</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">port</span><span style="color:#e6db74">}</span><span style="color:#e6db74">) -&gt; 80`</span>);
-</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">allocUtf8String</span>(<span style="color:#e6db74">&#39;80&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">/* getaddrinfo(): replace suspicious port strings                       */</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> gai <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#39;getaddrinfo&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (gai) {
+</span></span><span style="display:flex;"><span>    Interceptor.attach(gai, {
+</span></span><span style="display:flex;"><span>        onEnter(args) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">const</span> portStr <span style="color:#ff79c6">=</span> Memory.readCString(args[<span style="color:#bd93f9">1</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> (portStr) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">const</span> port <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">parseInt</span>(portStr);
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">if</span> (SUSPICIOUS_PORTS.includes(port)) {
+</span></span><span style="display:flex;"><span>                        log(<span style="color:#f1fa8c">`Redirecting getaddrinfo(</span><span style="color:#f1fa8c">${</span>port<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">) -&gt; 80`</span>);
+</span></span><span style="display:flex;"><span>                        args[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">=</span> Memory.allocUtf8String(<span style="color:#f1fa8c">&#39;80&#39;</span>);
 </span></span><span style="display:flex;"><span>                    }
 </span></span><span style="display:flex;"><span>                }
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Ignore memory read errors
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            }
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                <span style="color:#6272a4">// Ignore memory read errors
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">connectPtr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#39;connect&#39;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">connectPtr</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">errnoPtrFunc</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">NativeFunction</span>(<span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#39;__error&#39;</span>),
-</span></span><span style="display:flex;"><span>                                            <span style="color:#e6db74">&#39;pointer&#39;</span>, []);
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">connectPtr</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#75715e">/* sockaddr_in starts with sin_len (1B) sin_family (1B) port(big-endian) */</span>
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">sa</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>];
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">netPort</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">readU16</span>(<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">sa</span>.<span style="color:#a6e22e">add</span>(<span style="color:#ae81ff">2</span>));
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">port</span>     <span style="color:#f92672">=</span> <span style="color:#a6e22e">toHostOrder</span>(<span style="color:#a6e22e">netPort</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">shouldFail</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">SUSPICIOUS_PORTS</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">port</span>);
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">shouldFail</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> connectPtr <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#39;connect&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (connectPtr) {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">const</span> errnoPtrFunc <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">new</span> NativeFunction(Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#39;__error&#39;</span>),
+</span></span><span style="display:flex;"><span>                                            <span style="color:#f1fa8c">&#39;pointer&#39;</span>, []);
+</span></span><span style="display:flex;"><span>    Interceptor.attach(connectPtr, {
+</span></span><span style="display:flex;"><span>        onEnter(args) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#6272a4">/* sockaddr_in starts with sin_len (1B) sin_family (1B) port(big-endian) */</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.sa <span style="color:#ff79c6">=</span> args[<span style="color:#bd93f9">1</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">const</span> netPort <span style="color:#ff79c6">=</span> Memory.readU16(<span style="color:#ff79c6">this</span>.sa.add(<span style="color:#bd93f9">2</span>));
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.port     <span style="color:#ff79c6">=</span> toHostOrder(netPort);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.shouldFail <span style="color:#ff79c6">=</span> SUSPICIOUS_PORTS.includes(<span style="color:#ff79c6">this</span>.port);
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.shouldFail <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">false</span>;
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        },
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">shouldFail</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`Failing connect() on port </span><span style="color:#e6db74">${</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">port</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">writeU32</span>(<span style="color:#a6e22e">errnoPtrFunc</span>(), <span style="color:#ae81ff">61</span>);   <span style="color:#75715e">// ECONNREFUSED
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// Ignore errno write errors
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                }
+</span></span><span style="display:flex;"><span>        onLeave(retval) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">this</span>.shouldFail) {
+</span></span><span style="display:flex;"><span>                log(<span style="color:#f1fa8c">`Failing connect() on port </span><span style="color:#f1fa8c">${</span><span style="color:#ff79c6">this</span>.port<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">`</span>);
+</span></span><span style="display:flex;"><span>                retval.replace(<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                    Memory.writeU32(errnoPtrFunc(), <span style="color:#bd93f9">61</span>);   <span style="color:#6272a4">// ECONNREFUSED
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#6272a4">// Ignore errno write errors
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                }
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isPtrace</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#39;ptrace&#39;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">isPtrace</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">isPtrace</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">arg0</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>];
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">arg1</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>];
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">arg2</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> isPtrace <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#39;ptrace&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (isPtrace) {
+</span></span><span style="display:flex;"><span>    Interceptor.attach(isPtrace, {
+</span></span><span style="display:flex;"><span>        onEnter<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span>(args) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#8be9fd;font-style:italic">let</span> arg0 <span style="color:#ff79c6">=</span> args[<span style="color:#bd93f9">0</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#8be9fd;font-style:italic">let</span> arg1 <span style="color:#ff79c6">=</span> args[<span style="color:#bd93f9">1</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#8be9fd;font-style:italic">let</span> arg2 <span style="color:#ff79c6">=</span> args[<span style="color:#bd93f9">2</span>];
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; ptrace was called\n&#39;</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; Arg0 value is: &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">arg0</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\n&#34;</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; Arg1 value is: &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">arg1</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\n&#34;</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; Arg2 value is: &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">arg2</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\n&#34;</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">ptr</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; Modified args 0 &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39; Args 1 &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39; Args 2 &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">2</span>]);
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; Error in ptrace hook:&#39;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;&gt; ptrace was called\n&#39;</span>);
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;&gt; Arg0 value is: &#39;</span> <span style="color:#ff79c6">+</span> arg0 <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;\n&#34;</span>);
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;&gt; Arg1 value is: &#39;</span> <span style="color:#ff79c6">+</span> arg1 <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;\n&#34;</span>);
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;&gt; Arg2 value is: &#39;</span> <span style="color:#ff79c6">+</span> arg2 <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;\n&#34;</span>);
+</span></span><span style="display:flex;"><span>                args[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">=</span> ptr(<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>);
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;&gt; Modified args 0 &#39;</span> <span style="color:#ff79c6">+</span> args[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39; Args 1 &#39;</span> <span style="color:#ff79c6">+</span> args[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39; Args 2 &#39;</span> <span style="color:#ff79c6">+</span> args[<span style="color:#bd93f9">2</span>]);
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;&gt; Error in ptrace hook:&#39;</span>, e.message);
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isSysCtl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#34;__sysctl&#34;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">isSysCtl</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">isSysCtl</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">info</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">x2</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> isSysCtl <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#34;__sysctl&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (isSysCtl) {
+</span></span><span style="display:flex;"><span>    Interceptor.attach(isSysCtl, {
+</span></span><span style="display:flex;"><span>        onEnter<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span>(args) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">this</span>.info <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">this</span>.context.x2;
 </span></span><span style="display:flex;"><span>        },
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">pointer01</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">info</span>.<span style="color:#a6e22e">add</span>(<span style="color:#ae81ff">32</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">pointerFlag</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">pointer01</span>.<span style="color:#a6e22e">readInt</span>() <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x800</span>;
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">pointerFlag</span> <span style="color:#f92672">===</span> <span style="color:#ae81ff">0x800</span>) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; __sysctl was called and was disabled&#39;</span>);
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">pointer01</span>.<span style="color:#a6e22e">writeInt</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        onLeave<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span>(retval) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">const</span> pointer01 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">this</span>.info.add(<span style="color:#bd93f9">32</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">const</span> pointerFlag <span style="color:#ff79c6">=</span> pointer01.readInt() <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x800</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> (pointerFlag <span style="color:#ff79c6">===</span> <span style="color:#bd93f9">0x800</span>) {
+</span></span><span style="display:flex;"><span>                    console.log(<span style="color:#f1fa8c">&#39;&gt; __sysctl was called and was disabled&#39;</span>);
+</span></span><span style="display:flex;"><span>                    pointer01.writeInt(<span style="color:#bd93f9">0</span>);
 </span></span><span style="display:flex;"><span>                }
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Ignore memory access errors
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            }
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                <span style="color:#6272a4">// Ignore memory access errors
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fm</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">classes</span>.<span style="color:#a6e22e">NSFileManager</span>;
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">fm</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">fm</span>[<span style="color:#e6db74">&#39;- fileExistsAtPath:&#39;</span>]) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">impl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">fm</span>[<span style="color:#e6db74">&#39;- fileExistsAtPath:&#39;</span>].<span style="color:#a6e22e">implementation</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">impl</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">pathStr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">safeObjCToString</span>(<span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">2</span>]);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">pathStr</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39;&#39;</span>;
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">hide</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">SUSPICIOUS_FILE_PATHS</span>.<span style="color:#a6e22e">some</span>(<span style="color:#a6e22e">p</span> =&gt; <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#a6e22e">p</span>));
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">hide</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> fm <span style="color:#ff79c6">=</span> ObjC.classes.NSFileManager;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (fm <span style="color:#ff79c6">&amp;&amp;</span> fm[<span style="color:#f1fa8c">&#39;- fileExistsAtPath:&#39;</span>]) {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">const</span> impl <span style="color:#ff79c6">=</span> fm[<span style="color:#f1fa8c">&#39;- fileExistsAtPath:&#39;</span>].implementation;
+</span></span><span style="display:flex;"><span>    Interceptor.attach(impl, {
+</span></span><span style="display:flex;"><span>        onEnter(args) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">const</span> pathStr <span style="color:#ff79c6">=</span> safeObjCToString(args[<span style="color:#bd93f9">2</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.path <span style="color:#ff79c6">=</span> pathStr <span style="color:#ff79c6">||</span> <span style="color:#f1fa8c">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.hide <span style="color:#ff79c6">=</span> SUSPICIOUS_FILE_PATHS.some(p =&gt; <span style="color:#ff79c6">this</span>.path.includes(p));
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.hide <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">false</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.path <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;</span>;
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        },
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">hide</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`Pretending path does NOT exist → </span><span style="color:#e6db74">${</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// NO
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            }
+</span></span><span style="display:flex;"><span>        onLeave(retval) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">this</span>.hide) {
+</span></span><span style="display:flex;"><span>                log(<span style="color:#f1fa8c">`Pretending path does NOT exist → </span><span style="color:#f1fa8c">${</span><span style="color:#ff79c6">this</span>.path<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">`</span>);
+</span></span><span style="display:flex;"><span>                retval.replace(<span style="color:#bd93f9">0</span>); <span style="color:#6272a4">// NO
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>[<span style="color:#e6db74">&#39;stat&#39;</span>, <span style="color:#e6db74">&#39;stat64&#39;</span>, <span style="color:#e6db74">&#39;access&#39;</span>, <span style="color:#e6db74">&#39;faccessat&#39;</span>].<span style="color:#a6e22e">forEach</span>(<span style="color:#a6e22e">func</span> =&gt; {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ptr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#a6e22e">func</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">ptr</span>) <span style="color:#66d9ef">return</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">ptr</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Memory</span>.<span style="color:#a6e22e">readUtf8String</span>(<span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>]);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">hide</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">SUSPICIOUS_FILE_PATHS</span>.<span style="color:#a6e22e">some</span>(<span style="color:#a6e22e">p</span> =&gt; <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#a6e22e">p</span>));
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">hide</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>[<span style="color:#f1fa8c">&#39;stat&#39;</span>, <span style="color:#f1fa8c">&#39;stat64&#39;</span>, <span style="color:#f1fa8c">&#39;access&#39;</span>, <span style="color:#f1fa8c">&#39;faccessat&#39;</span>].forEach(func =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">const</span> ptr <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, func);
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>ptr) <span style="color:#ff79c6">return</span>;
+</span></span><span style="display:flex;"><span>    Interceptor.attach(ptr, {
+</span></span><span style="display:flex;"><span>        onEnter(args) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.path <span style="color:#ff79c6">=</span> Memory.readUtf8String(args[<span style="color:#bd93f9">0</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.hide <span style="color:#ff79c6">=</span> SUSPICIOUS_FILE_PATHS.some(p =&gt; <span style="color:#ff79c6">this</span>.path <span style="color:#ff79c6">&amp;&amp;</span> <span style="color:#ff79c6">this</span>.path.includes(p));
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.hide <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">false</span>;
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        },
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">hide</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`Pretending </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">func</span><span style="color:#e6db74">}</span><span style="color:#e6db74">() failed on </span><span style="color:#e6db74">${</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);   <span style="color:#75715e">// error
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            }
+</span></span><span style="display:flex;"><span>        onLeave(retval) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">this</span>.hide) {
+</span></span><span style="display:flex;"><span>                log(<span style="color:#f1fa8c">`Pretending </span><span style="color:#f1fa8c">${</span>func<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">() failed on </span><span style="color:#f1fa8c">${</span><span style="color:#ff79c6">this</span>.path<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">`</span>);
+</span></span><span style="display:flex;"><span>                retval.replace(<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>);   <span style="color:#6272a4">// error
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>});
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">classes</span>.<span style="color:#a6e22e">UIApplication</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">classes</span>.<span style="color:#a6e22e">UIApplication</span>[<span style="color:#e6db74">&#34;- canOpenURL:&#34;</span>]) {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">classes</span>.<span style="color:#a6e22e">UIApplication</span>[<span style="color:#e6db74">&#34;- canOpenURL:&#34;</span>].<span style="color:#a6e22e">implementation</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">is_flagged</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Extract the path
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">pathStr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">safeObjCToString</span>(<span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">2</span>]);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">pathStr</span>) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">pathStr</span>;
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#34;:&#34;</span>)[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">toLowerCase</span>();
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">canOpenURL</span>.<span style="color:#a6e22e">indexOf</span>(<span style="color:#a6e22e">app</span>) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>) {
-</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">is_flagged</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (ObjC.classes.UIApplication <span style="color:#ff79c6">&amp;&amp;</span> ObjC.classes.UIApplication[<span style="color:#f1fa8c">&#34;- canOpenURL:&#34;</span>]) {
+</span></span><span style="display:flex;"><span>    Interceptor.attach(ObjC.classes.UIApplication[<span style="color:#f1fa8c">&#34;- canOpenURL:&#34;</span>].implementation, {
+</span></span><span style="display:flex;"><span>        onEnter(args) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">this</span>.is_flagged <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">false</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">this</span>.path <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#6272a4">// Extract the path
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                <span style="color:#ff79c6">const</span> pathStr <span style="color:#ff79c6">=</span> safeObjCToString(args[<span style="color:#bd93f9">2</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> (pathStr) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">this</span>.path <span style="color:#ff79c6">=</span> pathStr;
+</span></span><span style="display:flex;"><span>                    <span style="color:#8be9fd;font-style:italic">let</span> app <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">this</span>.path.split(<span style="color:#f1fa8c">&#34;:&#34;</span>)[<span style="color:#bd93f9">0</span>].toLowerCase();
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">if</span> (canOpenURL.indexOf(app) <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">0</span>) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#ff79c6">this</span>.is_flagged <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span>;
 </span></span><span style="display:flex;"><span>                    }
 </span></span><span style="display:flex;"><span>                }
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Error in canOpenURL onEnter:&#39;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">message</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">is_flagged</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;[!] Error in canOpenURL onEnter:&#39;</span>, e.message);
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">this</span>.is_flagged <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">false</span>;
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        },
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">is_flagged</span> <span style="color:#f92672">||</span> <span style="color:#f92672">!</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span>) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>        onLeave(retval) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span><span style="color:#ff79c6">this</span>.is_flagged <span style="color:#ff79c6">||</span> <span style="color:#ff79c6">!</span><span style="color:#ff79c6">this</span>.path) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">return</span>;
 </span></span><span style="display:flex;"><span>                }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// ignore failed
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">isNull</span>()) {
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#6272a4">// ignore failed
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>                <span style="color:#ff79c6">if</span> (retval.isNull()) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">return</span>;
 </span></span><span style="display:flex;"><span>                }
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`canOpenURL: check for `</span> <span style="color:#f92672">+</span>
-</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">` was successful with: `</span> <span style="color:#f92672">+</span>
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">toString</span>() <span style="color:#f92672">+</span> <span style="color:#e6db74">`, marking it as failed.`</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#66d9ef">new</span> <span style="color:#a6e22e">NativePointer</span>(<span style="color:#ae81ff">0x00</span>));
-</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[!] Error in canOpenURL onLeave:&#39;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">`canOpenURL: check for `</span> <span style="color:#ff79c6">+</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">this</span>.path <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">` was successful with: `</span> <span style="color:#ff79c6">+</span>
+</span></span><span style="display:flex;"><span>                    retval.toString() <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">`, marking it as failed.`</span>);
+</span></span><span style="display:flex;"><span>                retval.replace(<span style="color:#ff79c6">new</span> NativePointer(<span style="color:#bd93f9">0x00</span>));
+</span></span><span style="display:flex;"><span>            } <span style="color:#ff79c6">catch</span> (e) {
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;[!] Error in canOpenURL onLeave:&#39;</span>, e.message);
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[*] Setting up additional monitoring...&#39;</span>);
+</span></span><span style="display:flex;"><span>console.log(<span style="color:#f1fa8c">&#39;[*] Setting up additional monitoring...&#39;</span>);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">viewController</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ObjC</span>.<span style="color:#a6e22e">classes</span>.<span style="color:#a6e22e">Captain_Nohook_ViewController</span>;
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">viewController</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">methods</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">viewController</span>.<span style="color:#a6e22e">$ownMethods</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">methods</span>.<span style="color:#a6e22e">forEach</span>(<span style="color:#a6e22e">method</span> =&gt; {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#39;flag&#39;</span>) <span style="color:#f92672">||</span> <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#39;Flag&#39;</span>)) {
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`[*] Found flag-related method: </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">method</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> viewController <span style="color:#ff79c6">=</span> ObjC.classes.Captain_Nohook_ViewController;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (viewController) {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">const</span> methods <span style="color:#ff79c6">=</span> viewController.$ownMethods;
+</span></span><span style="display:flex;"><span>    methods.forEach(method =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> (method.includes(<span style="color:#f1fa8c">&#39;flag&#39;</span>) <span style="color:#ff79c6">||</span> method.includes(<span style="color:#f1fa8c">&#39;Flag&#39;</span>)) {
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">`[*] Found flag-related method: </span><span style="color:#f1fa8c">${</span>method<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">`</span>);
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;[+] Bypass script loaded successfully!&#39;</span>);
+</span></span><span style="display:flex;"><span>console.log(<span style="color:#f1fa8c">&#39;[+] Bypass script loaded successfully!&#39;</span>);
 </span></span></code></pre></div><h4 id="ghidra-analysis">Ghidra Analysis</h4>
 <p>The following function implements a anti-tampering mechanism that scans loaded dynamic libraries to detect reverse engineering tools. The function creates a blacklist containing &ldquo;FridaGadget&rdquo;, &ldquo;frida&rdquo;, &ldquo;cynject&rdquo;, and &ldquo;libcycript&rdquo; - common instrumentation frameworks used for iOS app analysis. The detection leverages Apple&rsquo;s dynamic loader APIs (_dyld_image_count() and _dyld_get_image_name()) to enumerate all loaded libraries in the process memory. For each library, it performs case-insensitive string matching against the blacklist. If any suspicious library is found, the function returns false with an error message; otherwise, it returns true.</p>
 <pre tabindex="0"><code>
@@ -1964,13 +1886,42 @@ void Captain_Nohook::ImageResource::one_time_init_for_noHook(void)
   return;
 }
 </code></pre>
-    </div>
-    <div class="post-footer">
+  </div>
+
+  <footer class="post-footer fade-in">
+    <div class="post-nav">
+      
+      <a href="http://localhost:1314/posts/time-trap-mobilehackinglabs/" class="post-nav-link prev">
+        <span>← Previous</span>
+        <span class="post-nav-title">Time Trap Mobile Hacking Labs</span>
+      </a>
+      
+      
+      <a href="http://localhost:1314/posts/runner-mobilehackinglabs/" class="post-nav-link next">
+        <span>Next →</span>
+        <span class="post-nav-title">Runner Mobile Hacking Labs</span>
+      </a>
       
     </div>
-  </article>
+  </footer>
+</article>
 
   </main>
-</body>
 
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
+      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
+  </div>
+</footer>
+
+
+  <script src="/js/matrix.js"></script>
+  <script src="/js/main.js"></script>
+</body>
 </html>

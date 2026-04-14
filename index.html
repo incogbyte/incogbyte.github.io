@@ -1,323 +1,193 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-us">
-
 <head>
-  <title>ls $HOME</title>
-  <link rel="shortcut icon" href="%20/favicon.ico" />
-  <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.142.0">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="Rodolfo Tavares" />
-  <meta name="description"
-    content="Offensive Security | Mobile Hacking | Reverse Engineering" />
-
-  
+	<meta name="generator" content="Hugo 0.142.0"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1314&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>incogbyte</title>
+  <meta name="description" content="Offensive Security | Mobile Hacking | Reverse Engineering">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"
-    rel="stylesheet">
-
-  <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
-
-  
-  <link rel="stylesheet" href="/css/custom.min.d6deeb83eff354eeff1d492556314c2f87fea3a001739934a8e7caa4e9c53a0c.css" />
-
-  
-  <link rel="alternate" type="application/rss+xml" href="https://incogbyte.github.io/index.xml" title="ls $HOME">
-  
-
-  
-  
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="ls $HOME">
-  <meta name="twitter:description" content="Offensive Security | Mobile Hacking | Reverse Engineering">
-
-  <meta property="og:url" content="https://incogbyte.github.io/">
-  <meta property="og:site_name" content="ls $HOME">
-  <meta property="og:title" content="ls $HOME">
-  <meta property="og:description" content="Offensive Security | Mobile Hacking | Reverse Engineering">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="website">
-
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
-
 <body>
-  <header class="app-header">
-    
-    <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/images/avatar.jpg"
-        alt="Rodolfo Tavares" /></a>
-    <span class="app-header-title">Rodolfo Tavares</span>
-    <p class="app-header-subtitle">
+  <canvas id="matrix-bg"></canvas>
+  <div class="scanline"></div>
+
+  <header class="site-header">
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <span class="logo-bracket">[</span>
+      <span class="logo-text">incogbyte</span>
+      <span class="logo-bracket">]</span>
+      <span class="cursor">_</span>
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links">
       
-      <span class="alias">incogbyte</span>
+      <li><a href="/" class="nav-link">Home</a></li>
       
-       | <span class="alias">rodtvs</span>
+      <li><a href="/posts/" class="nav-link">Posts</a></li>
       
-    </p>
-    <nav class="app-header-menu">
-      <a class="app-header-menu-item" href="/">Home</a>
-       - 
+      <li><a href="/cve/" class="nav-link">CVEs</a></li>
       
-      <a class="app-header-menu-item" href="/tags/">Tags</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/about/">About</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/cve/">CVEs</a>
-    </nav>
-    <p>Offensive Security | Mobile Hacking | Reverse Engineering</p>
-    <div class="app-header-social">
-      
-      <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
-  <title>Github</title>
-  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-</svg>
-      </a>
-      
-      <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
-  <title>x</title>
-  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-</svg>
-      </a>
-      
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
-  <title>linkedin</title>
-  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
-</svg>
-      </a>
-      
-      <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
-  <title>keybase</title>
-  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-</svg>
-      </a>
-      
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
-  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-</svg>
-      </a>
-      
-    </div>
-  </header>
-  <main class="app-container">
-    
-  <article>
-    <h1>ls $HOME</h1>
-    <ul class="posts-list">
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/">phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            Mar 17, 2026
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            7 min read
-          </span>
-        </li>
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/runner-mobilehackinglabs/">Runner Mobile Hacking Labs</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            Jun 2, 2025
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            5 min read
-          </span>
-        </li>
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/">Captain No Hook Mobile Hacking Labs</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            May 31, 2025
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            25 min read
-          </span>
-        </li>
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/">Time Trap Mobile Hacking Labs</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            May 31, 2025
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            4 min read
-          </span>
-        </li>
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/">Gotham Times Mobile Hacking Labs</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            May 31, 2025
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            6 min read
-          </span>
-        </li>
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/">Flipcoin Wallet Mobile Hacking Lab</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            May 30, 2025
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            4 min read
-          </span>
-        </li>
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/flutter-encryption-bypass/">Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            Feb 20, 2025
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            6 min read
-          </span>
-        </li>
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/">Nasa Path Traversal and XSS (waf bypass)</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            Oct 7, 2024
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            6 min read
-          </span>
-        </li>
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/bypassmtlsflutter/">Bypass MTLS Flutter</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            Apr 18, 2024
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            7 min read
-          </span>
-        </li>
-      
-        <li class="posts-list-item">
-          <a class="posts-list-item-title" href="https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/">Decrypt WhatsApp Msgs Android (Investigator)</a>
-          <span class="posts-list-item-description">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-            Mar 10, 2024
-            <span class="posts-list-item-separator">-</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-            10 min read
-          </span>
-        </li>
+      <li><a href="/about/" class="nav-link">About</a></li>
       
     </ul>
+  </nav>
+</header>
+
+
+  <main class="container">
     
+<section class="hero">
+  <div class="hero-content fade-in">
+    <p class="hero-greeting typewriter">Hello, I'm</p>
+    <h1 class="hero-name glitch" data-text="Rodolfo Tavares">Rodolfo Tavares</h1>
+    <p class="hero-handle">
+      <span class="prompt">$</span> whoami
+      <span class="hero-response">incogbyte</span>
+    </p>
+    <p class="hero-desc">Offensive Security | Mobile Hacking | Reverse Engineering</p>
+    <div class="hero-cta">
+      <a href="/posts/" class="btn btn-primary">Read Blog</a>
+      <a href="/about/" class="btn btn-outline">About Me</a>
+    </div>
+  </div>
+</section>
 
-<ul class="pagination">
-  
-  
-  <li class="page-item active">
-    <a class="page-link" href="/">
-      1
-    </a>
-  </li>
-  
-  <li class="page-item">
-    <a class="page-link" href="/page/2/">
-      2
-    </a>
-  </li>
-  
-  
-  <li class="page-item">
-    <a class="page-link" href="/page/2/">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-arrow-right">
-  <title>arrow-right</title>
-  <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
-</svg>
-    </a>
-  </li>
-  
-</ul>
+<section class="section" id="latest-posts">
+  <h2 class="section-title slide-up">
+    <span class="prompt">#</span> Latest Posts
+  </h2>
+  <div class="posts-grid">
+    
+    <article class="post-card slide-up">
+      <div class="post-card-inner">
+        <div class="post-meta">
+          <time>Mar 17, 2026</time>
+          
+          <div class="post-tags">
+            
+            <span class="tag">writeup</span>
+            
+          </div>
+          
+        </div>
+        <h3 class="post-title"><a href="http://localhost:1314/posts/2026-03-17-phpipam-second-order-sqli/">phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</a></h3>
+        <p class="post-summary">Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189) Back in 2022, I found a SQL injection in phpIPAM 1.4.4 …</p>
+        <a href="http://localhost:1314/posts/2026-03-17-phpipam-second-order-sqli/" class="read-more">Read more →</a>
+      </div>
+    </article>
+    
+    <article class="post-card slide-up">
+      <div class="post-card-inner">
+        <div class="post-meta">
+          <time>Jun 02, 2025</time>
+          
+        </div>
+        <h3 class="post-title"><a href="http://localhost:1314/posts/runner-mobilehackinglabs/">Runner Mobile Hacking Labs</a></h3>
+        <p class="post-summary">In this challenge, you’ll be working with a fictitious app called Run Time, which tracks your steps while running. Your …</p>
+        <a href="http://localhost:1314/posts/runner-mobilehackinglabs/" class="read-more">Read more →</a>
+      </div>
+    </article>
+    
+    <article class="post-card slide-up">
+      <div class="post-card-inner">
+        <div class="post-meta">
+          <time>May 31, 2025</time>
+          
+        </div>
+        <h3 class="post-title"><a href="http://localhost:1314/posts/captain-no-hook-mobilehackinglabs/">Captain No Hook Mobile Hacking Labs</a></h3>
+        <p class="post-summary">Introduction The Captain No Hooks lab provides an in-depth exploration of iOS RASP (Runtime Application Self-Protection) …</p>
+        <a href="http://localhost:1314/posts/captain-no-hook-mobilehackinglabs/" class="read-more">Read more →</a>
+      </div>
+    </article>
+    
+    <article class="post-card slide-up">
+      <div class="post-card-inner">
+        <div class="post-meta">
+          <time>May 31, 2025</time>
+          
+        </div>
+        <h3 class="post-title"><a href="http://localhost:1314/posts/time-trap-mobilehackinglabs/">Time Trap Mobile Hacking Labs</a></h3>
+        <p class="post-summary">Introduction In this challenge, you will explore the vulnerabilities in an internally used application named Time Trap, …</p>
+        <a href="http://localhost:1314/posts/time-trap-mobilehackinglabs/" class="read-more">Read more →</a>
+      </div>
+    </article>
+    
+    <article class="post-card slide-up">
+      <div class="post-card-inner">
+        <div class="post-meta">
+          <time>May 31, 2025</time>
+          
+        </div>
+        <h3 class="post-title"><a href="http://localhost:1314/posts/gotham-times-mobilehackinglabs/">Gotham Times Mobile Hacking Labs</a></h3>
+        <p class="post-summary">Introduction The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This …</p>
+        <a href="http://localhost:1314/posts/gotham-times-mobilehackinglabs/" class="read-more">Read more →</a>
+      </div>
+    </article>
+    
+    <article class="post-card slide-up">
+      <div class="post-card-inner">
+        <div class="post-meta">
+          <time>May 30, 2025</time>
+          
+        </div>
+        <h3 class="post-title"><a href="http://localhost:1314/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/">Flipcoin Wallet Mobile Hacking Lab</a></h3>
+        <p class="post-summary">Flipcoin Wallet CTF - SQL Injection Challenge In this CTF challenge, I&rsquo;ll explore a SQL Injection vulnerability ( …</p>
+        <a href="http://localhost:1314/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/" class="read-more">Read more →</a>
+      </div>
+    </article>
+    
+  </div>
+</section>
 
-
-
-  </article>
+<section class="section" id="skills">
+  <h2 class="section-title slide-up">
+    <span class="prompt">#</span> Skills
+  </h2>
+  <div class="skills-grid slide-up">
+    <div class="skill-card">
+      <h3>Offensive Security</h3>
+      <p>Penetration testing, vulnerability research, and exploit development.</p>
+    </div>
+    <div class="skill-card">
+      <h3>Mobile Hacking</h3>
+      <p>Android & iOS security analysis, Flutter reverse engineering, mTLS bypass.</p>
+    </div>
+    <div class="skill-card">
+      <h3>Reverse Engineering</h3>
+      <p>Binary analysis, malware research, protocol reverse engineering.</p>
+    </div>
+    <div class="skill-card">
+      <h3>Bug Bounty</h3>
+      <p>Web application testing, CVE disclosures, responsible vulnerability reporting.</p>
+    </div>
+  </div>
+</section>
 
   </main>
-</body>
 
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
+      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
+  </div>
+</footer>
+
+
+  <script src="/js/matrix.js"></script>
+  <script src="/js/main.js"></script>
+</body>
 </html>

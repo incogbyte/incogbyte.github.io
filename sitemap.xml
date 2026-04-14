@@ -2,78 +2,78 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://incogbyte.github.io/categories/</loc>
+    <loc>http://localhost:1314/categories/</loc>
     <lastmod>2026-03-17T10:00:00-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/categories/hacking/</loc>
+    <loc>http://localhost:1314/categories/hacking/</loc>
     <lastmod>2026-03-17T10:00:00-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/</loc>
+    <loc>http://localhost:1314/</loc>
     <lastmod>2026-03-17T10:00:00-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</loc>
+    <loc>http://localhost:1314/posts/2026-03-17-phpipam-second-order-sqli/</loc>
     <lastmod>2026-03-17T10:00:00-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/</loc>
+    <loc>http://localhost:1314/posts/</loc>
     <lastmod>2026-03-17T10:00:00-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/tags/</loc>
+    <loc>http://localhost:1314/tags/</loc>
     <lastmod>2026-03-17T10:00:00-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/tags/writeup/</loc>
+    <loc>http://localhost:1314/tags/writeup/</loc>
     <lastmod>2026-03-17T10:00:00-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/categories/writeup/</loc>
+    <loc>http://localhost:1314/categories/writeup/</loc>
     <lastmod>2026-03-17T10:00:00-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/runner-mobilehackinglabs/</loc>
+    <loc>http://localhost:1314/posts/runner-mobilehackinglabs/</loc>
     <lastmod>2025-06-02T09:29:08-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/</loc>
+    <loc>http://localhost:1314/posts/captain-no-hook-mobilehackinglabs/</loc>
     <lastmod>2025-05-31T19:35:40-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/</loc>
+    <loc>http://localhost:1314/posts/time-trap-mobilehackinglabs/</loc>
     <lastmod>2025-05-31T14:10:48-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/</loc>
+    <loc>http://localhost:1314/posts/gotham-times-mobilehackinglabs/</loc>
     <lastmod>2025-05-31T10:14:01-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/</loc>
+    <loc>http://localhost:1314/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/</loc>
     <lastmod>2025-05-30T18:57:03-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/flutter-encryption-bypass/</loc>
+    <loc>http://localhost:1314/posts/flutter-encryption-bypass/</loc>
     <lastmod>2025-02-20T22:40:38-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</loc>
+    <loc>http://localhost:1314/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</loc>
     <lastmod>2024-10-07T07:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/bypassmtlsflutter/</loc>
+    <loc>http://localhost:1314/posts/bypassmtlsflutter/</loc>
     <lastmod>2024-04-18T22:40:38-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</loc>
+    <loc>http://localhost:1314/posts/decryptwhatsappmsgandroid/</loc>
     <lastmod>2024-03-10T22:40:38-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/kitctf2023/</loc>
+    <loc>http://localhost:1314/posts/kitctf2023/</loc>
     <lastmod>2023-06-19T17:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</loc>
+    <loc>http://localhost:1314/posts/2022-01-20-cve-2022-23046-phpipam/</loc>
     <lastmod>2023-02-02T17:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/tags/ctf/</loc>
+    <loc>http://localhost:1314/tags/ctf/</loc>
     <lastmod>2022-06-09T10:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/categories/ctf/</loc>
+    <loc>http://localhost:1314/categories/ctf/</loc>
     <lastmod>2022-06-09T10:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/reverse-nim-binary/</loc>
+    <loc>http://localhost:1314/posts/reverse-nim-binary/</loc>
     <lastmod>2022-06-09T10:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</loc>
+    <loc>http://localhost:1314/posts/ios-anti-tampers-bypass/</loc>
     <lastmod>2022-03-19T17:12:34-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/cve/</loc>
+    <loc>http://localhost:1314/cve/</loc>
     <lastmod>2020-05-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/about/</loc>
+    <loc>http://localhost:1314/about/</loc>
   </url>
 </urlset>

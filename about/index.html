@@ -1,118 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-us">
-
-<head>
-  <title>About // ls $HOME</title>
-  <link rel="shortcut icon" href="%20/favicon.ico" />
-  <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.142.0">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="Rodolfo Tavares" />
-  <meta name="description"
-    content="Rodolfo &#39;incogbyte&#39; Tavares | Offensive Security" />
-
-  
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1314&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | incogbyte</title>
+  <meta name="description" content="Rodolfo &#39;incogbyte&#39; Tavares | Offensive Security">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"
-    rel="stylesheet">
-
-  <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
-
-  
-  <link rel="stylesheet" href="/css/custom.min.d6deeb83eff354eeff1d492556314c2f87fea3a001739934a8e7caa4e9c53a0c.css" />
-
-  
-
-  
-  
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="About">
-  <meta name="twitter:description" content="Rodolfo &#39;incogbyte&#39; Tavares | Offensive Security">
-
-  <meta property="og:url" content="https://incogbyte.github.io/about/">
-  <meta property="og:site_name" content="ls $HOME">
-  <meta property="og:title" content="About">
-  <meta property="og:description" content="Rodolfo &#39;incogbyte&#39; Tavares | Offensive Security">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
-
 <body>
-  <header class="app-header">
+  <canvas id="matrix-bg"></canvas>
+  <div class="scanline"></div>
+
+  <header class="site-header">
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <span class="logo-bracket">[</span>
+      <span class="logo-text">incogbyte</span>
+      <span class="logo-bracket">]</span>
+      <span class="cursor">_</span>
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links">
+      
+      <li><a href="/" class="nav-link">Home</a></li>
+      
+      <li><a href="/posts/" class="nav-link">Posts</a></li>
+      
+      <li><a href="/cve/" class="nav-link">CVEs</a></li>
+      
+      <li><a href="/about/" class="nav-link">About</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+
+  <main class="container">
     
-    <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/images/avatar.jpg"
-        alt="Rodolfo Tavares" /></a>
-    <span class="app-header-title">Rodolfo Tavares</span>
-    <p class="app-header-subtitle">
-      
-      <span class="alias">incogbyte</span>
-      
-       | <span class="alias">rodtvs</span>
-      
-    </p>
-    <nav class="app-header-menu">
-      <a class="app-header-menu-item" href="/">Home</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/tags/">Tags</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/about/">About</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/cve/">CVEs</a>
-    </nav>
-    <p>Offensive Security | Mobile Hacking | Reverse Engineering</p>
-    <div class="app-header-social">
-      
-      <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
-  <title>Github</title>
-  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-</svg>
-      </a>
-      
-      <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
-  <title>x</title>
-  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-</svg>
-      </a>
-      
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
-  <title>linkedin</title>
-  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
-</svg>
-      </a>
-      
-      <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
-  <title>keybase</title>
-  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-</svg>
-      </a>
-      
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
-  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-</svg>
-      </a>
-      
-    </div>
+<article class="post-single">
+  <header class="post-header fade-in">
+    <h1 class="post-single-title">About</h1>
+    
+    
   </header>
-  <main class="app-container">
-    
-  <article class="post">
-    <header class="post-header">
-      <h1 class ="post-title">About</h1>
-    </header>
-    <div class="post-content">
-      <p><strong>Rodolfo Tavares</strong> is an Offensive Security professional with a deep passion for breaking things also create things to break them. Known in the community as <strong><code>incogbyte</code></strong> and <strong><code>rodtvs</code></strong>, he specializes in mobile application security, reverse engineering, and ofensive consulting/pentesting.</p>
+
+  <div class="post-content fade-in">
+    <p><strong>Rodolfo Tavares</strong> is an Offensive Security professional with a deep passion for breaking things also create things to break them. Known in the community as <strong><code>incogbyte</code></strong> and <strong><code>rodtvs</code></strong>, he specializes in mobile application security, reverse engineering, and ofensive consulting/pentesting.</p>
 <hr>
 <h3 id="professional-snapshot">Professional Snapshot</h3>
 <ul>
@@ -151,13 +91,37 @@
 <li><a href="https://linkedin.com/in/rodolfo-tavares-543863a7">LinkedIn</a></li>
 </ul>
 
-    </div>
-    <div class="post-footer">
+  </div>
+
+  <footer class="post-footer fade-in">
+    <div class="post-nav">
+      
+      
+      <a href="http://localhost:1314/cve/" class="post-nav-link next">
+        <span>Next →</span>
+        <span class="post-nav-title">Research &amp; Vulnerability Disclosures</span>
+      </a>
       
     </div>
-  </article>
+  </footer>
+</article>
 
   </main>
-</body>
 
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
+      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
+  </div>
+</footer>
+
+
+  <script src="/js/matrix.js"></script>
+  <script src="/js/main.js"></script>
+</body>
 </html>

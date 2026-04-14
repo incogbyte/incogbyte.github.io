@@ -1,149 +1,69 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-us">
-
-<head>
-  <title>iOS Anti-Tampers Bypass // ls $HOME</title>
-  <link rel="shortcut icon" href="%20/favicon.ico" />
-  <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.142.0">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="Rodolfo Tavares" />
-  <meta name="description"
-    content="" />
-
-  
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1314&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iOS Anti-Tampers Bypass | incogbyte</title>
+  <meta name="description" content="Offensive Security | Mobile Hacking | Reverse Engineering">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"
-    rel="stylesheet">
-
-  <link rel="stylesheet" href="/css/main.min.3373d1880564393d6fdfebd581c3c0426fb8fec976a9d3ca81aaf15ef48012d3.css" />
-
-  
-  <link rel="stylesheet" href="/css/custom.min.d6deeb83eff354eeff1d492556314c2f87fea3a001739934a8e7caa4e9c53a0c.css" />
-
-  
-
-  
-  
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="iOS Anti-Tampers Bypass">
-  <meta name="twitter:description" content="Hi everyone, in this blog i’m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:
-https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:
-ptrace sysctl strstr geppid In this blog, I will only talk about how I did it to bypass, using only frida with radare2. So let’s go.">
-
-  <meta property="og:url" content="https://incogbyte.github.io/posts/ios-anti-tampers-bypass/">
-  <meta property="og:site_name" content="ls $HOME">
-  <meta property="og:title" content="iOS Anti-Tampers Bypass">
-  <meta property="og:description" content="Hi everyone, in this blog i’m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:
-https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:
-ptrace sysctl strstr geppid In this blog, I will only talk about how I did it to bypass, using only frida with radare2. So let’s go.">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2022-03-19T17:12:34-03:00">
-    <meta property="article:modified_time" content="2022-03-19T17:12:34-03:00">
-    <meta property="article:tag" content="Writeup">
-
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
-
 <body>
-  <header class="app-header">
+  <canvas id="matrix-bg"></canvas>
+  <div class="scanline"></div>
+
+  <header class="site-header">
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <span class="logo-bracket">[</span>
+      <span class="logo-text">incogbyte</span>
+      <span class="logo-bracket">]</span>
+      <span class="cursor">_</span>
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links">
+      
+      <li><a href="/" class="nav-link">Home</a></li>
+      
+      <li><a href="/posts/" class="nav-link">Posts</a></li>
+      
+      <li><a href="/cve/" class="nav-link">CVEs</a></li>
+      
+      <li><a href="/about/" class="nav-link">About</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+
+  <main class="container">
     
-    <a href="https://incogbyte.github.io/"><img class="app-header-avatar" src="/images/avatar.jpg"
-        alt="Rodolfo Tavares" /></a>
-    <span class="app-header-title">Rodolfo Tavares</span>
-    <p class="app-header-subtitle">
+<article class="post-single">
+  <header class="post-header fade-in">
+    <h1 class="post-single-title">iOS Anti-Tampers Bypass</h1>
+    
+    <div class="post-single-meta">
+      <time>March 19, 2022</time>
+      <span class="reading-time">4 min read</span>
+    </div>
+    
+    
+    <div class="post-tags">
       
-      <span class="alias">incogbyte</span>
-      
-       | <span class="alias">rodtvs</span>
-      
-    </p>
-    <nav class="app-header-menu">
-      <a class="app-header-menu-item" href="/">Home</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/tags/">Tags</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/about/">About</a>
-       - 
-      
-      <a class="app-header-menu-item" href="/cve/">CVEs</a>
-    </nav>
-    <p>Offensive Security | Mobile Hacking | Reverse Engineering</p>
-    <div class="app-header-social">
-      
-      <a href="https://github.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
-  <title>Github</title>
-  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-</svg>
-      </a>
-      
-      <a href="https://x.com/incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-x">
-  <title>x</title>
-  <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-</svg>
-      </a>
-      
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
-  <title>linkedin</title>
-  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
-</svg>
-      </a>
-      
-      <a href="https://keybase.io/incogbyte/pgp_keys.asc" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-key">
-  <title>keybase</title>
-  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-</svg>
-      </a>
-      
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noreferrer noopener me">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-link">
-  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-</svg>
-      </a>
+      <span class="tag">writeup</span>
       
     </div>
-  </header>
-  <main class="app-container">
     
-  <article class="post">
-    <header class="post-header">
-      <h1 class ="post-title">iOS Anti-Tampers Bypass</h1>
-      <div class="post-meta">
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-          Mar 19, 2022
-        </div>
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-          4 min read
-        </div>
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
-  <title>tag</title>
-  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
-</svg>
-              <a class="tag" href="https://incogbyte.github.io/tags/writeup/">Writeup</a>
-        </div>
-      </div>
-    </header>
-    <div class="post-content">
-      <p><strong>Hi everyone, in this blog i&rsquo;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:</strong></p>
+  </header>
+
+  <div class="post-content fade-in">
+    <p><strong>Hi everyone, in this blog i&rsquo;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:</strong></p>
 <ul>
 <li><strong><a href="https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa">https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa</a></strong></li>
 </ul>
@@ -164,40 +84,40 @@ ptrace sysctl strstr geppid In this blog, I will only talk about how I did it to
 <p>It&rsquo;s worth mentioning here that a more realistic scenario, where you don&rsquo;t have this .ipa but have the jailbroken device. You can use the tool  <a href="https://github.com/NyaMisty/fouldecrypt">https://github.com/NyaMisty/fouldecrypt</a>, to get the decrypted binary.</p>
 <p><img src="/images/Screen_Shot_2022-03-19_at_17.56.54.png" alt="Screen Shot 2022-03-19 at 17.56.54.png"></p>
 <p>Taking the binary, we can pass it to our machine using the <strong>scp</strong> command. Next step is to use radare2 to analyze the binary and look for possible <strong>dlsym</strong> calls. To analyze the binary on radare2 we use the command below:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>r2 -A &lt;binaryDecrypted&gt;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>r2 -A &lt;binaryDecrypted&gt;
 </span></span></code></pre></div><p><img src="/images/Screen_Shot_2022-03-19_at_16.44.37.png" alt="Screen Shot 2022-03-19 at 16.44.37.png"></p>
 <blockquote>
 <p>What is dlsym ?</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">dlsym</span>() <span style="color:#a6e22e">returns</span> <span style="color:#a6e22e">the</span> <span style="color:#a6e22e">address</span> <span style="color:#66d9ef">of</span> <span style="color:#a6e22e">the</span> <span style="color:#a6e22e">code</span> <span style="color:#a6e22e">or</span> <span style="color:#a6e22e">data</span> <span style="color:#a6e22e">location</span> <span style="color:#a6e22e">specified</span> <span style="color:#a6e22e">by</span> <span style="color:#a6e22e">the</span>
-</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">null</span><span style="color:#f92672">-</span><span style="color:#a6e22e">terminated</span> <span style="color:#a6e22e">character</span> <span style="color:#a6e22e">string</span> <span style="color:#a6e22e">symbol</span>. <span style="color:#a6e22e">Which</span> <span style="color:#a6e22e">libraries</span> <span style="color:#a6e22e">and</span> <span style="color:#a6e22e">bundles</span> <span style="color:#a6e22e">are</span>
-</span></span><span style="display:flex;"><span>     <span style="color:#a6e22e">searched</span> <span style="color:#a6e22e">depends</span> <span style="color:#a6e22e">on</span> <span style="color:#a6e22e">the</span> <span style="color:#a6e22e">handle</span> <span style="color:#a6e22e">parameter</span>.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span>dlsym() returns the address <span style="color:#ff79c6">of</span> the code or data location specified by the
+</span></span><span style="display:flex;"><span>     <span style="color:#ff79c6">null</span><span style="color:#ff79c6">-</span>terminated character string symbol. Which libraries and bundles are
+</span></span><span style="display:flex;"><span>     searched depends on the handle parameter.
 </span></span></code></pre></div><p>To check the <strong>dlsym</strong> calls we use the command below:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>axt sym.imp.dlsym
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>axt sym.imp.dlsym
 </span></span></code></pre></div><p><img src="/images/Screen_Shot_2022-03-19_at_16.45.32.png" alt="Screen Shot 2022-03-19 at 16.45.32.png"></p>
 <p>As can be seen in the image above, there is a call at address 10008864, let&rsquo;s go to that address and check:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>s sym.func <span style="color:#ae81ff">10008864</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>s sym.func <span style="color:#bd93f9">10008864</span>
 </span></span></code></pre></div><p><img src="/images/dlsymPtrace.png" alt="dlsymPtrace.png"></p>
 <p>After analyzing the calls, we can see that there is a direct call to <strong>ptrace</strong>. We can use <strong>r2frida</strong>, and use the dtf utility from <a href="https://github.com/nowsecure/r2frida">r2frida</a>, to check the call being made at runtime. Using the commands bellow</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>r2 frida://spawn/usb//re.murphy.ios-challenge-2
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>r2 frida://spawn/usb//re.murphy.ios-challenge-2
 </span></span><span style="display:flex;"><span>:dtf ptrace iiii
 </span></span><span style="display:flex;"><span>:dc
 </span></span></code></pre></div><p><img src="/images/callingPtrace.png" alt="callingPtrace.png"></p>
 <p>Let&rsquo;s analyze this call to ptrace, as we can see 3 arguments being used. Ptrace was called at runtime so we should bypass, let&rsquo;s code a bypass using frida.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isPtrace</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#39;ptrace&#39;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">isPtrace</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">arg0</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>];
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">arg1</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>];
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">arg2</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">2</span>];
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">const</span> isPtrace <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#39;ptrace&#39;</span>);
+</span></span><span style="display:flex;"><span>    Interceptor.attach(isPtrace, {
+</span></span><span style="display:flex;"><span>        onEnter<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span>(args) {
+</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">let</span> arg0 <span style="color:#ff79c6">=</span> args[<span style="color:#bd93f9">0</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">let</span> arg1 <span style="color:#ff79c6">=</span> args[<span style="color:#bd93f9">1</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">let</span> arg2 <span style="color:#ff79c6">=</span> args[<span style="color:#bd93f9">2</span>];
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; ptrace was called\n&#39;</span>);
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; Arg0 value is: &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">arg0</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\n&#34;</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; Arg1 value is: &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">arg1</span>[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\n&#34;</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; Arg2 value is: &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\n&#34;</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">ptr</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; Modified args 0 &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39; Args 1 &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39; Args 2 &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">arg2</span>[<span style="color:#ae81ff">2</span>])
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;&gt; ptrace was called\n&#39;</span>);
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;&gt; Arg0 value is: &#39;</span> <span style="color:#ff79c6">+</span> arg0[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;\n&#34;</span>)
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;&gt; Arg1 value is: &#39;</span> <span style="color:#ff79c6">+</span> arg1[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;\n&#34;</span>)
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;&gt; Arg2 value is: &#39;</span> <span style="color:#ff79c6">+</span> args[<span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;\n&#34;</span>)
+</span></span><span style="display:flex;"><span>            args[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">=</span> ptr(<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;&gt; Modified args 0 &#39;</span> <span style="color:#ff79c6">+</span> args[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39; Args 1 &#39;</span> <span style="color:#ff79c6">+</span> args[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39; Args 2 &#39;</span> <span style="color:#ff79c6">+</span> arg2[<span style="color:#bd93f9">2</span>])
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    });
 </span></span></code></pre></div><p>The next step is bypass <strong>getppid,</strong> but what is getppid ?</p>
@@ -207,68 +127,68 @@ ptrace sysctl strstr geppid In this blog, I will only talk about how I did it to
 <p>Checking the disassembler it is possible to verify the call to <strong>getppid</strong>:</p>
 <p><img src="/images/getp.png" alt="getp.png"></p>
 <p>Checking, we can analyze that it is just a comparison, between:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#a6e22e">cmp</span> <span style="color:#a6e22e">w0</span>,<span style="color:#ae81ff">1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>cmp w0,<span style="color:#bd93f9">1</span>
 </span></span></code></pre></div><p>The frida script bellow can be used to bypass the getppid call:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isGetppid</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#34;getppid&#34;</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">isGetppid</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; getppid was called\n&#39;</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; getppid value before: &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">retval</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#ae81ff">0x01</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; getppid value after: &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">retval</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#ff79c6">const</span> isGetppid <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#34;getppid&#34;</span>)
+</span></span><span style="display:flex;"><span>    Interceptor.attach(isGetppid, {
+</span></span><span style="display:flex;"><span>        onLeave<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span>(retval) {
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;&gt; getppid was called\n&#39;</span>)
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;&gt; getppid value before: &#39;</span> <span style="color:#ff79c6">+</span> retval)
+</span></span><span style="display:flex;"><span>            retval.replace(<span style="color:#bd93f9">0x01</span>)
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#39;&gt; getppid value after: &#39;</span> <span style="color:#ff79c6">+</span> retval)
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    })
 </span></span></code></pre></div><p>Walking through the app&rsquo;s execution flow, you can check the use of <strong>sysctl</strong>, which can also be used as a form of <strong>anti-tampering</strong></p>
 <p><img src="/images/Screen_Shot_2022-03-19_at_23.21.15.png" alt="Screen Shot 2022-03-19 at 23.21.15.png"></p>
 <p>What is systctl ?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">The</span> <span style="color:#a6e22e">sysctl</span>() <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">retrieves</span> <span style="color:#a6e22e">system</span> <span style="color:#a6e22e">information</span> <span style="color:#a6e22e">and</span> <span style="color:#a6e22e">allows</span> <span style="color:#a6e22e">processes</span>
-</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">with</span> <span style="color:#a6e22e">appropriate</span> <span style="color:#a6e22e">privileges</span> <span style="color:#a6e22e">to</span> <span style="color:#a6e22e">set</span> <span style="color:#a6e22e">system</span> <span style="color:#a6e22e">information</span>. <span style="color:#a6e22e">The</span> <span style="color:#a6e22e">information</span>
-</span></span><span style="display:flex;"><span>     <span style="color:#a6e22e">available</span> <span style="color:#a6e22e">fromsysctl</span>() <span style="color:#a6e22e">consists</span> <span style="color:#66d9ef">of</span> <span style="color:#a6e22e">integers</span>, <span style="color:#a6e22e">strings</span>, <span style="color:#a6e22e">and</span> <span style="color:#a6e22e">tables</span>.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span>The sysctl() <span style="color:#8be9fd;font-style:italic">function</span> retrieves system information and allows processes
+</span></span><span style="display:flex;"><span>     <span style="color:#8be9fd;font-style:italic">with</span> appropriate privileges to set system information. The information
+</span></span><span style="display:flex;"><span>     available fromsysctl() consists <span style="color:#ff79c6">of</span> integers, strings, and tables.
 </span></span></code></pre></div><p>The frida script to bypass the sysctl call:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isSysCtl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#34;__sysctl&#34;</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">isSysCtl</span>, {
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onEnter</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">info</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">x2</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#ff79c6">const</span> isSysCtl <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#34;__sysctl&#34;</span>)
+</span></span><span style="display:flex;"><span>    Interceptor.attach(isSysCtl, {
+</span></span><span style="display:flex;"><span>        onEnter<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span>(args) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">this</span>.info <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">this</span>.context.x2;
 </span></span><span style="display:flex;"><span>        },
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">onLeave</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">pointer01</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">info</span>.<span style="color:#a6e22e">add</span>(<span style="color:#ae81ff">32</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">pointerFlag</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">pointer01</span>.<span style="color:#a6e22e">readInt</span>() <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x800</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">pointerFlag</span> <span style="color:#f92672">===</span> <span style="color:#ae81ff">0x800</span> ) {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;&gt; __sysctl was called and was disabled&#39;</span>)
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">pointer01</span>.<span style="color:#a6e22e">writeInt</span>(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        onLeave<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span>(retval) {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">const</span> pointer01 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">this</span>.info.add(<span style="color:#bd93f9">32</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">const</span> pointerFlag <span style="color:#ff79c6">=</span> pointer01.readInt() <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x800</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (pointerFlag <span style="color:#ff79c6">===</span> <span style="color:#bd93f9">0x800</span> ) {
+</span></span><span style="display:flex;"><span>                console.log(<span style="color:#f1fa8c">&#39;&gt; __sysctl was called and was disabled&#39;</span>)
+</span></span><span style="display:flex;"><span>                pointer01.writeInt(<span style="color:#bd93f9">0</span>)
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    })
 </span></span></code></pre></div><p>The last check that the app uses as anti-tampering is to check if there are any Libs or apps for data manipulation at runtime, such as frida, SSLKillSwitch etc. The strstr utility is usually used to check this series of strings at runtime. What is strstr ?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">The</span> <span style="color:#a6e22e">strstr</span>() <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">locates</span> <span style="color:#a6e22e">the</span> <span style="color:#a6e22e">first</span> <span style="color:#a6e22e">occurrence</span> <span style="color:#66d9ef">of</span> <span style="color:#a6e22e">the</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">-</span><span style="color:#a6e22e">terminated</span>
-</span></span><span style="display:flex;"><span>     <span style="color:#a6e22e">strings2</span> <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">the</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">-</span><span style="color:#a6e22e">terminated</span> <span style="color:#a6e22e">strings1</span>.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span>The strstr() <span style="color:#8be9fd;font-style:italic">function</span> locates the first occurrence <span style="color:#ff79c6">of</span> the <span style="color:#ff79c6">null</span><span style="color:#ff79c6">-</span>terminated
+</span></span><span style="display:flex;"><span>     strings2 <span style="color:#ff79c6">in</span> the <span style="color:#ff79c6">null</span><span style="color:#ff79c6">-</span>terminated strings1.
 </span></span></code></pre></div><p>The image below illustrates the checks:</p>
 <p><img src="/images/tamperLibsCalls.png" alt="tamperLibsCalls.png"></p>
 <p>The frida code to bypass strstr:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">tamperLibs</span> <span style="color:#f92672">=</span> [
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Substrate&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;cycript&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;frida&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;SSLKillSwitch2&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;SSLKillSwitch&#34;</span>]
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> tamperLibs <span style="color:#ff79c6">=</span> [
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;Substrate&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;cycript&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;frida&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;SSLKillSwitch2&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;SSLKillSwitch&#34;</span>]
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ptrStrStr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Module</span>.<span style="color:#a6e22e">findExportByName</span>(<span style="color:#66d9ef">null</span>, <span style="color:#e6db74">&#39;strstr&#39;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Interceptor</span>.<span style="color:#a6e22e">attach</span>(<span style="color:#a6e22e">ptrStrStr</span>, {
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">onEnter</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">args</span>) {
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">index</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">tamperLibs</span>.<span style="color:#a6e22e">length</span>;
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">libIsTampared</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">while</span> (<span style="color:#a6e22e">index</span><span style="color:#f92672">--</span>) {
-</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">lib</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">readUtf8String</span>();
-</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">lib</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">tamperLibs</span>[<span style="color:#a6e22e">index</span>]) {
-</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;&gt; strstr called: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">lib</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; overwrite return&#34;</span>);
-</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">libIsTampared</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">const</span> ptrStrStr <span style="color:#ff79c6">=</span> Module.findExportByName(<span style="color:#ff79c6">null</span>, <span style="color:#f1fa8c">&#39;strstr&#39;</span>);
+</span></span><span style="display:flex;"><span>    Interceptor.attach(ptrStrStr, {
+</span></span><span style="display:flex;"><span>	onEnter<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span> (args) {
+</span></span><span style="display:flex;"><span>		<span style="color:#8be9fd;font-style:italic">let</span> index <span style="color:#ff79c6">=</span> tamperLibs.length;
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">this</span>.libIsTampared <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">false</span>;
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">while</span> (index<span style="color:#ff79c6">--</span>) {
+</span></span><span style="display:flex;"><span>			<span style="color:#8be9fd;font-style:italic">var</span> lib <span style="color:#ff79c6">=</span> args[<span style="color:#bd93f9">1</span>].readUtf8String();
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">if</span> (lib <span style="color:#ff79c6">==</span> tamperLibs[index]) {
+</span></span><span style="display:flex;"><span>				console.log(<span style="color:#f1fa8c">&#34;&gt; strstr called: &#34;</span> <span style="color:#ff79c6">+</span> lib <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34; overwrite return&#34;</span>);
+</span></span><span style="display:flex;"><span>				<span style="color:#ff79c6">this</span>.libIsTampared <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span>;
 </span></span><span style="display:flex;"><span>			}
 </span></span><span style="display:flex;"><span>		}
 </span></span><span style="display:flex;"><span>	},
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">onLeave</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">retval</span>) {
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">libIsTampared</span>) {
-</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">retval</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#ae81ff">0x00</span>);
+</span></span><span style="display:flex;"><span>	onLeave<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span> (retval) {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">this</span>.libIsTampared) {
+</span></span><span style="display:flex;"><span>			retval.replace(<span style="color:#bd93f9">0x00</span>);
 </span></span><span style="display:flex;"><span>		}
 </span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>});
@@ -276,13 +196,37 @@ ptrace sysctl strstr geppid In this blog, I will only talk about how I did it to
 <p><img src="/images/frida_script.gif" alt="ezgif.com-gif-maker (2).gif"></p>
 <p>Bye ! see u next time !</p>
 
-    </div>
-    <div class="post-footer">
+  </div>
+
+  <footer class="post-footer fade-in">
+    <div class="post-nav">
+      
+      
+      <a href="http://localhost:1314/posts/reverse-nim-binary/" class="post-nav-link next">
+        <span>Next →</span>
+        <span class="post-nav-title">Reversing Nim Binary With Radare</span>
+      </a>
       
     </div>
-  </article>
+  </footer>
+</article>
 
   </main>
-</body>
 
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
+      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
+  </div>
+</footer>
+
+
+  <script src="/js/matrix.js"></script>
+  <script src="/js/main.js"></script>
+</body>
 </html>

@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Hacking on ls $HOME</title>
-    <link>https://incogbyte.github.io/categories/hacking/</link>
-    <description>Recent content in Hacking on ls $HOME</description>
+    <title>Hacking on incogbyte</title>
+    <link>http://localhost:1314/categories/hacking/</link>
+    <description>Recent content in Hacking on incogbyte</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 17 Mar 2026 10:00:00 -0300</lastBuildDate>
-    <atom:link href="https://incogbyte.github.io/categories/hacking/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1314/categories/hacking/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</title>
-      <link>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</link>
+      <link>http://localhost:1314/posts/2026-03-17-phpipam-second-order-sqli/</link>
       <pubDate>Tue, 17 Mar 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</guid>
-      <description>&lt;h1 id=&#34;second-order-sql-injection-in-phpipam-174-cve-2026-4189&#34;&gt;Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)&lt;/h1&gt;&#xA;&lt;p&gt;Back in 2022, I found a &lt;a href=&#34;https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/&#34;&gt;SQL injection in phpIPAM 1.4.4&lt;/a&gt; (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection  user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a &lt;strong&gt;Second Order SQL Injection&lt;/strong&gt; in version &lt;strong&gt;1.7.4&lt;/strong&gt;, where the payload is stored first and executed later in a completely different context.&lt;/p&gt;</description>
+      <guid>http://localhost:1314/posts/2026-03-17-phpipam-second-order-sqli/</guid>
+      <description>&lt;h1 id=&#34;second-order-sql-injection-in-phpipam-174-cve-2026-4189&#34;&gt;Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)&lt;/h1&gt;&#xA;&lt;p&gt;Back in 2022, I found a &lt;a href=&#34;http://localhost:1314/posts/2022-01-20-cve-2022-23046-phpipam/&#34;&gt;SQL injection in phpIPAM 1.4.4&lt;/a&gt; (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection  user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a &lt;strong&gt;Second Order SQL Injection&lt;/strong&gt; in version &lt;strong&gt;1.7.4&lt;/strong&gt;, where the payload is stored first and executed later in a completely different context.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Nasa Path Traversal and XSS (waf bypass)</title>
-      <link>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</link>
+      <link>http://localhost:1314/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</link>
       <pubDate>Mon, 07 Oct 2024 07:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</guid>
+      <guid>http://localhost:1314/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</guid>
       <description>&lt;h1 id=&#34;exploit-path-traversal-and-xss-in-nasa-subdomains&#34;&gt;Exploit Path Traversal and XSS in NASA Subdomains&lt;/h1&gt;&#xA;&lt;p&gt;In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.&lt;/p&gt;</description>
     </item>
     <item>
       <title>PHPIPAM CVE</title>
-      <link>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</link>
+      <link>http://localhost:1314/posts/2022-01-20-cve-2022-23046-phpipam/</link>
       <pubDate>Thu, 02 Feb 2023 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</guid>
+      <guid>http://localhost:1314/posts/2022-01-20-cve-2022-23046-phpipam/</guid>
       <description>&lt;p&gt;TL;DR&lt;/p&gt;&#xA;&lt;p&gt;This write up is about a SQL injection which I found 4 days after another researcher reported it :/, however, because of the fact that I haven’t found any write ups or publicly available exploits, I decided to write about it.&#xA;Exploit at the end!&lt;/p&gt;&#xA;&lt;p&gt;PHPIPAM is a software widely used internally by several companies. And by being so, it is relatively common for you to find a running instance to manage IT assets, networks, etc. &lt;strong&gt;1.4.4&lt;/strong&gt; is the vulnerable version and a fix has already been made public with the arrival of version &lt;strong&gt;1.4.5&lt;/strong&gt;. The request responsible for triggering the SQLi is presented below, but if you want to look at the rest, feel free.&lt;/p&gt;</description>
     </item>
     <item>
       <title>iOS Anti-Tampers Bypass</title>
-      <link>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</link>
+      <link>http://localhost:1314/posts/ios-anti-tampers-bypass/</link>
       <pubDate>Sat, 19 Mar 2022 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</guid>
+      <guid>http://localhost:1314/posts/ios-anti-tampers-bypass/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Hi everyone, in this blog i&amp;rsquo;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&#34;&gt;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;ptrace&lt;/li&gt;&#xA;&lt;li&gt;sysctl&lt;/li&gt;&#xA;&lt;li&gt;strstr&lt;/li&gt;&#xA;&lt;li&gt;geppid&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;In this blog, I will only talk about how I did it to bypass, using only &lt;a href=&#34;https://frida.re&#34;&gt;frida&lt;/a&gt;  with &lt;a href=&#34;https://github.com/radare2&#34;&gt;radare2&lt;/a&gt;. So let&amp;rsquo;s go.&lt;/p&gt;</description>
     </item>
   </channel>
