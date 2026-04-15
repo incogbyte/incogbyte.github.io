@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ios on incogbyte</title>
+    <link>https://incogbyte.github.io/tags/ios/</link>
+    <description>Recent content in Ios on incogbyte</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 15 Apr 2026 10:00:00 -0300</lastBuildDate>
+    <atom:link href="https://incogbyte.github.io/tags/ios/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</title>
+      <link>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</link>
+      <pubDate>Wed, 15 Apr 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</guid>
+      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-1-initial-access&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or via &lt;a href=&#34;mailto:incogbyte@protonmail.com&#34;&gt;email&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;This is the first post in a series where I document the entire process of building a jailbreak for the iPhone 3GS from scratch. The end goal is a fully working jailbreak: unsigned code execution, a patched kernel, Cydia, SSH, the whole thing. But before any of that can happen, we need to get our foot in the door.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
