@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on incogbyte</title>
-    <link>http://localhost:1314/tags/</link>
+    <link>https://incogbyte.github.io/tags/</link>
     <description>Recent content in Tags on incogbyte</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 17 Mar 2026 10:00:00 -0300</lastBuildDate>
-    <atom:link href="http://localhost:1314/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://incogbyte.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Writeup</title>
-      <link>http://localhost:1314/tags/writeup/</link>
+      <link>https://incogbyte.github.io/tags/writeup/</link>
       <pubDate>Tue, 17 Mar 2026 10:00:00 -0300</pubDate>
-      <guid>http://localhost:1314/tags/writeup/</guid>
+      <guid>https://incogbyte.github.io/tags/writeup/</guid>
       <description></description>
     </item>
     <item>
       <title>Ctf</title>
-      <link>http://localhost:1314/tags/ctf/</link>
+      <link>https://incogbyte.github.io/tags/ctf/</link>
       <pubDate>Thu, 09 Jun 2022 10:12:34 -0300</pubDate>
-      <guid>http://localhost:1314/tags/ctf/</guid>
+      <guid>https://incogbyte.github.io/tags/ctf/</guid>
       <description></description>
     </item>
   </channel>
