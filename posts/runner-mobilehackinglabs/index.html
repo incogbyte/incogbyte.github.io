@@ -144,7 +144,7 @@ scene:openURLContexts:
 <p><img src="/images/runner-01.png" alt=""></p>
 <p><img src="/images/runner-02.png" alt=""></p>
 <p><img src="/images/runner-03.png" alt=""></p>
-<p>This  getLicenseFile method in SubscribeController is interesting, constructs an HTTP GET request to http://server/download, including an &ldquo;X-API-Key&rdquo; header with the provided token. If the URL is invalid, it shows an error message.  Analise more functions we have:</p>
+<p>This  getLicenseFile method in SubscribeController is interesting, constructs an HTTP GET request to http://server/download, including an &quot;X-API-Key&quot; header with the provided token. If the URL is invalid, it shows an error message.  Analise more functions we have:</p>
 <pre tabindex="0"><code>verifyLicense
 
 trialSubscription
@@ -157,13 +157,13 @@ It first checks if the server string contains mhl.pages.dev; if not, it shows an
 </span></span><span style="display:flex;"><span>               (undefined <span style="color:#ff79c6">*</span>param_1,uint param_2,<span style="color:#8be9fd">int</span> param_3,<span style="color:#8be9fd">int</span> param_4,undefined8 param_5,
 </span></span><span style="display:flex;"><span>               <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>param_6)
 </span></span></code></pre></div><p><img src="/images/runner-04.png" alt=""></p>
-<p>The closure first checks for network errors, showing a &ldquo;Cannot connect to host while getting license&rdquo; toast if any occur, and exits early. It then verifies the HTTP response status code, displaying &ldquo;Unable to authenticate to server&rdquo; if it’s 401, and exits. Next, it checks the Content-Type header, expecting &ldquo;application/octet-stream&rdquo;; if mismatched, it notifies &ldquo;Unexpected response from server (download path not available)&rdquo; and exits. If valid, it saves the downloaded data as license.dylib, creating necessary directories and handling file operation errors. The closure attempts to dynamically load this library (dlopen), showing an error toast if loading fails. Upon success, it looks up a register_device function; failure to find or execute it triggers a &ldquo;Device registration failed&rdquo; toast, while success shows a message acknowledging the Pro upgrade.  Another thing is the function expect a function called <strong>register_device</strong></p>
+<p>The closure first checks for network errors, showing a &quot;Cannot connect to host while getting license&quot; toast if any occur, and exits early. It then verifies the HTTP response status code, displaying &quot;Unable to authenticate to server&quot; if it’s 401, and exits. Next, it checks the Content-Type header, expecting &quot;application/octet-stream&quot;; if mismatched, it notifies &quot;Unexpected response from server (download path not available)&quot; and exits. If valid, it saves the downloaded data as license.dylib, creating necessary directories and handling file operation errors. The closure attempts to dynamically load this library (dlopen), showing an error toast if loading fails. Upon success, it looks up a register_device function; failure to find or execute it triggers a &quot;Device registration failed&quot; toast, while success shows a message acknowledging the Pro upgrade.  Another thing is the function expect a function called <strong>register_device</strong></p>
 <p><img src="/images/runner-05.png" alt=""></p>
 <h3 id="exploit">Exploit</h3>
 <p>The following steps could be use..</p>
 <ol>
 <li>Bypass the mhl.pages.dev verification</li>
-<li>Create a server that &ldquo;serves&rdquo; the malicious dylib</li>
+<li>Create a server that &quot;serves&quot; the malicious dylib</li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> flask <span style="color:#ff79c6">import</span> Flask, jsonify, request, send_from_directory

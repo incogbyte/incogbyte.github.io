@@ -102,18 +102,18 @@
 </ul>
 <h3 id="understanding-javascript-expression-evaluation">Understanding JavaScript Expression Evaluation</h3>
 <p>In JavaScript, when you use comparison operators like != (not equal to) or logical operators like || (logical OR), the expressions on both sides of the operator are evaluated. This means that any functions called within these expressions will be executed during the evaluation process.</p>
-<p>Example 1: &ldquo;aaaa&rdquo; != confirm(1)</p>
+<p>Example 1: &quot;aaaa&quot; != confirm(1)</p>
 <ul>
-<li>Expression: &ldquo;aaaa&rdquo; != confirm(1)</li>
+<li>Expression: &quot;aaaa&quot; != confirm(1)</li>
 <li>Evaluation Steps:
 <ol>
-<li>The string &ldquo;aaaa&rdquo; is a literal and requires no evaluation.</li>
+<li>The string &quot;aaaa&quot; is a literal and requires no evaluation.</li>
 <li>The confirm(1) function is called to obtain its return value.
 <ul>
 <li>When confirm(1) is executed.</li>
 </ul>
 </li>
-<li>The != operator compares the string &ldquo;aaaa&rdquo; to the boolean result of confirm(1).
+<li>The != operator compares the string &quot;aaaa&quot; to the boolean result of confirm(1).
 <ul>
 <li>Since a string and a boolean are different types, JavaScript performs type coercion.</li>
 <li>The comparison evaluates to true or false, but the key point is that confirm(1) is executed.</li>
@@ -201,7 +201,7 @@
 <ul>
 <li>Obfuscation:
 <ul>
-<li>By using expressions like &ldquo;aaaa&rdquo; != confirm(1), attackers can avoid using blocked keywords like alert or onload directly in event handler attributes.</li>
+<li>By using expressions like &quot;aaaa&quot; != confirm(1), attackers can avoid using blocked keywords like alert or onload directly in event handler attributes.</li>
 <li>Unexpected Execution:
 <ul>
 <li>WAFs may not flag such expressions because they don’t match typical malicious patterns.</li>

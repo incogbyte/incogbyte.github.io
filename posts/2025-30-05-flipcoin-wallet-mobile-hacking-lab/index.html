@@ -58,32 +58,32 @@
 
   <div class="post-content fade-in">
     <h1 id="flipcoin-wallet-ctf---sql-injection-challenge">Flipcoin Wallet CTF - SQL Injection Challenge</h1>
-<p>In this CTF challenge, I&rsquo;ll explore a SQL Injection vulnerability ( Client Side) in the Flipcoin Wallet iOS app. I&rsquo;ll walk you through my process of identifying and exploiting the vulnerability to retrieve a recovery phrase from the application&rsquo;s database (this is the chall 👌).</p>
+<p>In this CTF challenge, I'll explore a SQL Injection vulnerability ( Client Side) in the Flipcoin Wallet iOS app. I'll walk you through my process of identifying and exploiting the vulnerability to retrieve a recovery phrase from the application's database (this is the chall 👌).</p>
 <h1 id="intro">Intro</h1>
-<p>When I first opened the app, I found a typical crypto wallet interface with features for buying, sending, and receiving cryptocurrencies. It also shows crypto news and displays balances for different coins. Since I couldn&rsquo;t find any obvious way to get the recovery phrase through the normal interface, I decided to dig into the app&rsquo;s code to find a way in.</p>
+<p>When I first opened the app, I found a typical crypto wallet interface with features for buying, sending, and receiving cryptocurrencies. It also shows crypto news and displays balances for different coins. Since I couldn't find any obvious way to get the recovery phrase through the normal interface, I decided to dig into the app's code to find a way in.</p>
 <p><img src="/images/flipCoin01.png" alt=""></p>
 <h1 id="static-analysis">Static Analysis</h1>
-<p>Let&rsquo;s start with static analysis. First, I&rsquo;ll check the Info.plist file to understand the app&rsquo;s configuration. This file contains important information like URL schemes (deep links) that the app uses. To begin, we need to get the IPA file. If you have a jailbroken device, you can install it using ideviceinstaller.</p>
+<p>Let's start with static analysis. First, I'll check the Info.plist file to understand the app's configuration. This file contains important information like URL schemes (deep links) that the app uses. To begin, we need to get the IPA file. If you have a jailbroken device, you can install it using ideviceinstaller.</p>
 <p><img src="/images/installer01.png" alt=""></p>
 <p>After extracting the IPA file, I used the ipsw tool to examine the Info.plist contents:</p>
 <p><img src="/images/schema02.png" alt=""></p>
-<p>After examining the contents of the extracted IPA, I discovered that the app is built using Swift and Objective-C. This is interesting because it means we&rsquo;ll need to analyze both languages.</p>
+<p>After examining the contents of the extracted IPA, I discovered that the app is built using Swift and Objective-C. This is interesting because it means we'll need to analyze both languages.</p>
 <blockquote>
 <p>Pro tip: You can use ipsw to get class-dump information for both Swift and Objective-C classes</p>
 </blockquote>
 <p><img src="/images/db01.png" alt=""></p>
-<p>While class-dump gives us method signatures and class structures, it doesn&rsquo;t show us the actual implementation. To understand what these methods do, we need to look at the decompiled code. There are several free tools available for this:</p>
+<p>While class-dump gives us method signatures and class structures, it doesn't show us the actual implementation. To understand what these methods do, we need to look at the decompiled code. There are several free tools available for this:</p>
 <ul>
 <li>Ghidra</li>
 <li>Radare2</li>
 <li>IDA Free (limited features)</li>
 <li>Hopper Free (limited features)</li>
 </ul>
-<p>For this analysis, I&rsquo;ll use IDA Free. Let&rsquo;s load the Flipcoin binary extracted from the IPA into IDA for deeper analysis. After analyzing the code, I found the class responsible for handling the data:</p>
+<p>For this analysis, I'll use IDA Free. Let's load the Flipcoin binary extracted from the IPA into IDA for deeper analysis. After analyzing the code, I found the class responsible for handling the data:</p>
 <p><img src="/images/ida-code-01.png" alt=""></p>
 <p><img src="/images/ida-code-02.png" alt=""></p>
 <h1 id="vulnerability-analysis">Vulnerability Analysis</h1>
-<p>Let&rsquo;s break down what I found in the code:</p>
+<p>Let's break down what I found in the code:</p>
 <h2 id="deep-link-handler">Deep Link Handler</h2>
 <p>The app uses a <code>SceneDelegate.scene(_:openURLContexts:)</code> method to handle deep links. This is a standard iOS method that gets triggered when the app is opened via a URL scheme (in this case, <code>flipcoin://</code>).</p>
 <h2 id="url-processing">URL Processing</h2>
@@ -97,8 +97,8 @@
 <li>Extracts the absolute string from the URL</li>
 <li>Searches for specific parameters:
 <ul>
-<li>&ldquo;amount&rdquo; (numeric value)</li>
-<li>&ldquo;testnet&rdquo; (string value)</li>
+<li>&quot;amount&quot; (numeric value)</li>
+<li>&quot;testnet&quot; (string value)</li>
 </ul>
 </li>
 </ul>
@@ -106,8 +106,8 @@
 <li>
 <p><strong>Parameter Validation</strong></p>
 <ul>
-<li>Checks if &ldquo;amount&rdquo; equals 42</li>
-<li>Verifies if &ldquo;testnet&rdquo; is present in the URL</li>
+<li>Checks if &quot;amount&quot; equals 42</li>
+<li>Verifies if &quot;testnet&quot; is present in the URL</li>
 <li>If both conditions are met, it assumes the request is valid</li>
 </ul>
 </li>
@@ -119,12 +119,12 @@
 </li>
 </ol>
 <h1 id="testing-the-vulnerability">Testing the Vulnerability</h1>
-<p>Let&rsquo;s create a simple HTML payload to test this functionality:</p>
+<p>Let's create a simple HTML payload to test this functionality:</p>
 <p><img src="/images/deeplink-flip-00.png" alt=""></p>
 <p><img src="/images/deeplink-flip-01.png" alt=""></p>
 <p>I intercepted the request using Burp Suite:</p>
 <p><img src="/images/deeplink-flip-02.png" alt=""></p>
-<p>This request revealed the account address, but our goal is to retrieve the recovery key. Let&rsquo;s go back to IDA and search for database-related strings and iOS methods, particularly focusing on NSManager.</p>
+<p>This request revealed the account address, but our goal is to retrieve the recovery key. Let's go back to IDA and search for database-related strings and iOS methods, particularly focusing on NSManager.</p>
 <p><img src="/images/ida-manager-01.png" alt=""></p>
 <p><img src="/images/ida-manager-02.png" alt=""></p>
 <h1 id="exploitation">Exploitation</h1>
@@ -134,7 +134,7 @@
 <p><img src="/images/localhost-01.png" alt=""></p>
 <p>Returning to IDA, I searched for SQL commands and found a potential SQL injection point:</p>
 <p><img src="/images/SQL-01.png" alt=""></p>
-<p>Let&rsquo;s test our deep link exploit:</p>
+<p>Let's test our deep link exploit:</p>
 <p><img src="/images/SQL-02.png" alt=""></p>
 <p><img src="/images/SQL-03.png" alt=""></p>
 <p>Success! We got the first entry. Since this is a mobile app and not a web application, using <code>OR 1=1</code> is safe in this context.</p>
@@ -144,7 +144,7 @@
 <p><img src="/images/SQL-06.png" alt=""></p>
 <h1 id="conclusion">Conclusion</h1>
 <p>This lab demonstrates a critical security vulnerability in mobile applications: SQL injection + deep links. The lack of proper input validation in the URL handling mechanism allowed us to inject SQL commands and retrieve sensitive data. This type of vulnerability  can lead to the exposure of sensitive information.</p>
-<p>For those interested in learning more about mobile security and practicing these concepts, I recommend visiting the MobileHackingLab - Flipcoin Wallet challenge. It&rsquo;s an excellent opportunity to enhance your skills in mobile application security testing and vulnerability assessment.</p>
+<p>For those interested in learning more about mobile security and practicing these concepts, I recommend visiting the MobileHackingLab - Flipcoin Wallet challenge. It's an excellent opportunity to enhance your skills in mobile application security testing and vulnerability assessment.</p>
 
   </div>
 

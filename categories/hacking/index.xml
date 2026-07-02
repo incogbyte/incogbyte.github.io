@@ -6,8 +6,15 @@
     <description>Recent content in Hacking on incogbyte</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 15 Apr 2026 10:00:00 -0300</lastBuildDate>
+    <lastBuildDate>Thu, 02 Jul 2026 10:00:00 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/categories/hacking/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</title>
+      <link>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</link>
+      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</guid>
+      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-2-reverse-engineering-the-bootrom&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or on &lt;a href=&#34;https://linkedin.com/in/rodolfo-tavares-543863a7&#34;&gt;LinkedIn&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;h2 id=&#34;where-we-left-off&#34;&gt;Where we left off&lt;/h2&gt;&#xA;&lt;p&gt;In &lt;a href=&#34;https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/&#34;&gt;Part 1&lt;/a&gt; we used&#xA;the &lt;strong&gt;limera1n&lt;/strong&gt; heap overflow to break into the iPhone 3GS SecureROM in DFU mode,&#xA;ran a 76-byte ARM payload, and pulled 64KB of raw code out of the chip:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</title>
       <link>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</link>
@@ -41,7 +48,7 @@
       <link>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</link>
       <pubDate>Sat, 19 Mar 2022 17:12:34 -0300</pubDate>
       <guid>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Hi everyone, in this blog i&amp;rsquo;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&#34;&gt;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;ptrace&lt;/li&gt;&#xA;&lt;li&gt;sysctl&lt;/li&gt;&#xA;&lt;li&gt;strstr&lt;/li&gt;&#xA;&lt;li&gt;geppid&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;In this blog, I will only talk about how I did it to bypass, using only &lt;a href=&#34;https://frida.re&#34;&gt;frida&lt;/a&gt;  with &lt;a href=&#34;https://github.com/radare2&#34;&gt;radare2&lt;/a&gt;. So let&amp;rsquo;s go.&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;strong&gt;Hi everyone, in this blog i&#39;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&#34;&gt;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;ptrace&lt;/li&gt;&#xA;&lt;li&gt;sysctl&lt;/li&gt;&#xA;&lt;li&gt;strstr&lt;/li&gt;&#xA;&lt;li&gt;geppid&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;In this blog, I will only talk about how I did it to bypass, using only &lt;a href=&#34;https://frida.re&#34;&gt;frida&lt;/a&gt;  with &lt;a href=&#34;https://github.com/radare2&#34;&gt;radare2&lt;/a&gt;. So let&#39;s go.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

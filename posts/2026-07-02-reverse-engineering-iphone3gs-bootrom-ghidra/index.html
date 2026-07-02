@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM | incogbyte</title>
+  <meta name="description" content="Offensive Security">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <canvas id="matrix-bg"></canvas>
+  <div class="scanline"></div>
+
+  <header class="site-header">
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <span class="logo-bracket">[</span>
+      <span class="logo-text">incogbyte</span>
+      <span class="logo-bracket">]</span>
+      <span class="cursor">_</span>
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links">
+      
+      <li><a href="/" class="nav-link">Home</a></li>
+      
+      <li><a href="/posts/" class="nav-link">Posts</a></li>
+      
+      <li><a href="/cve/" class="nav-link">CVEs</a></li>
+      
+      <li><a href="/about/" class="nav-link">About</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+
+  <main class="container">
+    
+<article class="post-single">
+  <header class="post-header fade-in">
+    <h1 class="post-single-title">Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</h1>
+    
+    <div class="post-single-meta">
+      <time>July 02, 2026</time>
+      <span class="reading-time">28 min read</span>
+    </div>
+    
+    
+    <div class="post-tags">
+      
+      <span class="tag">ios</span>
+      
+      <span class="tag">arm</span>
+      
+      <span class="tag">exploit</span>
+      
+      <span class="tag">hardware</span>
+      
+      <span class="tag">jailbreak</span>
+      
+      <span class="tag">reverse-engineering</span>
+      
+      <span class="tag">ghidra</span>
+      
+      <span class="tag">bootrom</span>
+      
+    </div>
+    
+  </header>
+
+  <div class="post-content fade-in">
+    <h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-2-reverse-engineering-the-bootrom">Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</h1>
+<blockquote>
+<p><strong>Note:</strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on <a href="https://x.com/incogbyte">X (@incogbyte)</a> or on <a href="https://linkedin.com/in/rodolfo-tavares-543863a7">LinkedIn</a>. I am grateful for any corrections and happy to learn from them.</p>
+</blockquote>
+<h2 id="where-we-left-off">Where we left off</h2>
+<p>In <a href="/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/">Part 1</a> we used
+the <strong>limera1n</strong> heap overflow to break into the iPhone 3GS SecureROM in DFU mode,
+ran a 76-byte ARM payload, and pulled 64KB of raw code out of the chip:</p>
+<pre tabindex="0"><code>File:     bootrom.bin
+Size:     65536 bytes (64KB)
+SHA-256:  0e6feb1144c95b1ee088ecd6c45bfdc2ed17191167555b6ca513d6572e463c86
+Device:   iPhone 3GS (S5L8920, SecureROM 359.3.2)
+</code></pre><p>That was the &quot;get a foot in the door&quot; step. But <code>bootrom.bin</code> is still a black
+box, 64KB of bytes that Apple engineers wrote in 2008 and burned into the chip.
+This post is about <strong>turning those bytes into something we can read</strong>: loading it
+into Ghidra correctly, finding the vector table and reset handler, following the
+strings, and, the fun part, walking straight up to the same functions the
+exploit abused in Part 1 and reading their source.</p>
+<p>Quick reminder of where this sits in the series:</p>
+<ul>
+<li><strong>Part 1: initial access</strong>, limera1n, dumping the BootROM ✅</li>
+<li><strong>Part 2: Reverse Engineering the BootROM</strong> &lt;-- <em>you are here</em></li>
+<li>Part 3: Bypassing the Boot Chain</li>
+<li>Part 4: Loading a Custom Payload</li>
+<li>Part 5: Kernel Patching and Root</li>
+<li>Part 6: The Jailbreak</li>
+</ul>
+<hr>
+<h2 id="1-first-contact-what-are-we-even-holding">1. First contact: what are we even holding?</h2>
+<p>Before opening any disassembler, look at the raw shape of the file. This tells you
+how to load it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ls -la bootrom.bin
+</span></span><span style="display:flex;"><span>-rw-r--r--  <span style="color:#bd93f9">65536</span>  bootrom.bin
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ xxd bootrom.bin | head -4
+</span></span><span style="display:flex;"><span>00000000: 0e00 00ea 18f0 9fe5 18f0 9fe5 18f0 9fe5  ................
+</span></span><span style="display:flex;"><span>00000010: 18f0 9fe5 18f0 9fe5 18f0 9fe5 18f0 9fe5  ................
+</span></span><span style="display:flex;"><span>00000020: <span style="color:#bd93f9">4000</span> <span style="color:#bd93f9">0000</span> c055 <span style="color:#bd93f9">0000</span> d055 <span style="color:#bd93f9">0000</span> e855 <span style="color:#bd93f9">0000</span>  @....U...U...U..
+</span></span><span style="display:flex;"><span>00000030: 0c56 <span style="color:#bd93f9">0000</span> <span style="color:#bd93f9">2456</span> <span style="color:#bd93f9">0000</span> <span style="color:#bd93f9">2856</span> <span style="color:#bd93f9">0000</span> <span style="color:#bd93f9">3856</span> <span style="color:#bd93f9">0000</span>  .V..<span style="color:#8be9fd;font-style:italic">$V</span>..<span style="color:#ff79c6">(</span>V..8V..
+</span></span></code></pre></div><p>Two things right away:</p>
+<ol>
+<li>
+<p><strong>There is no file header.</strong> No Mach-O magic, no ELF magic, nothing. This is a
+<em>flat binary</em>, the raw contents of memory starting at physical address <code>0x0</code>.
+A disassembler will not auto-detect anything, we have to tell it the
+architecture and base address by hand.</p>
+</li>
+<li>
+<p><strong>The very first word is <code>0e 00 00 ea</code>.</strong> In ARM that decodes to
+<code>B #0x40</code>, an unconditional branch. That is the classic ARM <strong>reset vector</strong>:
+in the ARM architecture, address <code>0x0</code> is the first entry of the exception
+vector table, the fixed slot the core jumps to the instant it powers on (see
+the <a href="https://developer.arm.com/documentation/ddi0406/latest/">ARM Architecture Reference Manual (ARMv7-A/R), &quot;Exceptions&quot;</a>).
+The CPU powers on, sets PC = 0, and the first thing it does is jump to <code>0x40</code>.
+So byte 0 is code, and it's 32-bit ARM, little-endian.</p>
+</li>
+</ol>
+<p>How much of the 64KB is actually <em>used</em>? A quick script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>d <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#39;bootrom.bin&#39;</span>,<span style="color:#f1fa8c">&#39;rb&#39;</span>)<span style="color:#ff79c6">.</span>read()
+</span></span><span style="display:flex;"><span>last <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">max</span>(i <span style="color:#ff79c6">for</span> i,b <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(d) <span style="color:#ff79c6">if</span> b <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;last non-zero byte at 0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#39;</span> <span style="color:#ff79c6">%</span> last)     <span style="color:#6272a4"># --&gt; 0xb218</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;zeros: </span><span style="color:#f1fa8c">%.1f%%</span><span style="color:#f1fa8c">&#39;</span> <span style="color:#ff79c6">%</span> (<span style="color:#bd93f9">100</span><span style="color:#ff79c6">*</span>d<span style="color:#ff79c6">.</span>count(<span style="color:#bd93f9">0</span>)<span style="color:#ff79c6">/</span><span style="color:#8be9fd;font-style:italic">len</span>(d)))  <span style="color:#6272a4"># --&gt; 38.5%</span>
+</span></span></code></pre></div><p>So the real ROM is roughly <code>0x0</code>-<code>0xb218</code> (~45KB of code + data), and the rest is
+zero padding out to the 64KB ROM window. Good, we know the map's boundaries
+before we start.</p>
+<p><img src="/images/jbiphone3gs/bootrom_zero_tail.png" alt="Last non-zero byte at 0xb218, 38.5% of the dump is zero padding"></p>
+<hr>
+<h2 id="2-loading-it-into-ghidra-and-the-mistake-i-made-first">2. Loading it into Ghidra (and the mistake I made first)</h2>
+<p>This is the step where it's easy to waste an hour. The import options <em>must</em> match
+the silicon, or every address Ghidra shows you is wrong and nothing cross-references.</p>
+<p><strong>File --&gt; Import File --&gt; bootrom.bin</strong>, then:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Option</th>
+          <th>Value</th>
+          <th>Why</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Language</td>
+          <td><code>ARM:LE:32:v7</code></td>
+          <td>S5L8920 is a Cortex-A8 (ARMv7-A) core, little-endian, 32-bit</td>
+      </tr>
+      <tr>
+          <td>Base / Image Base</td>
+          <td><code>0x00000000</code></td>
+          <td>The ROM is mapped at physical <code>0x0</code>, branches use absolute targets</td>
+      </tr>
+      <tr>
+          <td>Format</td>
+          <td>Raw Binary</td>
+          <td>there is no container to parse</td>
+      </tr>
+  </tbody>
+</table>
+<blockquote>
+<p><strong>The mistake:</strong> my first import used base address <code>0x84000000</code>, the SRAM
+address from Part 1, because that number was burned into my brain from the
+exploit. Wrong. <code>0x84000000</code> is where our <em>payload</em> copied the ROM to so USB
+could read it. The ROM itself <em>executes</em> from <code>0x0</code>. Load it at <code>0x0</code>, otherwise
+the handler table at <code>0x20</code> (which holds absolute addresses like <code>0x000055c0</code>)
+points into nowhere and Ghidra's auto-analysis finds almost no functions.</p>
+</blockquote>
+<p><img src="/images/jbiphone3gs/ghidra_import_options.png" alt="Ghidra import: ARM v7 32-bit little-endian, and the options dialog with Base Address 0x0, Length 0x10000"></p>
+<p>One more subtlety that matters a lot on this chip: <strong>the SecureROM is a mix of ARM
+and Thumb code (<a href="https://developer.arm.com/documentation/%EE%80%80dui0473/latest/overview-of-the-arm-archi%EE%80%80tecture/arm-and-thumb-instruction-set-ov%EE%80%80erview">https://developer.arm.com/documentation/%EE%80%80dui0473/latest/overview-of-the-arm-archi%EE%80%80tecture/arm-and-thumb-instruction-set-ov%EE%80%80erview</a>).</strong> A quick primer if the term is new: <strong>Thumb</strong> is ARM's compact
+16-bit instruction encoding. It's the same processor and the same registers, just a
+narrower set of instructions that take half the space, which is why boot ROMs (where
+every byte counts) lean on it heavily. The core flips between the two states at
+runtime, and the low bit of a branch target address selects which one (bit 0 = 1
+means &quot;decode the destination as Thumb&quot;).</p>
+<p>Concretely here: the reset path at <code>0x40</code> is 32-bit ARM. Almost everything after it
+is 16-bit Thumb. Ghidra's auto-analysis handles a lot of this via the <code>BX</code>/<code>BLX</code>
+transitions, but you'll be flipping individual functions between ARM and Thumb by
+hand (<code>Ctrl+Shift+G</code> --&gt; set the <code>TMode</code> context register). If a &quot;function&quot; looks
+like total garbage, you're decoding Thumb as ARM or vice-versa.</p>
+<p>To make this post reproducible without Ghidra, I also disassembled the key regions
+with <a href="https://www.capstone-engine.org/">Capstone</a>, the little script is at the
+<a href="#appendix-a-reproduce-this-with-capstone">end of the post</a>. Most of the raw
+disassembly listings below come straight out of it, where I lean on Ghidra's
+resolved constants or its decompiler, I'll call it out.</p>
+<hr>
+<h2 id="3-the-vector-table-0x0---0x40">3. The vector table (0x0 - 0x40)</h2>
+<p>The first 32 bytes are the ARM exception vectors, eight 32-bit slots, one per CPU
+exception. On this ROM, seven of them are <code>LDR PC, [PC, #0x18]</code> (load the real
+handler address from a table <code>0x18</code> bytes ahead), and the first is a direct branch:</p>
+<pre tabindex="0"><code>0x0000:  b     #0x40              ; Reset  --&gt; jump straight to init
+0x0004:  ldr   pc, [pc, #0x18]    ; Undefined Instruction
+0x0008:  ldr   pc, [pc, #0x18]    ; Software Interrupt (SVC)
+0x000c:  ldr   pc, [pc, #0x18]    ; Prefetch Abort
+0x0010:  ldr   pc, [pc, #0x18]    ; Data Abort
+0x0014:  ldr   pc, [pc, #0x18]    ; (reserved)
+0x0018:  ldr   pc, [pc, #0x18]    ; IRQ
+0x001c:  ldr   pc, [pc, #0x18]    ; FIQ
+</code></pre><p>And the table those <code>LDR</code>s read from, sitting right after at <code>0x20</code>:</p>
+<pre tabindex="0"><code>Reset          --&gt; 0x00000040
+Undefined      --&gt; 0x000055c0
+SWI / SVC      --&gt; 0x000055d0
+Prefetch Abort --&gt; 0x000055e8
+Data Abort     --&gt; 0x0000560c
+Reserved       --&gt; 0x00005624
+IRQ            --&gt; 0x00005628
+FIQ            --&gt; 0x00005638
+</code></pre><p>This is already useful intel. Those seven handlers clustered at <code>0x55c0</code>-<code>0x5638</code>
+are the exception/panic machinery. When our Part 1 exploit sent the stall trigger
+and the device &quot;raised an error&quot;, <em>this</em> is the region of code that fielded the
+resulting fault. We now have its address. (We'll come back to the panic path in a
+second, the strings will confirm it.)</p>
+<blockquote>
+<p><strong>In Ghidra:</strong> if it hasn't already, mark <code>0x20</code>-<code>0x40</code> as an array of 8
+pointers (<code>P</code> on the first word, then <code>[</code> for array). Each entry becomes a
+clickable cross-reference to a handler. Instant map of the CPU's fault surface.</p>
+</blockquote>
+<p><img src="/images/jbiphone3gs/ghidra_vector_table.png" alt="The exception vector table at 0x0 with Ghidra's auto-created Reset / IRQ / FIQ labels and the handler pointer table at 0x20"></p>
+<hr>
+<h2 id="4-the-reset-handler-0x40-relocation--bss-zeroing">4. The reset handler (0x40): relocation + BSS zeroing</h2>
+<p>Following the reset branch to <code>0x40</code> lands us in 32-bit ARM. This is the very first
+code the chip runs on power-on, and it does exactly what a bare-metal reset stub is
+supposed to do, figure out where it's running, relocate itself to its link address
+if it isn't already there, copy the data segment, zero the BSS, set up a stack for
+every CPU mode, and jump into the real firmware. Once Ghidra resolves the literal
+pool, the constants turn this from a generic stub into a <strong>map of the SecureROM's
+runtime memory layout</strong>:</p>
+<pre tabindex="0"><code>; --- relocate self to link address 0x0 (skipped here: already at 0x0) ---
+0x0040:  cpy   r0, pc                 ; where am I actually running?
+0x0044:  ldr   r1, [DAT_00000310]     ; = 0x48
+0x0048:  sub   r0, r0, r1             ; r0 = relocation delta (0 on this device)
+0x004c:  ldr   r1, [DAT_00000314]     ; = 0x0  (dst = link address)
+0x0050:  cmp   r0, r1
+0x0054:  beq   0x78                   ; delta == 0? already home, skip the copy
+0x005c:  ldr   r2, [DAT_00000318]     ; = 0xB000  (copy length: 44 KB)
+0x0060:  ldr   r3, [r0], #4           ; \  copy code to 0x0 (only runs if the ROM
+0x0068:  str   r3, [r1], #4           ; /  is loaded elsewhere; a no-op here)
+0x006c:  bne   0x60
+0x0074:  bx    r1                     ; jump to the copied-out code
+
+; --- copy data segment + zero BSS ---
+0x008c:  ldr   r1, [DAT_00000328]     ; = 0x84024000  (data dst)
+0x0090:  ldr   r2, [DAT_0000032c]     ; = 0x21C       (data len)
+...                                    ; copy 0x21C bytes of .data
+0x00a4:  ldr   r0, [DAT_0000031c]     ; = 0x8402421C  (BSS start)
+0x00a8:  ldr   r1, [DAT_00000320]     ; = 0x84026000  (BSS end)
+0x00b4:  strlt r2, [r0], #4           ; while (start &lt; end) *start++ = 0
+
+; --- set up a stack for every ARM processor mode ---
+0x00bc:  mrs   r0, cpsr
+0x00c4:  orr   r1, r0, #0x12          ; IRQ mode
+0x00cc:  ldr   sp, [DAT_00000330]     ; = 0x84031800
+0x00d0:  orr   r1, r0, #0x11          ; FIQ mode  --&gt; sp = 0x84031800
+0x00dc:  orr   r1, r0, #0x17          ; Abort mode --&gt; sp = 0x84031800
+0x00e8:  orr   r1, r0, #0x1b          ; Undefined mode --&gt; sp = 0x84031800
+0x00f4:  orr   r1, r0, #0x13          ; Supervisor (SVC) mode
+0x00fc:  ldr   sp, [DAT_00000334]     ; = 0x84034000   &lt;-- remember this number
+0x0100:  ldr   r0, [DAT_0000030c]     ; = 0x6EF
+0x0108:  bx    r0                      ; jump into securerom_main() (Thumb, 0x6ee)
+</code></pre><p>So the ROM relocates itself to its link address (a no-op when it's already running
+from <code>0x0</code>), lays out <code>.data</code> at <code>0x84024000</code> and <code>.bss</code> up to <code>0x84026000</code>, gives
+IRQ/FIQ/Abort/Undefined modes a stack at <code>0x84031800</code>, gives
+<strong>Supervisor (SVC) mode a stack topping out at <code>0x84034000</code></strong>, and finally <code>bx</code>es
+into the main firmware routine at <code>0x6ee</code>. That's the whole pre-boot world in ~50
+instructions.</p>
+<p><img src="/images/jbiphone3gs/ghidra_reset_handler.png" alt="Ghidra listing of reset_handler at 0x40, with the literal pool resolved: copy length 0xB000, data at 0x84024000, BSS to 0x84026000, and the per-mode stacks"></p>
+<h3 id="the-number-we-typed-on-faith-in-part-1">The number we typed on faith in Part 1</h3>
+<p>First, what is a &quot;Supervisor stack&quot;? ARM cores don't run in one flat mode. The
+processor has several <strong>modes</strong> (User, Supervisor/SVC, IRQ, FIQ, Abort, Undefined,
+System), and a few of them, including SVC, get their own <em>banked</em> stack pointer, a
+private <code>SP</code> that's swapped in automatically when the CPU enters that mode. Supervisor
+mode is the privileged mode the core boots into and returns to on an <code>SVC</code> call, so
+the &quot;Supervisor stack&quot; is simply wherever <code>SP</code> points while the CPU is in SVC mode,
+the region the reset handler just pointed at <code>0x84034000</code>.</p>
+<p>Look again at that SVC stack top: <strong><code>0x84034000</code></strong>. Now recall the single most
+important constant from the Part 1 exploit, the address we overwrote to hijack the
+Link Register:</p>
+<pre tabindex="0"><code>EXPLOIT_LR = 0x84033FA4
+</code></pre><p>Do the subtraction:</p>
+<pre tabindex="0"><code>0x84034000  (top of the Supervisor stack, set up right here at 0x00fc)
+- 0x84033FA4 (EXPLOIT_LR)
+= 0x5C       (92 bytes)
+</code></pre><p><code>EXPLOIT_LR</code> sits <strong>92 bytes below the top of the SVC stack</strong>, the exact stack this
+reset handler just created. The USB/DFU code runs in Supervisor mode, so the saved
+return address (LR) that limera1n corrupts lives <em>on this stack</em>. In Part 1 we
+copied <code>0x84033FA4</code> out of <code>ipwndfu</code>'s per-chip table and trusted it blindly. Here's
+the static proof of where that number comes from: it's not magic, it's a slot in the
+Supervisor stack that the ROM allocates in its very first 50 instructions. Reverse
+engineering just turned a copied constant into an <em>understood</em> one. ❤️</p>
+<p>A couple of terms worth unpacking, since this is a study project and I'm reasoning
+out loud rather than claiming certainty. A <strong>relocation delta</strong> is just the
+difference between where the code is <em>actually</em> executing right now and where it was
+<em>built</em> to run. The <code>cpy r0, pc</code> grabs the current address, the <code>sub</code> subtracts the
+expected one, and the leftover is how far off we are, if it's zero the code is
+already home and the copy loop is skipped. A <strong>sanity check</strong> is the cheap &quot;does this
+even look right?&quot; test you do before trusting anything: here, if disassembling <code>0x40</code>
+doesn't produce this recognizable relocate-then-zero-BSS shape, then I've almost
+certainly loaded the file wrong (bad base address, or ARM decoded as Thumb), and I
+should fix that before reading another line.</p>
+<p>The ordering also seems important, though I'm inferring intent from the code rather
+than from any Apple source: the ROM relocates itself, sets up the stacks, and only
+<em>then</em> (<code>bx 0x6ee</code>) jumps into the firmware that brings up USB, crypto, and the heap.
+If that reading is right, it explains why the exploit can only land <em>later</em>, once the
+DFU loop is live and the allocator is actually running, none of the machinery
+limera1n abuses exists yet at reset time.</p>
+<hr>
+<h2 id="5-strings-are-a-treasure-map">5. Strings are a treasure map</h2>
+<p>Before grinding through Thumb functions, dump the strings, they're free labels for
+half the binary. <code>strings -a -t x</code> (offset in hex) on this ROM is unusually
+rewarding:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ strings -a -t x -n <span style="color:#bd93f9">5</span> bootrom.bin
+</span></span><span style="display:flex;"><span>     <span style="color:#bd93f9">200</span> SecureROM <span style="color:#ff79c6">for</span> s5l8920xsi, Copyright 2008, Apple Inc.
+</span></span><span style="display:flex;"><span>     <span style="color:#bd93f9">240</span> RELEASE
+</span></span><span style="display:flex;"><span>     <span style="color:#bd93f9">280</span> iBoot-359.3.2
+</span></span><span style="display:flex;"><span>    a144 Apple Secure Boot Certification Authority
+</span></span><span style="display:flex;"><span>    a170 Apple Inc.
+</span></span><span style="display:flex;"><span>    a17c Apple Mobile Device <span style="color:#ff79c6">(</span>DFU Mode<span style="color:#ff79c6">)</span>
+</span></span><span style="display:flex;"><span>    a19c CPID:%04X CPRV:%02X CPFM:%02X SCEP:%02X BDID:%02X ECID:%016llX
+</span></span><span style="display:flex;"><span>    a1dc  SRTG:<span style="color:#ff79c6">[</span>
+</span></span><span style="display:flex;"><span>    a1e8 double panic
+</span></span><span style="display:flex;"><span>    a1f8 panic:
+</span></span><span style="display:flex;"><span>    a204 idle task
+</span></span><span style="display:flex;"><span>    a210 &lt;null&gt;
+</span></span><span style="display:flex;"><span>    ae60 0123456789ABCDEF0123456789abcdef
+</span></span><span style="display:flex;"><span>    b0b0 bootstrap
+</span></span></code></pre></div><p>Let me pull on a few of these threads.</p>
+<h3 id="51-the-banner-block-0x200">5.1 The banner block (0x200)</h3>
+<pre tabindex="0"><code>0x0200  SecureROM for s5l8920xsi, Copyright 2008, Apple Inc.\0
+0x0240  RELEASE\0
+0x0280  iBoot-359.3.2\0
+</code></pre><p><code>s5l8920xsi</code> is the exact SoC (S5L8920 = the 3GS). <code>RELEASE</code> is the build variant
+(vs. a <code>DEBUG</code> SecureROM Apple used internally). And <code>iBoot-359.3.2</code> is the version
+string, the same one that showed up in the USB serial in Part 1
+(<code>SRTG:[iBoot-359.3.2]</code>). That's not a coincidence...</p>
+<h3 id="52-the-string-that-printed-our-own-serial-number-">5.2 The string that printed our own serial number 🤯</h3>
+<p>Look at <code>0xa19c</code>:</p>
+<pre tabindex="0"><code>CPID:%04X CPRV:%02X CPFM:%02X SCEP:%02X BDID:%02X ECID:%016llX
+</code></pre><p>followed immediately by <code> SRTG:[</code> and <code>]</code> at <code>0xa1dc</code>.</p>
+<p><strong>This is the format string that built the DFU serial number we read in Part 1 to
+identify the chip.</strong> Remember this, from the recon step?</p>
+<pre tabindex="0"><code>CPID:8920 SRTG:[iBoot-359.3.2]
+</code></pre><p><code>CPID:8920</code> is how we knew it was a 3GS (S5L8920) and therefore vulnerable to
+limera1n. We were, without realizing it, reading the output of <em>this exact
+<code>snprintf</code>-style call inside the ROM we've now dumped.</em> The USB descriptor strings
+sit right above it:</p>
+<pre tabindex="0"><code>0xa170  Apple Inc.\0
+0xa17c  Apple Mobile Device (DFU Mode)\0
+</code></pre><p>Those are the USB manufacturer/product strings your Mac shows when the phone is in
+DFU. Here's why that matters for finding code. A string on its own is dead data, but
+a disassembler records every place in the code that <em>references</em> an address, its
+cross-references, or <strong>xrefs</strong>. So if I look up who reads <code>0xa19c</code>, I get the exact
+function that assembles the serial number, and that function lives deep in the code
+that sets up USB and answers DFU requests.</p>
+<p>That's what I mean by &quot;the neighborhood limera1n lives in&quot;: the limera1n bug is a
+heap corruption in how the SecureROM handles USB/DFU transfers, so the vulnerable
+code sits in that same USB/DFU cluster. Landing on the serial-builder puts me a few
+function calls away from the bug itself. Walking <em>backwards</em> from a recognizable
+string to its xref, instead of reading 45KB of Thumb top to bottom, is one of the
+fastest ways to parachute straight into the interesting code.</p>
+<p><img src="/images/jbiphone3gs/ghidra_serial_format_xref.png" alt="The CPID:%04X... serial format string at 0xa19c, with its single XREF pointing at the function that assembles the DFU serial number"></p>
+<h3 id="53-the-panic-path">5.3 The panic path</h3>
+<p><code>double panic</code>, <code>panic: </code>, <code>idle task</code>, <code>&lt;null&gt;</code> at <code>0xa1e8</code>-<code>0xa210</code> are the
+strings the exception handlers we found at <code>0x55c0</code>-<code>0x5638</code> print. Cross-reference
+<code>panic: </code> and you land right in that cluster, confirming what the vector table
+already told us.</p>
+<h3 id="54-the-trust-anchor-an-embedded-apple-certificate">5.4 The trust anchor: an embedded Apple certificate</h3>
+<p><code>0xa144</code> says <code>Apple Secure Boot Certification Authority</code>, and just after it, at
+<code>0xa230</code>, there's a DER-encoded X.509 certificate:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#6272a4"># a DER SEQUENCE is 0x30 0x82 &lt;len_hi&gt; &lt;len_lo&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#bd93f9">0xa230</span>:  <span style="color:#bd93f9">30</span> <span style="color:#bd93f9">82</span> <span style="color:#bd93f9">03</span> a3   <span style="color:#ff79c6">--&gt;</span> SEQUENCE, length <span style="color:#bd93f9">0x3a3</span> (<span style="color:#bd93f9">931</span> <span style="color:#8be9fd;font-style:italic">bytes</span>)
+</span></span></code></pre></div><p>with human-readable fields sprinkled through it:</p>
+<pre tabindex="0"><code>a265  Apple Inc.
+a27a  Apple Certification Authority
+a2a2  Apple Root CA
+a4f3  https://www.apple.com/appleca/
+a524  Reliance on this certificate by any party assumes acceptance of ...
+</code></pre><p>This is a <strong>huge</strong> find for the series. This baked-in certificate is the <strong>root of
+trust</strong> for the whole boot chain. When the SecureROM loads the next stage (LLB /
+iBSS), it verifies an RSA signature over an Image3 (<code>img3</code>) blob, and the chain of
+trust terminates <em>here</em>, at a certificate physically burned into the chip. This is
+the thing Apple is protecting: you cannot boot code the ROM can't trace back to
+this cert.</p>
+<p>Which means <strong>this cert, and the code that checks signatures against it, is the
+target of Part 3.</strong> We're going to find the RSA/SHA-1 verification routine, work out
+exactly where it decides &quot;signature valid / invalid&quot;, and neutralize that decision.
+For now it's enough to know where the anchor lives: <code>0xa230</code>.</p>
+<p><img src="/images/jbiphone3gs/ghidra_strings_certificate.png" alt="The Apple Secure Boot Certification Authority string and the USB DFU descriptor strings (Apple Inc. / Apple Mobile Device (DFU Mode)), each with an XREF into the code"></p>
+<p>There's also a plain hex lookup table at <code>0xae60</code>:</p>
+<pre tabindex="0"><code>0123456789ABCDEF0123456789abcdef
+</code></pre><p>That's the alphabet a <code>hex()</code> / byte-to-ASCII helper indexes into, the exact thing
+the <code>%02X</code> conversions in the serial string need. Small detail, but finding its
+xrefs points you straight at the ROM's string-formatting helper.</p>
+<hr>
+<h2 id="6-meeting-an-old-enemy-the-dfu-buffer-and-the-heap-allocator">6. Meeting an old enemy: the DFU buffer and the heap allocator</h2>
+<p>Here's the part I was most excited about. In Part 1 we abused a heap overflow
+<strong>completely blind</strong>, we knew the shape of a heap block only from <code>ipwndfu</code>'s
+constants and pod2g's notes:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ff79c6">struct</span> heap_block {
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd">uint32_t</span> flags;   <span style="color:#6272a4">// 0x405 = free
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">uint32_t</span> size;
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd">uint32_t</span> prev;    <span style="color:#6272a4">// we overwrote this --&gt; shellcode
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">uint32_t</span> next;    <span style="color:#6272a4">// we overwrote this --&gt; LR
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>};
+</span></span></code></pre></div><p>One term first, because the whole exploit hinges on it: a <strong>heap allocator</strong> is the
+code that hands out dynamic memory on request and takes it back later, the classic
+<code>malloc()</code> / <code>free()</code> pair from C. To keep track of what's handed out, an allocator
+stores bookkeeping, its <strong>metadata</strong>, usually in a small header right before each
+block: how big it is, whether it's free, and pointers linking it to its neighbors in
+a free list. The canonical design almost every embedded allocator borrows from is
+Doug Lea's <code>dlmalloc</code>, whose write-up
+(<a href="https://gee.cs.oswego.edu/dl/html/malloc.html">A Memory Allocator</a>) explains those
+headers and free lists in detail. The reason this matters to us: if you can overwrite
+that metadata, you can trick <code>free()</code> into writing an attacker-controlled value to an
+attacker-controlled address, which is exactly the primitive limera1n uses.</p>
+<p>Now we have the actual allocator in front of us. Let's read it instead of guessing.</p>
+<h3 id="61-the-dfu-buffer-allocation-0x34a4">6.1 The DFU buffer allocation (0x34a4)</h3>
+<p>Our payload's <code>usb_wait_for_image</code> (more on that below) calls a function at
+<code>0x34a4</code>. Its opening is unmistakable:</p>
+<pre tabindex="0"><code>0x34a4:  push  {r4, r5, r6, r7, lr}
+0x34a6:  mov   r6, fp
+...
+0x34b4:  movs  r0, #0x80
+0x34b6:  movs  r3, #0x32
+0x34b8:  lsls  r0, r0, #4          ; r0 = 0x80 &lt;&lt; 4 = 0x800   &lt;-- DFU chunk size!
+0x34ba:  str   r3, [r6]            ; r3 = 0x32 = 50 (a status/timeout constant)
+...
+0x34c4:  bl    #0x1aa8             ; malloc(0x800)
+0x34c8:  ldr   r3, [pc, #0xe8]
+0x34ca:  str   r0, [r3]            ; stash the buffer pointer in a global
+0x34cc:  cmp   r0, #0
+0x34ce:  beq   #0x359c             ; bail if allocation failed
+</code></pre><p>That <code>0x800</code> is the <strong>exact</strong> DFU transfer chunk size we streamed data in during
+Part 1 (<code>chunk = data[idx:idx+0x800]</code>). So <code>0x34a4</code> sets up the DFU transfer buffer
+by calling the real allocator at <strong><code>0x1aa8</code></strong> with size <code>0x800</code>. We just found
+<code>malloc</code>.</p>
+<h3 id="62-the-allocator-0x1aa8-and-the-free-side-validation-0x1fa8">6.2 The allocator (0x1aa8) and the free-side validation (0x1fa8)</h3>
+<p><code>0x1f80</code> is a small wrapper that allocates a <code>0x18</code>-byte object and initializes it:</p>
+<pre tabindex="0"><code>0x1f80:  push  {r4, r5, r6, r7, lr}
+0x1f88:  movs  r0, #0x18           ; malloc(0x18), a 24-byte descriptor
+0x1f8a:  movs  r1, #0
+0x1f8e:  bl    #0x1aa8             ; &lt;- the real allocator again
+0x1f92:  cmp   r0, #0
+0x1f94:  beq   #0x1fa2
+0x1f96:  ldr   r3, [pc, #0xc]
+0x1f98:  str   r4, [r0]            ; obj-&gt;field_0 = ...
+0x1f9a:  str   r4, [r0, #4]        ; obj-&gt;field_4 = ...
+0x1f9c:  str   r3, [r0, #0xc]      ; obj-&gt;field_c = &lt;magic/tag&gt;   &lt;-- note offset 0xc
+0x1f9e:  str   r5, [r0, #0x10]
+0x1fa0:  str   r6, [r0, #0x14]
+0x1fa2:  pop   {r4, r5, r6, r7, pc}
+</code></pre><p>And right after it, the free / release path at <code>0x1fa8</code>:</p>
+<pre tabindex="0"><code>0x1fa8:  push  {r7, lr}
+0x1faa:  ldr   r2, [r0, #0xc]      ; read obj-&gt;field_c  &lt;-- same offset 0xc
+0x1fac:  ldr   r3, [pc, #0xc]      ; load the expected magic
+0x1fae:  add   r7, sp, #0
+0x1fb0:  cmp   r2, r3              ; block-&gt;tag == expected?
+0x1fb2:  bne   #0x1fb8             ; mismatch --&gt; skip the real free
+0x1fb4:  bl    #0x1ccc             ; the actual free()
+0x1fb8:  pop   {r7, pc}
+</code></pre><p>Decompiled, that whole function is four lines, and the &quot;known-good constant&quot; has a
+name:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>longlong <span style="color:#50fa7b">free_validated</span>(<span style="color:#8be9fd">int</span> block, undefined4 param_2)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> ( <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">int</span> <span style="color:#ff79c6">*</span>)(block <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xc</span>) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0x4d656d7a</span> )   <span style="color:#6272a4">// 0x4d656d7a == &#39;Memz&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        <span style="color:#50fa7b">free</span>(block, param_2);
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> ...;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>0x4D656D7A</code> is ASCII <strong><code>Memz</code></strong> (stored little-endian in the ROM as the bytes
+<code>7a 6d 65 4d</code>). It's a <strong>magic canary</strong>: the wrapper at <code>0x1f80</code> stamps it into the
+0x18-byte descriptor objects it hands out, and <code>0x1fa8</code> won't release one unless the
+canary still matches. Sitting right next to it in the literal pool is
+<code>0x696D6733</code> = <strong><code>img3</code></strong>, the magic for Apple's signed-image container, a good hint
+that these descriptors describe images. Confirmation that offset <code>0xc</code> is the magic
+and not a pointer: <code>0x1f80</code> <em>writes</em> the same value with <code>str r3, [r0, #0xc]</code>. One
+function stamps <code>Memz</code>, the other checks it.</p>
+<p><img src="/images/jbiphone3gs/ghidra_validated_free.png" alt="Ghidra decompiler view of free_validated: if (*(int *)(param_1 + 0xc) == HEAP_BLOCK_MAGIC) free(...), with the constant renamed to HEAP_BLOCK_MAGIC ('Memz')"></p>
+<p>Here's the part I had to slow down on. <code>0x1fa8</code> is not the general <code>free</code>. It's a
+<em>descriptor</em> free, gated by <code>Memz</code>, that then calls the real <code>free</code> at <code>0x1ccc</code>. In
+the DFU loop above it's only ever called on the objects <code>0x1f80</code> returns: the
+0x18-byte image descriptors, already stamped with <code>Memz</code>. The chunk limera1n forges
+is a plain heap block, not one of those descriptors, so its <code>free</code> has to go through
+the unguarded <code>0x1ccc</code>: if it ever hit the <code>Memz</code> <code>cmp</code> at <code>0x1fb0</code> it would be
+rejected and the unlink would never fire. (The check reads <code>[user_ptr + 0xc]</code>; the
+spray forges the <code>fd</code>/<code>bk</code> links at <code>[user_ptr + 0]</code> / <code>[user_ptr + 4]</code> to steer the
+unlink, and never puts <code>Memz</code> where the check looks, so the forged chunk can't pass
+it.) The attack works precisely because the corrupted chunk's free does <em>not</em> pass
+through this check. That's the real shape of the bug: a validated free exists in the
+ROM, but it guards the wrong object, and the DFU buffer is released through the
+unvalidated path, which is the door limera1n walks through.</p>
+<p>In other words: <strong>Part 1 was us punching this allocator in the dark. Part 2 is us
+turning the lights on and finding the door we actually used.</strong> In a later post I
+want to trace the full <code>malloc</code>/<code>free</code> at <code>0x1aa8</code>/<code>0x1ccc</code>, recover the real header
+layout field by field, and line it up against the sprayed values, a proper autopsy
+of the bug now that we can read the victim.</p>
+<hr>
+<h2 id="7-reading-our-own-exploits-landing-pad-usb_wait_for_image-0x8b7">7. Reading our own exploit's landing pad: usb_wait_for_image (0x8b7)</h2>
+<p>Full-circle moment. In Part 1, the last thing our 76-byte payload did was call an
+address we treated as a magic number:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-armasm" data-lang="armasm"><span style="display:flex;"><span><span style="color:#ff79c6">.set</span> RET_ADDR, 0<span style="color:#50fa7b">x8b7</span>          <span style="color:#6272a4">@ usb_wait_for_image on 3GS SecureROM 359.3.2
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    ...
+</span></span><span style="display:flex;"><span>    LDR  R3, =<span style="color:#8be9fd;font-style:italic">RET_ADDR</span>
+</span></span><span style="display:flex;"><span>    BLX  R3                    <span style="color:#6272a4">@ hand control back to the ROM&#39;s USB loop
+</span></span></span></code></pre></div><p>We called <code>0x8b7</code> on faith, pod2g's notes said &quot;this re-arms USB so the Mac can
+<code>DFU_UPLOAD</code> your buffer,&quot; and it worked. Now we can actually read it. (The <code>+1</code>
+makes it Thumb, so the function starts at <code>0x8b6</code>.)</p>
+<pre tabindex="0"><code>0x08b6:  bl    #0x34a4            ; set up the DFU transfer buffer (section 6.1!)
+0x08ba:  cmp   r0, #0
+0x08bc:  blt   #0x8e6            ; error path if setup failed
+0x08be:  mov   sl, r0
+0x08c0:  movs  r0, #0x84
+0x08c2:  lsls  r0, r0, #0x18      ; r0 = 0x84 &lt;&lt; 24 = 0x84000000   &lt;-- our SRAM base!
+0x08c4:  mov   r1, sl
+0x08c6:  movs  r2, #0
+0x08c8:  bl    #0x1f80            ; wrap the buffer in a descriptor (section 6.2)
+0x08cc:  adds  r5, r0, #0
+0x08d0:  beq   #0x8e6
+0x08d2:  movs  r1, #0x84
+0x08d6:  lsls  r1, r1, #0x18      ; 0x84000000 again
+0x08da:  mov   r2, sl
+0x08dc:  bl    #0x6b8             ; register / kick off the USB transfer
+0x08e2:  bl    #0x1fa8            ; release descriptor (the validated free!)
+...
+0x08f6:  b     #0x7d4             ; back into the DFU command loop
+</code></pre><p>Everything lines up with what actually happened on the wire in Part 1:</p>
+<ul>
+<li><code>bl 0x34a4</code>, allocates the <code>0x800</code> DFU buffer.</li>
+<li><code>movs r0,#0x84, lsls r0,#0x18</code>, materializes <strong><code>0x84000000</code></strong>, the SRAM address
+our payload had <code>memcpy</code>'d the ROM to. This function points the USB machinery at
+that buffer.</li>
+<li><code>bl 0x1f80</code> / <code>bl 0x1fa8</code>, the allocator wrapper and validated-free we just
+reverse engineered.</li>
+<li><code>b 0x7d4</code>, jumps back into the main DFU request loop, which is why, after our
+shellcode returned here, the Mac could immediately issue <code>DFU_UPLOAD (0xA1/2)</code> and
+stream 65536 bytes out. That's the dump.</li>
+</ul>
+<p>So the &quot;magic number&quot; <code>0x8b7</code> was the ROM's own <em>&quot;(re)initialize the USB image
+transfer path&quot;</em> routine. We borrowed Apple's USB stack to exfiltrate Apple's ROM. 🙂</p>
+<p>Step back from <code>0x8b6</code> and the shape of the whole thing appears. <code>0x8b6</code> isn't its own
+function, it's one branch of the SecureROM's main DFU service loop (<code>FUN_000006ee</code>
+at <code>0x6ee</code>, the <code>bx 0x6ef</code> target from the reset handler): an infinite
+<code>do { } while (true)</code> that never returns. Each pass waits for a USB control request
+and dispatches on it. Reconstructed from the decompiler (the <code>req</code> numbers are the
+ROM's internal command enum, not the USB <code>bRequest</code> values):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#8be9fd">void</span> <span style="color:#50fa7b">securerom_main</span>(<span style="color:#8be9fd">void</span>)                    <span style="color:#6272a4">// never returns
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>{
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">do</span> {
+</span></span><span style="display:flex;"><span>    req <span style="color:#ff79c6">=</span> <span style="color:#50fa7b">dfu_get_request</span>();                 <span style="color:#6272a4">// wait for a USB control request
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> (req <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">2</span>) {                          <span style="color:#6272a4">// DFU_DNLOAD: host sends an image
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        <span style="color:#6272a4">// FUN_00004e18 receives into 0x84000000 (4 endpoints x 0x200),
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        <span style="color:#6272a4">// 0x1f80 wraps it in a descriptor, then FUN_000006b8 validates+loads it
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (req <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">3</span>) {                     <span style="color:#6272a4">// DFU_UPLOAD: host reads device memory
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        size <span style="color:#ff79c6">=</span> <span style="color:#50fa7b">dfu_buffer_setup</span>(<span style="color:#bd93f9">0x84000000</span>, size);   <span style="color:#6272a4">// 0x34a4, alloc the 0x800 buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        desc <span style="color:#ff79c6">=</span> <span style="color:#50fa7b">heap_alloc_desc</span>(<span style="color:#bd93f9">0x84000000</span>, size, <span style="color:#bd93f9">0</span>); <span style="color:#6272a4">// 0x1f80
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        <span style="color:#50fa7b">usb_start_transfer</span>(desc, <span style="color:#bd93f9">0x84000000</span>, size);  <span style="color:#6272a4">// expose 0x84000000 to host
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        <span style="color:#6272a4">//  *** this is the branch that streamed our 65536-byte dump to the Mac ***
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        <span style="color:#6272a4">//  *** our payload re-enters here at 0x8b6 (RET_ADDR 0x8b7)            ***
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (req <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>) {                     <span style="color:#6272a4">// third command -- see caveat below
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        <span style="color:#6272a4">// looks up a named entry in a registry (FUN_00001350) and loads it;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        <span style="color:#6272a4">// NOT confirmed as DFU_GETSTATUS
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    }
+</span></span><span style="display:flex;"><span>  } <span style="color:#ff79c6">while</span> (<span style="color:#8be9fd;font-style:italic">true</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The <code>req == 3</code> (UPLOAD) branch is the one our Part 1 dump actually rode: <code>0x34a4</code>
+points the USB machinery at <code>0x84000000</code> so the host can read it back, exactly what
+our Mac's <code>DFU_UPLOAD (0xA1/2)</code> requests pulled down. That's also the branch our
+payload jumps back into at <code>0x8b6</code>. The <code>req == 2</code> (DNLOAD) branch is where the host
+sends an image and the ROM receives it into <code>0x84000000</code>.</p>
+<p>Two caveats I'd rather flag than paper over, because the rest of this section leans
+on them:</p>
+<ul>
+<li>
+<p><strong><code>req == 1</code> is not a clean fit for DFU_GETSTATUS.</strong> Standard DFU <code>GETSTATUS</code> just
+returns a 6-byte status struct, but this branch looks up a named entry in a
+linked-list registry (<code>FUN_00001350</code>, comparing a global name string) and then
+runs the same load path as the other two. It may be a vendor command or the
+state-advance step, but I haven't proven the numbering. <code>FUN_000046ec</code> dispatches
+the USB <code>bRequest</code> through a jumptable Ghidra couldn't recover, so the internal
+<code>req</code> values are inferred from behavior, not read off the spec.</p>
+</li>
+<li>
+<p><strong>The signature check is not specific to <code>req == 2</code>.</strong> All three load paths funnel
+through <code>FUN_000006b8</code>, which calls <code>FUN_00001f00</code> (it gates on the descriptor's
+type tag at <code>+0xc</code> being <code>Memz</code> or <code>img3</code>) and then <code>FUN_000024dc</code>, a 728-byte
+<code>img3</code> container parser that checks the image starts with the <code>img3</code> magic and is
+where the real signature/certificate verification lives. That shared verifier, not
+any single DFU branch, is what Part 3 will attack.</p>
+</li>
+</ul>
+<p><img src="/images/jbiphone3gs/ghidra_usb_wait_for_image.png" alt="Ghidra decompiler view of usb_wait_for_image, showing the 0x84000000 constant and the calls to dfu_buffer_setup, heap_alloc_desc, usb_start_transfer, and free_validated"></p>
+<hr>
+<h2 id="8-the-map-so-far">8. The map so far</h2>
+<p>Putting the confirmed pieces together, here's the working memory map of the 3GS
+SecureROM 359.3.2 after this session:</p>
+<pre tabindex="0"><code>Offset        What                                  How I know
+------------------------------------------------------------------------------
+0x0000-0x001f Exception vector table (ARM)          disassembly: B / LDR PC
+0x0020-0x003f Handler address table                 8 absolute pointers
+0x0040-~0x1ff Reset / relocation / BSS clear (ARM)   MOV R0,PC + copy loop
+0x0200        &#34;SecureROM for s5l8920xsi ... 2008&#34;    banner string
+0x0240        &#34;RELEASE&#34;                             build variant
+0x0280        &#34;iBoot-359.3.2&#34;                       version (matches SRTG)
+0x06ee        securerom_main (firmware entry)       bx target from reset_handler
+~0x06xx+      Thumb code region begins              BX/BLX into Thumb
+0x06b8        image load: validate + execute         shared by all DFU load branches
+0x08b6        usb_wait_for_image (our RET_ADDR!)     payload target 0x8b7
+0x1aa8        malloc (general allocator)            called with size in r0
+0x1ccc        free (general release + unlink)        the unguarded path limera1n rides
+0x1f00        image type gate (Memz / img3 @+0xc)    -&gt; FUN_000024dc
+0x1f80        alloc+init 0x18-byte descriptor       stamps Memz at +0xc
+0x1fa8        validated free (checks Memz at +0xc)   descriptor free, NOT the exploited path
+0x24dc        img3 parser + sig verify (728 B)       Part 3 target, reached via 0x6b8
+0x34a4        DFU upload-buffer setup (0x800)        chunk size == Part 1
+0x55c0-0x5638 Exception / panic handlers            vector table + &#34;panic:&#34;
+0xa144        &#34;Apple Secure Boot Certification...&#34;   string
+0xa170        USB DFU descriptor strings            &#34;Apple Mobile Device (DFU Mode)&#34;
+0xa19c        DFU serial format string              &#34;CPID:%04X ... ECID:%016llX&#34;
+0xa230        Embedded Apple Root CA cert (931 B)    DER 30 82 03 a3
+0xae60        hex digit table                       &#34;0123...ABCDEF0123...abcdef&#34;
+0xb0b0        &#34;bootstrap&#34;                           string
+0xb218        last non-zero byte                    ~45KB used, rest is padding
+</code></pre><p>And the runtime <strong>SRAM layout</strong> the reset handler builds before the firmware even
+starts (these are the live addresses, not ROM offsets, recovered from the resolved
+literal pool in section 4):</p>
+<pre tabindex="0"><code>0x84024000            .data segment (0x21C bytes copied here)
+0x8402421C-0x84026000 .bss (zeroed)
+0x84031800            IRQ / FIQ / Abort / Undefined mode stacks
+0x84034000            Supervisor (SVC) mode stack top
+  0x84033FA4          &lt;-- EXPLOIT_LR: 0x5C below the SVC stack top (Part 1)
+</code></pre><p>Not bad for a binary that had no header, no symbols, and no ground truth except a
+few community-documented addresses. Every row above I either disassembled or
+xref'd out of <em>my own dump</em>, and each one is a labeled anchor to keep working from
+in Ghidra. The single best payoff: <code>EXPLOIT_LR</code> stopped being a number copied from
+someone else's tool and became a slot in a stack we watched the ROM allocate.</p>
+<p><img src="/images/jbiphone3gs/ghidra_function_map.png" alt="Ghidra Symbol Tree after this session, with the renamed functions: reset_handler, malloc, free, heap_alloc_desc, dfu_buffer_setup, usb_start_transfer, usb_wait_for_image"></p>
+<hr>
+<h2 id="9-whats-next-part-3">9. What's next (Part 3)</h2>
+<p>We now understand the terrain:</p>
+<ul>
+<li>how the chip boots (<code>0x0</code> --&gt; reset <code>0x40</code> --&gt; relocate --&gt; Thumb world),</li>
+<li>where it talks USB (the DFU loop around <code>0x7d4</code>, <code>usb_wait_for_image</code> at <code>0x8b6</code>),</li>
+<li>how it manages memory (the allocator at <code>0x1aa8</code>/<code>0x1ccc</code>, and the <code>Memz</code> heap
+canary on the descriptor free at <code>0x1fa8</code> that limera1n sidesteps by corrupting a
+buffer freed through the unguarded <code>0x1ccc</code>), and</li>
+<li><strong>where its root of trust lives</strong> (the Apple Root CA at <code>0xa230</code>).</li>
+</ul>
+<p><strong>Part 3: Bypassing the Boot Chain</strong> is where this gets offensive again. The plan:</p>
+<ol>
+<li>Trace into the Image3 (<code>img3</code>) parser we already located (<code>FUN_000024dc</code>, §7) to
+find the RSA/SHA-1 signature verification routine that validates the next boot
+stage against the <code>0xa230</code> certificate.</li>
+<li>Locate the single branch where &quot;signature valid?&quot; becomes a yes/no decision.</li>
+<li>Patch it, in memory, live, right after the limera1n exploit hands us execution,
+so the ROM happily accepts a stage <em>we</em> signed (i.e. didn't).</li>
+</ol>
+<p>That's the difference between &quot;I can read Apple's boot code&quot; and &quot;I can make the
+device boot my code.&quot; See you there. ❤️</p>
+<hr>
+<h2 id="appendix-a-reproduce-this-with-capstone">Appendix A: reproduce this with Capstone</h2>
+<p>No Ghidra required to follow along with the raw disassembly in this post. Most of
+those listings came out of this (the decompiler views and resolved constants are
+Ghidra's, as flagged inline):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#6272a4">#!/usr/bin/env python3</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># pip3 install capstone</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> struct
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> capstone <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>d <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#39;bootrom.bin&#39;</span>, <span style="color:#f1fa8c">&#39;rb&#39;</span>)<span style="color:#ff79c6">.</span>read()
+</span></span><span style="display:flex;"><span>u32 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">lambda</span> o: struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#39;&lt;I&#39;</span>, d[o:o<span style="color:#ff79c6">+</span><span style="color:#bd93f9">4</span>])[<span style="color:#bd93f9">0</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>arm   <span style="color:#ff79c6">=</span> Cs(CS_ARCH_ARM, CS_MODE_ARM)     <span style="color:#6272a4"># for 0x0..~0x1ff</span>
+</span></span><span style="display:flex;"><span>thumb <span style="color:#ff79c6">=</span> Cs(CS_ARCH_ARM, CS_MODE_THUMB)   <span style="color:#6272a4"># for almost everything else</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">show</span>(md, start, length, label):
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;--- </span><span style="color:#f1fa8c">{</span>label<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> @ 0x</span><span style="color:#f1fa8c">{</span>start<span style="color:#f1fa8c">:</span><span style="color:#f1fa8c">x</span><span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> ---&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> md<span style="color:#ff79c6">.</span>disasm(d[start:start<span style="color:#ff79c6">+</span>length], start):
+</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;  0x</span><span style="color:#f1fa8c">{</span>i<span style="color:#ff79c6">.</span>address<span style="color:#f1fa8c">:</span><span style="color:#f1fa8c">04x</span><span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">:  </span><span style="color:#f1fa8c">{</span>i<span style="color:#ff79c6">.</span>mnemonic<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> </span><span style="color:#f1fa8c">{</span>i<span style="color:#ff79c6">.</span>op_str<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># 1. vector table + handler pointers</span>
+</span></span><span style="display:flex;"><span>show(arm, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x20</span>, <span style="color:#f1fa8c">&#34;vector table (ARM)&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">for</span> n, name <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>([<span style="color:#f1fa8c">&#39;Reset&#39;</span>,<span style="color:#f1fa8c">&#39;Undef&#39;</span>,<span style="color:#f1fa8c">&#39;SWI&#39;</span>,<span style="color:#f1fa8c">&#39;PAbort&#39;</span>,<span style="color:#f1fa8c">&#39;DAbort&#39;</span>,
+</span></span><span style="display:flex;"><span>                          <span style="color:#f1fa8c">&#39;Reserved&#39;</span>,<span style="color:#f1fa8c">&#39;IRQ&#39;</span>,<span style="color:#f1fa8c">&#39;FIQ&#39;</span>]):
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;  </span><span style="color:#f1fa8c">{</span>name<span style="color:#f1fa8c">:</span><span style="color:#f1fa8c">10s</span><span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> --&gt; 0x</span><span style="color:#f1fa8c">{</span>u32(<span style="color:#bd93f9">0x20</span> <span style="color:#ff79c6">+</span> n<span style="color:#ff79c6">*</span><span style="color:#bd93f9">4</span>)<span style="color:#f1fa8c">:</span><span style="color:#f1fa8c">08x</span><span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># 2. reset handler</span>
+</span></span><span style="display:flex;"><span>show(arm, <span style="color:#bd93f9">0x40</span>, <span style="color:#bd93f9">0x80</span>, <span style="color:#f1fa8c">&#34;reset / init (ARM)&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># 3. the functions our Part 1 exploit touched (all Thumb --&gt; even address)</span>
+</span></span><span style="display:flex;"><span>show(thumb, <span style="color:#bd93f9">0x8b6</span>,  <span style="color:#bd93f9">0x50</span>, <span style="color:#f1fa8c">&#34;usb_wait_for_image (payload RET_ADDR 0x8b7)&#34;</span>)
+</span></span><span style="display:flex;"><span>show(thumb, <span style="color:#bd93f9">0x34a4</span>, <span style="color:#bd93f9">0x30</span>, <span style="color:#f1fa8c">&#34;DFU buffer setup (0x800 chunk)&#34;</span>)
+</span></span><span style="display:flex;"><span>show(thumb, <span style="color:#bd93f9">0x1f80</span>, <span style="color:#bd93f9">0x30</span>, <span style="color:#f1fa8c">&#34;alloc+init descriptor&#34;</span>)
+</span></span><span style="display:flex;"><span>show(thumb, <span style="color:#bd93f9">0x1fa8</span>, <span style="color:#bd93f9">0x20</span>, <span style="color:#f1fa8c">&#34;validated free (reads block[0xc])&#34;</span>)
+</span></span></code></pre></div><h2 id="appendix-b-seeding-ghidra-why-the-landing-pad-needs-a-nudge">Appendix B: seeding Ghidra (why the landing pad needs a nudge)</h2>
+<p>One workflow gotcha worth documenting. The reset handler enters the main firmware
+through an <em>indirect</em> branch (<code>ldr r0, [=0x6ef]; bx r0</code>), and everything from there is
+Thumb. <code>0x8b6</code> isn't a routine of its own, it lives inside <code>securerom_main</code>, the
+~540-byte function at <code>0x6ee</code> (<code>FUN_000006ee</code>, spanning <code>0x6ee</code>-<code>0x90a</code>) that the
+reset handler jumps to. Depending on your analysis options, that region can come out
+under-analyzed, and even when Ghidra does recover the big function, the exact spot our
+payload lands on (<code>0x8b6</code>) has no name of its own, which makes it a pain to decompile
+in isolation.</p>
+<p>I made this reproducible with a tiny Ghidra pre-script (<code>SeedDisasm.py</code>): it pins ARM
+mode on the vector table at <code>0x0</code>, disassembles Thumb at <code>0x8B7</code>, and carves out a
+named <code>usb_wait_for_image</code> function at <code>0x8b6</code> so the landing pad decompiles on its
+own:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#6272a4"># Ghidra pre-script, run before Auto Analyze</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> ghidra.app.cmd.disassemble <span style="color:#ff79c6">import</span> ArmDisassembleCommand
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> ghidra.program.model.address <span style="color:#ff79c6">import</span> AddressSet
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> ghidra.program.model.symbol <span style="color:#ff79c6">import</span> SourceType
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>space <span style="color:#ff79c6">=</span> currentProgram<span style="color:#ff79c6">.</span>getAddressFactory()<span style="color:#ff79c6">.</span>getDefaultAddressSpace()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">seed</span>(off, thumb, name<span style="color:#ff79c6">=</span><span style="color:#ff79c6">None</span>):
+</span></span><span style="display:flex;"><span>    addr <span style="color:#ff79c6">=</span> space<span style="color:#ff79c6">.</span>getAddress(off <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">~</span><span style="color:#bd93f9">1</span>)          <span style="color:#6272a4"># instructions live at even addrs</span>
+</span></span><span style="display:flex;"><span>    ArmDisassembleCommand(addr, AddressSet(addr), thumb)<span style="color:#ff79c6">.</span>applyTo(currentProgram, monitor)
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> name:
+</span></span><span style="display:flex;"><span>        fn <span style="color:#ff79c6">=</span> getFunctionAt(addr) <span style="color:#ff79c6">or</span> createFunction(addr, name)
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> fn: fn<span style="color:#ff79c6">.</span>setName(name, SourceType<span style="color:#ff79c6">.</span>USER_DEFINED)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>seed(<span style="color:#bd93f9">0x0</span>,   <span style="color:#ff79c6">False</span>)                              <span style="color:#6272a4"># ARM vector table</span>
+</span></span><span style="display:flex;"><span>seed(<span style="color:#bd93f9">0x8B7</span>, <span style="color:#ff79c6">True</span>, <span style="color:#f1fa8c">&#34;usb_wait_for_image&#34;</span>)         <span style="color:#6272a4"># Thumb; low bit = Thumb, entry is 0x8b6</span>
+</span></span></code></pre></div><p>Two Jython foot-guns cost me a few minutes each: the file needs a
+<code># -*- coding: utf-8 -*-</code> line if any comment has a non-ASCII character (an em-dash
+did it), and <code>ArmDisassembleCommand</code> is the clean way to set Thumb mode, the
+generic <code>DisassembleCommand</code> wants you to poke the <code>TMode</code> register with a
+<code>java.math.BigInteger</code>, which is a hassle.</p>
+<p><img src="/images/jbiphone3gs/ghidra_seed_script.png" alt="Adding the script directory in Ghidra's Bundle Manager, and SeedDisasm.py printing &quot;seeded ARM@0x0, Thumb@0x8B7&quot;"></p>
+<h2 id="appendix-c-references">Appendix C: references</h2>
+<ul>
+<li><strong>ipwndfu</strong> (axi0mX), <a href="https://github.com/axi0mX/ipwndfu">https://github.com/axi0mX/ipwndfu</a>, reference limera1n
+sequence and the per-chip constants.</li>
+<li><strong>The iPhone Wiki - S5L8920 / SecureROM</strong>,
+<a href="https://www.theiphonewiki.com/wiki/S5L8920">https://www.theiphonewiki.com/wiki/S5L8920</a>, community notes on the 3GS ROM.</li>
+<li><strong>Ghidra</strong>, <a href="https://ghidra-sre.org/">https://ghidra-sre.org/</a>, the ARM/Thumb disassembler used here.</li>
+<li><strong>Capstone</strong>, <a href="https://www.capstone-engine.org/">https://www.capstone-engine.org/</a>, the scriptable disassembler
+behind the listings.</li>
+</ul>
+
+  </div>
+
+  <footer class="post-footer fade-in">
+    <div class="post-nav">
+      
+      <a href="https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/" class="post-nav-link prev">
+        <span>← Previous</span>
+        <span class="post-nav-title">Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</span>
+      </a>
+      
+      
+    </div>
+  </footer>
+</article>
+
+  </main>
+
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
+      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
+  </div>
+</footer>
+
+
+  <script src="/js/matrix.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>

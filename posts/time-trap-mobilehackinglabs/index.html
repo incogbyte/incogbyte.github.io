@@ -60,11 +60,11 @@
     <h3 id="introduction">Introduction</h3>
 <p>In this challenge, you will explore the vulnerabilities in an internally used application named Time Trap, focusing on Command Injection. Time Trap is a fictional application that showcases insecure practices commonly found in internal applications. Your objective is to exploit the Command Injection vulnerability to gain unauthorized access and execute commands on the iOS device.</p>
 <h3 id="initial-setup">Initial Setup</h3>
-<p>First, let&rsquo;s install the .ipa file on our jailbroken device:</p>
+<p>First, let's install the .ipa file on our jailbroken device:</p>
 <p><img src="/images/time-01.png" alt=""></p>
 <h3 id="analysis-process">Analysis Process</h3>
 <h4 id="1-automated-analysis-setup">1. Automated Analysis Setup</h4>
-<p>We&rsquo;ll use the following bash script to automate the class-dump analysis and .IPA extraction:</p>
+<p>We'll use the following bash script to automate the class-dump analysis and .IPA extraction:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ff79c6">#!/bin/bash
 </span></span></span><span style="display:flex;"><span><span style="color:#ff79c6"></span>
 </span></span><span style="display:flex;"><span><span style="color:#6272a4"># Check if an IPA file was provided</span>
@@ -129,7 +129,7 @@
 </span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[+] Decompilation completed for </span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">&#34;</span>
 </span></span></code></pre></div><p><img src="/images/time-02.png" alt=""></p>
 <h4 id="2-infoplist-analysis">2. Info.plist Analysis</h4>
-<p>Let&rsquo;s examine the Info.plist file using <code>ipsw</code>:</p>
+<p>Let's examine the Info.plist file using <code>ipsw</code>:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ipsw plist _extracted/Payload/Time<span style="color:#f1fa8c">\ </span>Trap.app/Info.plist
 </span></span></code></pre></div><p>The most interesting part is the deep link configuration:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;CFBundleURLTypes&#34;</span>: <span style="color:#ff79c6">[</span>
@@ -142,10 +142,10 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">}</span>
 </span></span><span style="display:flex;"><span><span style="color:#ff79c6">]</span>
 </span></span></code></pre></div><h4 id="3-binary-analysis">3. Binary Analysis</h4>
-<p>Let&rsquo;s examine the class-dump and verify the function signatures:</p>
+<p>Let's examine the class-dump and verify the function signatures:</p>
 <p><img src="/images/time-05.png" alt=""></p>
 <p><img src="/images/time-07.png" alt=""></p>
-<p>As we can see, we have the class name <code>Time_Trap</code> and some UI methods. Let&rsquo;s analyze the Time Trap binary in Ghidra:</p>
+<p>As we can see, we have the class name <code>Time_Trap</code> and some UI methods. Let's analyze the Time Trap binary in Ghidra:</p>
 <p><img src="/images/time-10.png" alt=""></p>
 <p>The <code>buttonPressed</code> function is particularly interesting:</p>
 <p><img src="/images/time-08.png" alt=""></p>

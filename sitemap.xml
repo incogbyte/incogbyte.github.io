@@ -3,39 +3,51 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://incogbyte.github.io/tags/arm/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/tags/bootrom/</loc>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/categories/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/tags/exploit/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/tags/ghidra/</loc>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/categories/hacking/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/tags/hardware/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/tags/ios/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/tags/jailbreak/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
-    <loc>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <loc>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</loc>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/posts/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/categories/research/</loc>
-    <lastmod>2026-04-15T10:00:00-03:00</lastmod>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/tags/reverse-engineering/</loc>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/tags/</loc>
+    <lastmod>2026-07-02T10:00:00-03:00</lastmod>
+  </url><url>
+    <loc>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</loc>
     <lastmod>2026-04-15T10:00:00-03:00</lastmod>
   </url><url>
     <loc>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</loc>

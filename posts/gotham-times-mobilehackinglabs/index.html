@@ -70,8 +70,8 @@
 </ul>
 <p>This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.</p>
 <h3 id="initial-application-analysis">Initial Application Analysis</h3>
-<p>Upon launching the application, we are presented with a login screen and an option to navigate to the registration screen. After creating an account and logging in, we are taken to the authenticated section of the app where we can view a list of news articles and profile information. Nothing seems unusual at first, so let&rsquo;s dig deeper into the application.</p>
-<p>Let&rsquo;s break down the initial application flow and interface:</p>
+<p>Upon launching the application, we are presented with a login screen and an option to navigate to the registration screen. After creating an account and logging in, we are taken to the authenticated section of the app where we can view a list of news articles and profile information. Nothing seems unusual at first, so let's dig deeper into the application.</p>
+<p>Let's break down the initial application flow and interface:</p>
 <ol>
 <li>
 <p>Authentication Flow:</p>
@@ -156,7 +156,7 @@
 </span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[+] Decompilation completed for </span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">&#34;</span>
 </span></span></code></pre></div><p>We can inspect the binary extracted contents and class-dump information:</p>
 <p><img src="/images/gothamt-01.png" alt=""></p>
-<p>This information show us some interesting things&hellip; but the mainly information is the name of the Gotham_Times classes/interfaces</p>
+<p>This information show us some interesting things... but the mainly information is the name of the Gotham_Times classes/interfaces</p>
 <p>We can use the <code>ipsw</code> to verify the plist files:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ipsw plist Info.plist
 </span></span><span style="display:flex;"><span><span style="color:#ff79c6">{</span>
@@ -397,7 +397,7 @@
 <p><strong>Iterates over UIOpenURLContext items</strong> passed by the system.</p>
 </li>
 <li>
-<p><strong>Extracts the URL</strong> from each context and checks if the host is &ldquo;open&rdquo;.</p>
+<p><strong>Extracts the URL</strong> from each context and checks if the host is &quot;open&quot;.</p>
 </li>
 <li>
 <p>If matched, it:</p>
@@ -437,7 +437,7 @@
 <p><img src="/images/gothamt-06.png" alt=""></p>
 <p>As we can see, the app could be exploited with an <code>open redirect vulnerability</code> that could leak the Session token. This vulnerability exists in the WebView implementation, where insufficient URL validation allows for malicious redirects.</p>
 <h3 id="conclusion">Conclusion</h3>
-<p>This lab serves as a valuable lesson in understanding the security implications of loading URLs within a WebView in iOS applications. By exploiting vulnerabilities like this, it&rsquo;s possible to load malicious sites and steal session tokens. For a hands-on experience with these concepts, visit the lab at MobileHackingLab - Gotham Times.</p>
+<p>This lab serves as a valuable lesson in understanding the security implications of loading URLs within a WebView in iOS applications. By exploiting vulnerabilities like this, it's possible to load malicious sites and steal session tokens. For a hands-on experience with these concepts, visit the lab at MobileHackingLab - Gotham Times.</p>
 
   </div>
 

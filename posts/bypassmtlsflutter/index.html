@@ -58,8 +58,8 @@
 
   <div class="post-content fade-in">
     <h4 id="overview">Overview</h4>
-<p>In this blog post, we&rsquo;ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\<em>(ツ)</em>/¯  ) from developers. Before we continue.. into the specifics, it&rsquo;s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.</p>
-<p>Our journey will begin with an exploration of Flutter&rsquo;s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.</p>
+<p>In this blog post, we'll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\<em>(ツ)</em>/¯  ) from developers. Before we continue.. into the specifics, it's essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.</p>
+<p>Our journey will begin with an exploration of Flutter's network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.</p>
 <h4 id="mtls--mutual-tls-">MTLS ( Mutual TLS )</h4>
 <p>Mutual TLS (mTLS) authentication ensures that traffic is both secure and trusted in both directions between a client and server. It allows requests that do not log in with an identity provider (like IoT devices) to demonstrate that they can reach a given resource. Client certificate authentication is also a second layer of security for team members who both log in with an identity provider (IdP) and present a valid client certificate.</p>
 <p>With a root certificate authority (CA) in place, Access only allows requests from devices with a corresponding client certificate. When a request reaches the application, Access responds with a request for the client to present a certificate. If the device fails to present the certificate, the request is not allowed to proceed. If the client does have a certificate, Access completes a key exchange to verify.</p>
@@ -72,11 +72,11 @@
 </ul>
 <p>However, many modern applications are transitioning to mTLS rather than relying solely on traditional SSL pinning. This shift adds an additional layer of security through client certificate authentication, enhancing overall protection against unauthorized access.</p>
 <h4 id="how-the-bypass-works">How the Bypass Works</h4>
-<p>To understand the process of bypassing mTLS implementations in Flutter, I&rsquo;ll break down the explanation into common code patterns and their practical implementations. Here’s a look at typical methods used to implement client certificates mTLS in Flutter:</p>
+<p>To understand the process of bypassing mTLS implementations in Flutter, I'll break down the explanation into common code patterns and their practical implementations. Here’s a look at typical methods used to implement client certificates mTLS in Flutter:</p>
 <ol>
 <li>
 <p><strong>Loading the private key and certificate from environment variables</strong></p>
-<p>In this pattern, private keys and certificates are loaded from environment variables, which is considered a secure practice as it avoids hardcoding sensitive information directly in the application’s source code. Here&rsquo;s an example:</p>
+<p>In this pattern, private keys and certificates are loaded from environment variables, which is considered a secure practice as it avoids hardcoding sensitive information directly in the application’s source code. Here's an example:</p>
 </li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dart" data-lang="dart"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">class</span> <span style="color:#50fa7b">SecurityConfiguration</span> {
@@ -97,7 +97,7 @@
 <ol start="2">
 <li>
 <p><strong>Loading static files from the assets folder</strong></p>
-<p>Another common approach involves storing the certificate and key as files in the application&rsquo;s assets folder. This method is straightforward and often used in developmental stages:</p>
+<p>Another common approach involves storing the certificate and key as files in the application's assets folder. This method is straightforward and often used in developmental stages:</p>
 </li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dart" data-lang="dart"><span style="display:flex;"><span>Future<span style="color:#ff79c6">&lt;</span>SecurityContext<span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd;font-style:italic">get</span> globalContext <span style="color:#8be9fd;font-style:italic">async</span> {
@@ -118,7 +118,7 @@
 <p>The provided code examples illustrate two primary methods for configuring the <code>SecurityContext</code> in Flutter applications to use custom client certificates and private keys for mTLS. Both methods aim to enhance security by either isolating sensitive data (like in the environment variables method) or simplifying the development process (like in the static files method). In both cases, the <code>SecurityContext</code> setup involves specifying that only the explicitly provided certificates and keys are to be used, without relying on any pre-existing or default security configurations. This setup is essential in scenarios where mTLS is used, as it requires precise control over both client and server-side certificate validations.</p>
 <p>You can now download my lab at: <a href="https://github.com/incogbyte/mtls-flutter">mtls-flutter on GitHub</a> and try it yourself! This blog post will primarily focus on Android.</p>
 <h4 id="reversing-the-flutter-app-and-understanding-the-methodology">Reversing the Flutter App and Understanding the Methodology</h4>
-<p>First, download the .apk file and try using <a href="https://github.com/Impact-I/reFlutter">Reflutter</a> to intercept the traffic. However, sometimes RASP (Runtime Application Self-Protection) technologies, which you can read about on <a href="https://www.guardsquare.com/runtime-application-self-protection-rasp">GuardSquare&rsquo;s RASP page</a> (Use radare2 or IDA ;)), might prevent this. If so, you&rsquo;ll need to bypass these protections before running Reflutter.</p>
+<p>First, download the .apk file and try using <a href="https://github.com/Impact-I/reFlutter">Reflutter</a> to intercept the traffic. However, sometimes RASP (Runtime Application Self-Protection) technologies, which you can read about on <a href="https://www.guardsquare.com/runtime-application-self-protection-rasp">GuardSquare's RASP page</a> (Use radare2 or IDA ;)), might prevent this. If so, you'll need to bypass these protections before running Reflutter.</p>
 <p><img src="/images/flutter_01.png" alt=""></p>
 <p>After successfully modifying the app, you need to sign the newly patched .apk with <a href="https://github.com/patrickfav/uber-apk-signer">uber-apk-signer</a>:</p>
 <p><img src="/images/flutter_02.png" alt=""></p>
@@ -130,32 +130,32 @@
 <li>Not work ¯\<em>(ツ)</em>/¯</li>
 </ul>
 <p><img src="/images/flutter_05.png" alt=""></p>
-<p>If you&rsquo;re unable to make any requests, it might be time to try some Frida scripts to further probe and manipulate the application&rsquo;s runtime.</p>
+<p>If you're unable to make any requests, it might be time to try some Frida scripts to further probe and manipulate the application's runtime.</p>
 <p><img src="/images/flutter_06.png" alt=""></p>
 <ul>
 <li>Not work ¯\<em>(ツ)</em>/¯</li>
 </ul>
 <p><img src="/images/flutter_07.png" alt=""></p>
-<p>If that still doesn&rsquo;t work, it&rsquo;s possible another layer of protection is in place (mTLS :p ). Suppose the developer has used static files for certificate and key storage, as one method we discussed. In that case, you can easily access the <code>.CA</code> file and <code>.key</code> in the assets folder. You can then use these files to generate a <code>.p12</code> file with the following command, which can be imported into Burp Suite to attempt the request again:</p>
+<p>If that still doesn't work, it's possible another layer of protection is in place (mTLS :p ). Suppose the developer has used static files for certificate and key storage, as one method we discussed. In that case, you can easily access the <code>.CA</code> file and <code>.key</code> in the assets folder. You can then use these files to generate a <code>.p12</code> file with the following command, which can be imported into Burp Suite to attempt the request again:</p>
 <p><img src="/images/flutter_08.png" alt=""></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#6272a4"># Choose any password</span>
 </span></span><span style="display:flex;"><span>openssl pkcs12 -export -out certmtls.p12 -inkey private.key -in certificate.crt
 </span></span><span style="display:flex;"><span>Enter Export Password:
 </span></span><span style="display:flex;"><span>Verifying - Enter Export Password:
 </span></span></code></pre></div><p><img src="/images/flutter_09.png" alt=""></p>
-<p>Relaunch the app and try pressing the button again. With the correct mTLS client <code>.key</code> and <code>.crt</code> configured in your intercepting proxy, you should now be able to intercept the app&rsquo;s traffic.</p>
+<p>Relaunch the app and try pressing the button again. With the correct mTLS client <code>.key</code> and <code>.crt</code> configured in your intercepting proxy, you should now be able to intercept the app's traffic.</p>
 <p><img src="/images/flutter_10.png" alt=""></p>
 <p>If the developer has employed environment variables or runtime configurations (the first method of implementation), retrieving the certificates could be more challenging. It would require a different approach, possibly involving extracting environment variables or intercepting them at runtime.</p>
-<p>Testing Flutter apps poses significant challenges due to Flutter&rsquo;s architecture, which compiles into a native binary for iOS and Android. For Android, after building the app (<code>mtls_example_flutter/build/app/outputs/flutter-apk/</code>), verify the presence of <strong>libapp.so</strong> by extracting it and using tools such as <a href="https://github.com/skylot/jadx">Jadx</a> for decompiling the .apk or <a href="https://github.com/nowsecure/r2frida">Radare with Frida</a> for dynamic analysis. The core logic is encapsulated within <strong>libapp.so</strong>. Analyzing this file with tools like <a href="https://github.com/NationalSecurityAgency/ghidra">Ghidra</a> or IDA is essential for understanding how certificates are embedded within the binary.</p>
+<p>Testing Flutter apps poses significant challenges due to Flutter's architecture, which compiles into a native binary for iOS and Android. For Android, after building the app (<code>mtls_example_flutter/build/app/outputs/flutter-apk/</code>), verify the presence of <strong>libapp.so</strong> by extracting it and using tools such as <a href="https://github.com/skylot/jadx">Jadx</a> for decompiling the .apk or <a href="https://github.com/nowsecure/r2frida">Radare with Frida</a> for dynamic analysis. The core logic is encapsulated within <strong>libapp.so</strong>. Analyzing this file with tools like <a href="https://github.com/NationalSecurityAgency/ghidra">Ghidra</a> or IDA is essential for understanding how certificates are embedded within the binary.</p>
 <p>We have two approaches to choose from here: use analysis tools like Ghidra, Radare2, or IDA, or utilize a tool called <a href="https://github.com/worawit/blutter">Blutter</a>.</p>
-<p>Let&rsquo;s explore using the Blutter tool. Begin by extracting <strong>libapp.so</strong> from the lib folder after unzipping the .apk:</p>
+<p>Let's explore using the Blutter tool. Begin by extracting <strong>libapp.so</strong> from the lib folder after unzipping the .apk:</p>
 <p><img src="/images/flutter_11.png" alt=""></p>
 <p>Blutter will generate the following contents:</p>
 <ul>
 <li><strong>asm/</strong>: This directory stores the assembly code, which includes annotations from object pools and thread pools, making the assembly easier to read.</li>
 <li><strong>ida_script/</strong>: This folder contains scripts for IDA which aid in the reverse engineering of the app by adding names and structures.</li>
 <li><strong>blutter_frida.js</strong>: A Frida script designed for intercepting the target function.</li>
-<li><strong>objs.txt</strong>: Stores the data found in object pools during the app&rsquo;s initialization, making string constants easily readable.</li>
+<li><strong>objs.txt</strong>: Stores the data found in object pools during the app's initialization, making string constants easily readable.</li>
 <li><strong>pp.txt</strong>: Contains all Dart objects.</li>
 </ul>
 <p>If you search for the hexadecimal pattern <code>4c 5c 30</code> (LS0), you can locate the pattern of the certificate:</p>

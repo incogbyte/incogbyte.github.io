@@ -57,7 +57,7 @@
   </header>
 
   <div class="post-content fade-in">
-    <p>In my previous post <a href="https://incogbyte.github.io/posts/bypassmtlsflutter/">Bypassing MTLS in Flutter</a>, I discussed how MTLS is <strong>generaly</strong> implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: <em>&ldquo;It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open.&rdquo;</em></p>
+    <p>In my previous post <a href="https://incogbyte.github.io/posts/bypassmtlsflutter/">Bypassing MTLS in Flutter</a>, I discussed how MTLS is <strong>generaly</strong> implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: <em>&quot;It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open.&quot;</em></p>
 <p>In this blog post, I will explain how to bypass scenarios where the application encrypts the request body (RSA) before sending it to the server. This technique is commonly seen in banking applications or other apps with mature security practices in mobile development.</p>
 <h3 id="understanding-rsa-encryption">Understanding RSA Encryption</h3>
 <p>The most commonly used encryption method in such cases is RSA. Let’s break it down in simple terms:</p>
@@ -207,7 +207,7 @@
 <p><img src="/images/burp-encrypted-flutter-req.png" alt=""></p>
 <p><img src="/images/e1.png" alt=""></p>
 <p><img src="/images/e2.png" alt=""></p>
-<p>If you enjoyed this post, send feedback on X (@incogbyte) or email me at <a href="mailto:incogbyte@protonmail.com">incogbyte@protonmail.com</a>. Let me know if you&rsquo;d like a part 2!</p>
+<p>If you enjoyed this post, send feedback on X (@incogbyte) or email me at <a href="mailto:incogbyte@protonmail.com">incogbyte@protonmail.com</a>. Let me know if you'd like a part 2!</p>
 <p><strong>References:</strong></p>
 <ul>
 <li><a href="https://github.com/worawit/blutter">Blutter</a></li>
