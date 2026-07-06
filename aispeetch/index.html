@@ -60,8 +60,8 @@
 <!-- React 18 (production) -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<!-- Babel standalone for in-browser JSX -->
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Babel standalone for in-browser JSX (pinned to 7.x: classic JSX runtime, works with UMD React global) -->
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
 
 <script type="text/babel" data-presets="react">
 const { useState, useRef, useEffect } = React;
