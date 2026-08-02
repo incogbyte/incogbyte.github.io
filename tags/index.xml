@@ -6,27 +6,76 @@
     <description>Recent content in Tags on incogbyte</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 02 Jul 2026 10:00:00 -0300</lastBuildDate>
+    <lastBuildDate>Sun, 02 Aug 2026 10:00:00 -0300</lastBuildDate>
     <atom:link href="https://incogbyte.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Arm</title>
       <link>https://incogbyte.github.io/tags/arm/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
       <guid>https://incogbyte.github.io/tags/arm/</guid>
       <description></description>
     </item>
     <item>
       <title>Bootrom</title>
       <link>https://incogbyte.github.io/tags/bootrom/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
       <guid>https://incogbyte.github.io/tags/bootrom/</guid>
       <description></description>
     </item>
     <item>
       <title>Exploit</title>
       <link>https://incogbyte.github.io/tags/exploit/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
       <guid>https://incogbyte.github.io/tags/exploit/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Hardware</title>
+      <link>https://incogbyte.github.io/tags/hardware/</link>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/tags/hardware/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Image3</title>
+      <link>https://incogbyte.github.io/tags/image3/</link>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/tags/image3/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ios</title>
+      <link>https://incogbyte.github.io/tags/ios/</link>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/tags/ios/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Jailbreak</title>
+      <link>https://incogbyte.github.io/tags/jailbreak/</link>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/tags/jailbreak/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Limera1n</title>
+      <link>https://incogbyte.github.io/tags/limera1n/</link>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/tags/limera1n/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Reverse-Engineering</title>
+      <link>https://incogbyte.github.io/tags/reverse-engineering/</link>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/tags/reverse-engineering/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Securerom</title>
+      <link>https://incogbyte.github.io/tags/securerom/</link>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
+      <guid>https://incogbyte.github.io/tags/securerom/</guid>
       <description></description>
     </item>
     <item>
@@ -34,34 +83,6 @@
       <link>https://incogbyte.github.io/tags/ghidra/</link>
       <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
       <guid>https://incogbyte.github.io/tags/ghidra/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Hardware</title>
-      <link>https://incogbyte.github.io/tags/hardware/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/tags/hardware/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Ios</title>
-      <link>https://incogbyte.github.io/tags/ios/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/tags/ios/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Jailbreak</title>
-      <link>https://incogbyte.github.io/tags/jailbreak/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/tags/jailbreak/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Reverse-Engineering</title>
-      <link>https://incogbyte.github.io/tags/reverse-engineering/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/tags/reverse-engineering/</guid>
       <description></description>
     </item>
     <item>
