@@ -1,217 +1,33 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head>
-	<meta name="generator" content="Hugo 0.142.0">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>incogbyte</title>
-  <meta name="description" content="Offensive Security">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-  <canvas id="matrix-bg"></canvas>
-  <div class="scanline"></div>
-
-  <header class="site-header">
-  <nav class="navbar">
-    <a href="/" class="logo">
-      <span class="logo-bracket">[</span>
-      <span class="logo-text">incogbyte</span>
-      <span class="logo-bracket">]</span>
-      <span class="cursor">_</span>
-    </a>
-    <button class="menu-toggle" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <ul class="nav-links">
-      
-      <li><a href="/" class="nav-link">Home</a></li>
-      
-      <li><a href="/posts/" class="nav-link">Posts</a></li>
-      
-      <li><a href="/cve/" class="nav-link">CVEs</a></li>
-      
-      <li><a href="/about/" class="nav-link">About</a></li>
-      
-    </ul>
-  </nav>
-</header>
-
-
-  <main class="container">
-    
-<section class="hero">
-  <div class="hero-content fade-in">
-    <p class="hero-greeting typewriter">Hello, I'm</p>
-    <h1 class="hero-name glitch" data-text="Rodolfo Tavares">Rodolfo Tavares</h1>
-    <p class="hero-handle">
-      <span class="prompt">$</span> whoami
-      <span class="hero-response">incogbyte</span>
-    </p>
-    <p class="hero-desc">Offensive Security</p>
-    <div class="hero-cta">
-      <a href="/posts/" class="btn btn-primary">Read Blog</a>
-      <a href="/about/" class="btn btn-outline">About Me</a>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="latest-posts">
-  <h2 class="section-title slide-up">
-    <span class="prompt">#</span> Latest Posts
-  </h2>
-  <div class="posts-grid">
-    
-    <article class="post-card slide-up">
-      <div class="post-card-inner">
-        <div class="post-meta">
-          <time>Aug 02, 2026</time>
-          
-          <div class="post-tags">
-            
-            <span class="tag">ios</span>
-            
-            <span class="tag">arm</span>
-            
-          </div>
-          
-        </div>
-        <h3 class="post-title"><a href="https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/">Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain</a></h3>
-        <p class="post-summary">Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain Note: I am always learning. This series is a …</p>
-        <a href="https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/" class="read-more">Read more →</a>
-      </div>
-    </article>
-    
-    <article class="post-card slide-up">
-      <div class="post-card-inner">
-        <div class="post-meta">
-          <time>Jul 02, 2026</time>
-          
-          <div class="post-tags">
-            
-            <span class="tag">ios</span>
-            
-            <span class="tag">arm</span>
-            
-          </div>
-          
-        </div>
-        <h3 class="post-title"><a href="https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/">Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</a></h3>
-        <p class="post-summary">Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM Note: I am always learning. This …</p>
-        <a href="https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/" class="read-more">Read more →</a>
-      </div>
-    </article>
-    
-    <article class="post-card slide-up">
-      <div class="post-card-inner">
-        <div class="post-meta">
-          <time>Apr 15, 2026</time>
-          
-          <div class="post-tags">
-            
-            <span class="tag">ios</span>
-            
-            <span class="tag">arm</span>
-            
-          </div>
-          
-        </div>
-        <h3 class="post-title"><a href="https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/">Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</a></h3>
-        <p class="post-summary">Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access Note: I am always learning. This series is a study …</p>
-        <a href="https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/" class="read-more">Read more →</a>
-      </div>
-    </article>
-    
-    <article class="post-card slide-up">
-      <div class="post-card-inner">
-        <div class="post-meta">
-          <time>Mar 17, 2026</time>
-          
-          <div class="post-tags">
-            
-            <span class="tag">writeup</span>
-            
-          </div>
-          
-        </div>
-        <h3 class="post-title"><a href="https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/">phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</a></h3>
-        <p class="post-summary">Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189) Back in 2022, I found a SQL injection in phpIPAM 1.4.4 …</p>
-        <a href="https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/" class="read-more">Read more →</a>
-      </div>
-    </article>
-    
-    <article class="post-card slide-up">
-      <div class="post-card-inner">
-        <div class="post-meta">
-          <time>Jun 02, 2025</time>
-          
-        </div>
-        <h3 class="post-title"><a href="https://incogbyte.github.io/posts/runner-mobilehackinglabs/">Runner Mobile Hacking Labs</a></h3>
-        <p class="post-summary">In this challenge, you’ll be working with a fictitious app called Run Time, which tracks your steps while running. Your …</p>
-        <a href="https://incogbyte.github.io/posts/runner-mobilehackinglabs/" class="read-more">Read more →</a>
-      </div>
-    </article>
-    
-    <article class="post-card slide-up">
-      <div class="post-card-inner">
-        <div class="post-meta">
-          <time>May 31, 2025</time>
-          
-        </div>
-        <h3 class="post-title"><a href="https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/">Captain No Hook Mobile Hacking Labs</a></h3>
-        <p class="post-summary">Introduction The Captain No Hooks lab provides an in-depth exploration of iOS RASP (Runtime Application Self-Protection) …</p>
-        <a href="https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/" class="read-more">Read more →</a>
-      </div>
-    </article>
-    
-  </div>
-</section>
-
-<section class="section" id="skills">
-  <h2 class="section-title slide-up">
-    <span class="prompt">#</span> Skills
-  </h2>
-  <div class="skills-grid slide-up">
-    <div class="skill-card">
-      <h3>Offensive Security</h3>
-      <p>Penetration testing, vulnerability research, and exploit development.</p>
-    </div>
-    <div class="skill-card">
-      <h3>Mobile Hacking</h3>
-      <p>Android & iOS security analysis, Flutter reverse engineering, mTLS bypass.</p>
-    </div>
-    <div class="skill-card">
-      <h3>Reverse Engineering</h3>
-      <p>Binary analysis, malware research, protocol reverse engineering.</p>
-    </div>
-    <div class="skill-card">
-      <h3>Bug Bounty</h3>
-      <p>Web application testing, CVE disclosures, responsible vulnerability reporting.</p>
-    </div>
-  </div>
-</section>
-
-  </main>
-
-  <footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-links">
-      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
-      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
-  </div>
-</footer>
-
-
-  <script src="/js/matrix.js"></script>
-  <script src="/js/main.js"></script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta name=generator content="Hugo 0.142.0"><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Rodolfo Tavares | Offensive Security Researcher</title>
+<meta name=description content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta name=author content="Rodolfo Tavares"><meta name=theme-color content="#0b0e13"><link rel=canonical href=https://incogbyte.github.io/><meta property="og:title" content="Rodolfo Tavares | Offensive Security Researcher"><meta property="og:description" content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta property="og:type" content="website"><meta property="og:url" content="https://incogbyte.github.io/"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel=stylesheet><script src=/js/theme-init.js></script><link rel=stylesheet href=/css/style.css></head><body><a class=skip-link href=#main-content>Skip to content</a><div class=site-grid aria-hidden=true></div><header class=site-header><nav class=navbar aria-label="Main navigation"><a href=/ class=logo aria-label="Rodolfo Tavares, Home"><span class=logo-mark aria-hidden=true>~/</span>
+<span class=logo-lockup><span class=logo-text>incogbyte</span>
+<span class=logo-subtitle>offensive security research</span></span></a><ul class=nav-links id=site-navigation><li><a href=/posts/ class=nav-link>Writing</a></li><li><a href=/cve/ class=nav-link>CVEs</a></li><li><a href=/about/ class=nav-link>About</a></li></ul><div class=nav-actions><button class=theme-toggle type=button aria-label="Switch to light theme" title="Switch to light theme">
+<span class=theme-icon aria-hidden=true>☀</span>
+</button>
+<button class=menu-toggle type=button aria-label="Open navigation" aria-expanded=false aria-controls=site-navigation>
+<span></span>
+<span></span>
+<span></span></button></div></nav></header><main class=container id=main-content><section class=home-intro><p class=terminal-path>~/incogbyte</p><h1>Rodolfo Tavares</h1><nav class=home-links aria-label="Professional profiles"><a href=/cve/>CVEs</a>
+<a href=https://github.com/incogbyte target=_blank rel="noopener noreferrer">GitHub <span aria-hidden=true>↗</span></a>
+<a href=https://linkedin.com/in/rodolfo-tavares-543863a7 target=_blank rel="noopener noreferrer">LinkedIn <span aria-hidden=true>↗</span></a>
+<a href=mailto:incogbyte@protonmail.com>Email</a>
+<a href=/about/>About</a></nav></section><section class="home-section writing-preview"><header class=section-heading-compact><div><p class=section-label>Research notebook</p><h2>Latest writing</h2></div><a href=/posts/>Browse the archive</a></header><ol class=post-feed><li class=post-feed-item data-post-item data-tags="ios arm exploit hardware jailbreak reverse-engineering bootrom securerom image3 limera1n hacking research" data-search="jailbreaking the iphone 3gs from scratch, part 3: bypassing the boot chain jailbreaking the iphone 3gs from scratch, part 3: bypassing the boot chain note: i am always learning. this series is a study project, not a definitive guide, and i will certainly … ios arm exploit hardware jailbreak reverse-engineering bootrom securerom image3 limera1n hacking research"><a href=/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/><p class=post-feed-meta><span class=post-kind>ios</span>
+<time datetime=2026-08-02>Aug 02, 2026</time>
+<span>17 min read</span></p><h3>Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain</h3><p class=post-feed-summary>Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain Note: I am always learning. This series is a study project, not a definitive guide, and I will certainly …</p></a></li><li class=post-feed-item data-post-item data-tags="ios arm exploit hardware jailbreak reverse-engineering ghidra bootrom hacking research" data-search="jailbreaking the iphone 3gs from scratch, part 2: reverse engineering the bootrom jailbreaking the iphone 3gs from scratch, part 2: reverse engineering the bootrom note: i am always learning. this series is a study project, not a definitive guide, and i will … ios arm exploit hardware jailbreak reverse-engineering ghidra bootrom hacking research"><a href=/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/><p class=post-feed-meta><span class=post-kind>ios</span>
+<time datetime=2026-07-02>Jul 02, 2026</time>
+<span>28 min read</span></p><h3>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</h3><p class=post-feed-summary>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM Note: I am always learning. This series is a study project, not a definitive guide, and I will …</p></a></li><li class=post-feed-item data-post-item data-tags="ios arm exploit hardware jailbreak hacking research" data-search="jailbreaking the iphone 3gs from scratch, part 1: initial access jailbreaking the iphone 3gs from scratch, part 1: initial access note: i am always learning. this series is a study project, not a definitive guide, and i will certainly make … ios arm exploit hardware jailbreak hacking research"><a href=/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/><p class=post-feed-meta><span class=post-kind>ios</span>
+<time datetime=2026-04-15>Apr 15, 2026</time>
+<span>20 min read</span></p><h3>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</h3><p class=post-feed-summary>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access Note: I am always learning. This series is a study project, not a definitive guide, and I will certainly make …</p></a></li><li class=post-feed-item data-post-item data-tags="writeup web sqli hacking writeup" data-search="phpipam 1.7.4 - second order sql injection via subnetordering second order sql injection in phpipam 1.7.4 (cve-2026-4189) back in 2022, i found a sql injection in phpipam 1.4.4 (cve-2022-23046) via the bgp mapping search feature. that was a … writeup web sqli hacking writeup"><a href=/posts/2026-03-17-phpipam-second-order-sqli/><p class=post-feed-meta><span class=post-kind>writeup</span>
+<time datetime=2026-03-17>Mar 17, 2026</time>
+<span>7 min read</span></p><h3>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</h3><p class=post-feed-summary>Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189) Back in 2022, I found a SQL injection in phpIPAM 1.4.4 (CVE-2022-23046) via the BGP mapping search feature. That was a …</p></a></li><li class=post-feed-item data-post-item data-tags="mobile ios reverse-engineering lab " data-search="runner mobile hacking labs in this challenge, you’ll be working with a fictitious app called run time, which tracks your steps while running. your objective is to bypass the app’s protections, inject a … mobile ios reverse-engineering lab "><a href=/posts/runner-mobilehackinglabs/><p class=post-feed-meta><span class=post-kind>mobile</span>
+<time datetime=2025-06-02>Jun 02, 2025</time>
+<span>4 min read</span></p><h3>Runner Mobile Hacking Labs</h3><p class=post-feed-summary>In this challenge, you’ll be working with a fictitious app called Run Time, which tracks your steps while running. Your objective is to bypass the app’s protections, inject a …</p></a></li><li class=post-feed-item data-post-item data-tags="mobile ios anti-debugging lab " data-search="captain no hook mobile hacking labs introduction the captain no hooks lab provides an in-depth exploration of ios rasp (runtime application self-protection) defenses. this comprehensive guide focuses on how we can … mobile ios anti-debugging lab "><a href=/posts/captain-no-hook-mobilehackinglabs/><p class=post-feed-meta><span class=post-kind>mobile</span>
+<time datetime=2025-05-31>May 31, 2025</time>
+<span>26 min read</span></p><h3>Captain No Hook Mobile Hacking Labs</h3><p class=post-feed-summary>Introduction The Captain No Hooks lab provides an in-depth exploration of iOS RASP (Runtime Application Self-Protection) defenses. This comprehensive guide focuses on how we can …</p></a></li><li class=post-feed-item data-post-item data-tags="mobile ios command-injection lab " data-search="time trap mobile hacking labs introduction in this challenge, you will explore the vulnerabilities in an internally used application named time trap, focusing on command injection. time trap is a fictional … mobile ios command-injection lab "><a href=/posts/time-trap-mobilehackinglabs/><p class=post-feed-meta><span class=post-kind>mobile</span>
+<time datetime=2025-05-31>May 31, 2025</time>
+<span>4 min read</span></p><h3>Time Trap Mobile Hacking Labs</h3><p class=post-feed-summary>Introduction In this challenge, you will explore the vulnerabilities in an internally used application named Time Trap, focusing on Command Injection. Time Trap is a fictional …</p></a></li><li class=post-feed-item data-post-item data-tags="mobile ios webview lab " data-search="gotham times mobile hacking labs introduction the gotham times lab provides an in-depth exploration of ios webviews and their security implications. this comprehensive guide focuses on how vulnerabilities in … mobile ios webview lab "><a href=/posts/gotham-times-mobilehackinglabs/><p class=post-feed-meta><span class=post-kind>mobile</span>
+<time datetime=2025-05-31>May 31, 2025</time>
+<span>6 min read</span></p><h3>Gotham Times Mobile Hacking Labs</h3><p class=post-feed-summary>Introduction The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in …</p></a></li></ol></section></main><footer class=site-footer><div class=footer-content><p><span class=footer-prompt>~/incogbyte</span> <span>Security research, notes and disclosures.</span></p><nav class=footer-links aria-label="External profiles"><a href=https://github.com/incogbyte target=_blank rel="noopener noreferrer">GitHub</a>
+<a href=https://linkedin.com/in/rodolfo-tavares-543863a7 target=_blank rel="noopener noreferrer">LinkedIn</a>
+<a href=mailto:incogbyte@protonmail.com>Email</a>
+<a href=/index.xml>RSS</a></nav></div></footer><script src=/js/main.js></script></body></html>

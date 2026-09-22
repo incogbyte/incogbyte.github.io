@@ -1,61 +1,34 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Hacking on incogbyte</title>
-    <link>https://incogbyte.github.io/categories/hacking/</link>
-    <description>Recent content in Hacking on incogbyte</description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 02 Aug 2026 10:00:00 -0300</lastBuildDate>
-    <atom:link href="https://incogbyte.github.io/categories/hacking/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain</title>
-      <link>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</link>
-      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</guid>
-      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-3-bypassing-the-boot-chain&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or on &lt;a href=&#34;https://linkedin.com/in/rodolfo-tavares-543863a7&#34;&gt;LinkedIn&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;In this post, I&#39;ll show what I found in my own 64KB dump, what I compared with&#xA;public tools, and what actually worked on the phone. The custom Image3 comes in&#xA;Part 4, so I won&#39;t claim that part here.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</title>
-      <link>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</guid>
-      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-2-reverse-engineering-the-bootrom&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or on &lt;a href=&#34;https://linkedin.com/in/rodolfo-tavares-543863a7&#34;&gt;LinkedIn&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;h2 id=&#34;where-we-left-off&#34;&gt;Where we left off&lt;/h2&gt;&#xA;&lt;p&gt;In &lt;a href=&#34;https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/&#34;&gt;Part 1&lt;/a&gt; we used&#xA;the &lt;strong&gt;limera1n&lt;/strong&gt; heap overflow to break into the iPhone 3GS SecureROM in DFU mode,&#xA;ran a 76-byte ARM payload, and pulled 64KB of raw code out of the chip:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</title>
-      <link>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</link>
-      <pubDate>Wed, 15 Apr 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</guid>
-      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-1-initial-access&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or via &lt;a href=&#34;mailto:incogbyte@protonmail.com&#34;&gt;email&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;This is the first post in a series where I document the entire process of building a jailbreak for the iPhone 3GS from scratch. The end goal is a fully working jailbreak: unsigned code execution, a patched kernel, Cydia, SSH, the whole thing. But before any of that can happen, we need to get our foot in the door.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</title>
-      <link>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</link>
-      <pubDate>Tue, 17 Mar 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</guid>
-      <description>&lt;h1 id=&#34;second-order-sql-injection-in-phpipam-174-cve-2026-4189&#34;&gt;Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)&lt;/h1&gt;&#xA;&lt;p&gt;Back in 2022, I found a &lt;a href=&#34;https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/&#34;&gt;SQL injection in phpIPAM 1.4.4&lt;/a&gt; (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection  user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a &lt;strong&gt;Second Order SQL Injection&lt;/strong&gt; in version &lt;strong&gt;1.7.4&lt;/strong&gt;, where the payload is stored first and executed later in a completely different context.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Nasa Path Traversal and XSS (waf bypass)</title>
-      <link>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</link>
-      <pubDate>Mon, 07 Oct 2024 07:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</guid>
-      <description>&lt;h1 id=&#34;exploit-path-traversal-and-xss-in-nasa-subdomains&#34;&gt;Exploit Path Traversal and XSS in NASA Subdomains&lt;/h1&gt;&#xA;&lt;p&gt;In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>PHPIPAM CVE</title>
-      <link>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</link>
-      <pubDate>Thu, 02 Feb 2023 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</guid>
-      <description>&lt;p&gt;TL;DR&lt;/p&gt;&#xA;&lt;p&gt;This write up is about a SQL injection which I found 4 days after another researcher reported it :/, however, because of the fact that I haven’t found any write ups or publicly available exploits, I decided to write about it.&#xA;Exploit at the end!&lt;/p&gt;&#xA;&lt;p&gt;PHPIPAM is a software widely used internally by several companies. And by being so, it is relatively common for you to find a running instance to manage IT assets, networks, etc. &lt;strong&gt;1.4.4&lt;/strong&gt; is the vulnerable version and a fix has already been made public with the arrival of version &lt;strong&gt;1.4.5&lt;/strong&gt;. The request responsible for triggering the SQLi is presented below, but if you want to look at the rest, feel free.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>iOS Anti-Tampers Bypass</title>
-      <link>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</link>
-      <pubDate>Sat, 19 Mar 2022 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Hi everyone, in this blog i&#39;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&#34;&gt;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;ptrace&lt;/li&gt;&#xA;&lt;li&gt;sysctl&lt;/li&gt;&#xA;&lt;li&gt;strstr&lt;/li&gt;&#xA;&lt;li&gt;geppid&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;In this blog, I will only talk about how I did it to bypass, using only &lt;a href=&#34;https://frida.re&#34;&gt;frida&lt;/a&gt;  with &lt;a href=&#34;https://github.com/radare2&#34;&gt;radare2&lt;/a&gt;. So let&#39;s go.&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hacking on Rodolfo Tavares | Offensive Security Researcher</title><link>https://incogbyte.github.io/categories/hacking/</link><description>Recent content in Hacking on Rodolfo Tavares | Offensive Security Researcher</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 02 Aug 2026 10:00:00 -0300</lastBuildDate><atom:link href="https://incogbyte.github.io/categories/hacking/index.xml" rel="self" type="application/rss+xml"/><item><title>Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain</title><link>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</link><pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</guid><description>&lt;h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-3-bypassing-the-boot-chain">Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href="https://x.com/incogbyte">X (@incogbyte)&lt;/a> or on &lt;a href="https://linkedin.com/in/rodolfo-tavares-543863a7">LinkedIn&lt;/a>. I am grateful for any corrections and happy to learn from them.&lt;/p>
+&lt;/blockquote>
+&lt;p>In this post, I'll show what I found in my own 64KB dump, what I compared with
+public tools, and what actually worked on the phone. The custom Image3 comes in
+Part 4, so I won't claim that part here.&lt;/p></description></item><item><title>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</title><link>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</link><pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</guid><description>&lt;h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-2-reverse-engineering-the-bootrom">Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href="https://x.com/incogbyte">X (@incogbyte)&lt;/a> or on &lt;a href="https://linkedin.com/in/rodolfo-tavares-543863a7">LinkedIn&lt;/a>. I am grateful for any corrections and happy to learn from them.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="where-we-left-off">Where we left off&lt;/h2>
+&lt;p>In &lt;a href="https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/">Part 1&lt;/a> we used
+the &lt;strong>limera1n&lt;/strong> heap overflow to break into the iPhone 3GS SecureROM in DFU mode,
+ran a 76-byte ARM payload, and pulled 64KB of raw code out of the chip:&lt;/p></description></item><item><title>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</title><link>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</link><pubDate>Wed, 15 Apr 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</guid><description>&lt;h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-1-initial-access">Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href="https://x.com/incogbyte">X (@incogbyte)&lt;/a> or via &lt;a href="mailto:incogbyte@protonmail.com">email&lt;/a>. I am grateful for any corrections and happy to learn from them.&lt;/p>
+&lt;/blockquote>
+&lt;p>This is the first post in a series where I document the entire process of building a jailbreak for the iPhone 3GS from scratch. The end goal is a fully working jailbreak: unsigned code execution, a patched kernel, Cydia, SSH, the whole thing. But before any of that can happen, we need to get our foot in the door.&lt;/p></description></item><item><title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</title><link>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</link><pubDate>Tue, 17 Mar 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</guid><description>&lt;h1 id="second-order-sql-injection-in-phpipam-174-cve-2026-4189">Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)&lt;/h1>
+&lt;p>Back in 2022, I found a &lt;a href="https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/">SQL injection in phpIPAM 1.4.4&lt;/a> (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a &lt;strong>Second Order SQL Injection&lt;/strong> in version &lt;strong>1.7.4&lt;/strong>, where the payload is stored first and executed later in a completely different context.&lt;/p></description></item><item><title>Nasa Path Traversal and XSS (waf bypass)</title><link>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</link><pubDate>Mon, 07 Oct 2024 07:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</guid><description>&lt;h1 id="exploit-path-traversal-and-xss-in-nasa-subdomains">Exploit Path Traversal and XSS in NASA Subdomains&lt;/h1>
+&lt;p>In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.&lt;/p></description></item><item><title>PHPIPAM CVE</title><link>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</link><pubDate>Thu, 02 Feb 2023 17:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</guid><description>&lt;p>TL;DR&lt;/p>
+&lt;p>This write up is about a SQL injection which I found 4 days after another researcher reported it :/, however, because of the fact that I haven’t found any write ups or publicly available exploits, I decided to write about it.
+Exploit at the end!&lt;/p>
+&lt;p>PHPIPAM is a software widely used internally by several companies. And by being so, it is relatively common for you to find a running instance to manage IT assets, networks, etc. &lt;strong>1.4.4&lt;/strong> is the vulnerable version and a fix has already been made public with the arrival of version &lt;strong>1.4.5&lt;/strong>. The request responsible for triggering the SQLi is presented below, but if you want to look at the rest, feel free.&lt;/p></description></item><item><title>iOS Anti-Tampers Bypass</title><link>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</link><pubDate>Sat, 19 Mar 2022 17:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</guid><description>&lt;p>&lt;strong>Hi everyone, in this blog i'm going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;a href="https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa">https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&lt;/a>&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;p>The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&lt;/p>
+&lt;ul>
+&lt;li>ptrace&lt;/li>
+&lt;li>sysctl&lt;/li>
+&lt;li>strstr&lt;/li>
+&lt;li>geppid&lt;/li>
+&lt;/ul>
+&lt;p>In this blog, I will only talk about how I did it to bypass, using only &lt;a href="https://frida.re">frida&lt;/a> with &lt;a href="https://github.com/radare2">radare2&lt;/a>. So let's go.&lt;/p></description></item></channel></rss>

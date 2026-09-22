@@ -1,145 +1,271 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>incogbyte</title>
-    <link>https://incogbyte.github.io/</link>
-    <description>Recent content on incogbyte</description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 02 Aug 2026 10:00:00 -0300</lastBuildDate>
-    <atom:link href="https://incogbyte.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain</title>
-      <link>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</link>
-      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</guid>
-      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-3-bypassing-the-boot-chain&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or on &lt;a href=&#34;https://linkedin.com/in/rodolfo-tavares-543863a7&#34;&gt;LinkedIn&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;In this post, I&#39;ll show what I found in my own 64KB dump, what I compared with&#xA;public tools, and what actually worked on the phone. The custom Image3 comes in&#xA;Part 4, so I won&#39;t claim that part here.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</title>
-      <link>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</guid>
-      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-2-reverse-engineering-the-bootrom&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or on &lt;a href=&#34;https://linkedin.com/in/rodolfo-tavares-543863a7&#34;&gt;LinkedIn&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;h2 id=&#34;where-we-left-off&#34;&gt;Where we left off&lt;/h2&gt;&#xA;&lt;p&gt;In &lt;a href=&#34;https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/&#34;&gt;Part 1&lt;/a&gt; we used&#xA;the &lt;strong&gt;limera1n&lt;/strong&gt; heap overflow to break into the iPhone 3GS SecureROM in DFU mode,&#xA;ran a 76-byte ARM payload, and pulled 64KB of raw code out of the chip:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</title>
-      <link>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</link>
-      <pubDate>Wed, 15 Apr 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</guid>
-      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-1-initial-access&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or via &lt;a href=&#34;mailto:incogbyte@protonmail.com&#34;&gt;email&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;This is the first post in a series where I document the entire process of building a jailbreak for the iPhone 3GS from scratch. The end goal is a fully working jailbreak: unsigned code execution, a patched kernel, Cydia, SSH, the whole thing. But before any of that can happen, we need to get our foot in the door.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</title>
-      <link>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</link>
-      <pubDate>Tue, 17 Mar 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</guid>
-      <description>&lt;h1 id=&#34;second-order-sql-injection-in-phpipam-174-cve-2026-4189&#34;&gt;Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)&lt;/h1&gt;&#xA;&lt;p&gt;Back in 2022, I found a &lt;a href=&#34;https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/&#34;&gt;SQL injection in phpIPAM 1.4.4&lt;/a&gt; (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection  user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a &lt;strong&gt;Second Order SQL Injection&lt;/strong&gt; in version &lt;strong&gt;1.7.4&lt;/strong&gt;, where the payload is stored first and executed later in a completely different context.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Runner Mobile Hacking Labs</title>
-      <link>https://incogbyte.github.io/posts/runner-mobilehackinglabs/</link>
-      <pubDate>Mon, 02 Jun 2025 09:29:08 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/runner-mobilehackinglabs/</guid>
-      <description>&lt;p&gt;In this challenge, you’ll be working with a fictitious app called &lt;strong&gt;Run Time&lt;/strong&gt;, which tracks your steps while running. Your objective is to &lt;strong&gt;bypass the app’s protections, inject a dynamic library, and achieve code execution&lt;/strong&gt;. &lt;a href=&#34;https://www.mobilehackinglab.com/path-player?courseid=lab-runtime&#34;&gt;https://www.mobilehackinglab.com/path-player?courseid=lab-runtime&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;On a &lt;strong&gt;jailbroken device&lt;/strong&gt;, you can install the .ipa file using:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ideviceinstaller -i com.mobilehackinglab.runtime.ipa&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We’ll start by analyzing the app’s binary using class-dump, examining its Info.plist, and extracting class metadata.&lt;/p&gt;&#xA;&lt;p&gt;You can use the following script to automate the extraction:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Captain No Hook Mobile Hacking Labs</title>
-      <link>https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/</link>
-      <pubDate>Sat, 31 May 2025 19:35:40 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/</guid>
-      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;The Captain No Hooks lab provides an in-depth exploration of iOS RASP (Runtime Application Self-Protection) defenses. This comprehensive guide focuses on how we can bypass these security mechanisms.&lt;/p&gt;&#xA;&lt;p&gt;The lab description:&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Welcome to the iOS Application Security Lab: Captain No Hook Anti-Debugging Challenge. This challenge focuses on a fictitious app called Captain No Hook, which implements advanced anti-debugging and jailbreak detection techniques. Your objective is to bypass these protections and retrieve the hidden flag within the app.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Time Trap Mobile Hacking Labs</title>
-      <link>https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/</link>
-      <pubDate>Sat, 31 May 2025 14:10:48 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/</guid>
-      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;In this challenge, you will explore the vulnerabilities in an internally used application named Time Trap, focusing on Command Injection. Time Trap is a fictional application that showcases insecure practices commonly found in internal applications. Your objective is to exploit the Command Injection vulnerability to gain unauthorized access and execute commands on the iOS device.&lt;/p&gt;&#xA;&lt;h3 id=&#34;initial-setup&#34;&gt;Initial Setup&lt;/h3&gt;&#xA;&lt;p&gt;First, let&#39;s install the .ipa file on our jailbroken device:&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://incogbyte.github.io/images/time-01.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;analysis-process&#34;&gt;Analysis Process&lt;/h3&gt;&#xA;&lt;h4 id=&#34;1-automated-analysis-setup&#34;&gt;1. Automated Analysis Setup&lt;/h4&gt;&#xA;&lt;p&gt;We&#39;ll use the following bash script to automate the class-dump analysis and .IPA extraction:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Gotham Times Mobile Hacking Labs</title>
-      <link>https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/</link>
-      <pubDate>Sat, 31 May 2025 10:14:01 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/</guid>
-      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.&lt;/p&gt;&#xA;&lt;p&gt;In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;How webviews function in iOS applications&lt;/li&gt;&#xA;&lt;li&gt;Understanding deep links and their implementation&lt;/li&gt;&#xA;&lt;li&gt;Identifying open redirect vulnerabilities&lt;/li&gt;&#xA;&lt;li&gt;Techniques for exploiting these security flaws&lt;/li&gt;&#xA;&lt;li&gt;Methods for extracting session tokens&lt;/li&gt;&#xA;&lt;li&gt;Best practices for preventing such attacks&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Flipcoin Wallet Mobile Hacking Lab</title>
-      <link>https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/</link>
-      <pubDate>Fri, 30 May 2025 18:57:03 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/</guid>
-      <description>&lt;h1 id=&#34;flipcoin-wallet-ctf---sql-injection-challenge&#34;&gt;Flipcoin Wallet CTF - SQL Injection Challenge&lt;/h1&gt;&#xA;&lt;p&gt;In this CTF challenge, I&#39;ll explore a SQL Injection vulnerability ( Client Side) in the Flipcoin Wallet iOS app. I&#39;ll walk you through my process of identifying and exploiting the vulnerability to retrieve a recovery phrase from the application&#39;s database (this is the chall 👌).&lt;/p&gt;&#xA;&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;When I first opened the app, I found a typical crypto wallet interface with features for buying, sending, and receiving cryptocurrencies. It also shows crypto news and displays balances for different coins. Since I couldn&#39;t find any obvious way to get the recovery phrase through the normal interface, I decided to dig into the app&#39;s code to find a way in.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques</title>
-      <link>https://incogbyte.github.io/posts/flutter-encryption-bypass/</link>
-      <pubDate>Thu, 20 Feb 2025 22:40:38 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/flutter-encryption-bypass/</guid>
-      <description>&lt;p&gt;In my previous post &lt;a href=&#34;https://incogbyte.github.io/posts/bypassmtlsflutter/&#34;&gt;Bypassing MTLS in Flutter&lt;/a&gt;, I discussed how MTLS is &lt;strong&gt;generaly&lt;/strong&gt; implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: &lt;em&gt;&amp;quot;It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open.&amp;quot;&lt;/em&gt;&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Nasa Path Traversal and XSS (waf bypass)</title>
-      <link>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</link>
-      <pubDate>Mon, 07 Oct 2024 07:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</guid>
-      <description>&lt;h1 id=&#34;exploit-path-traversal-and-xss-in-nasa-subdomains&#34;&gt;Exploit Path Traversal and XSS in NASA Subdomains&lt;/h1&gt;&#xA;&lt;p&gt;In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Bypass MTLS Flutter</title>
-      <link>https://incogbyte.github.io/posts/bypassmtlsflutter/</link>
-      <pubDate>Thu, 18 Apr 2024 22:40:38 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/bypassmtlsflutter/</guid>
-      <description>&lt;h4 id=&#34;overview&#34;&gt;Overview&lt;/h4&gt;&#xA;&lt;p&gt;In this blog post, we&#39;ll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\&lt;em&gt;(ツ)&lt;/em&gt;/¯  ) from developers. Before we continue.. into the specifics, it&#39;s essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.&lt;/p&gt;&#xA;&lt;p&gt;Our journey will begin with an exploration of Flutter&#39;s network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Decrypt WhatsApp Msgs Android (Investigator)</title>
-      <link>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</link>
-      <pubDate>Sun, 10 Mar 2024 22:40:38 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</guid>
-      <description>&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;&#xA;&lt;p&gt;In this blog post, we&#39;ll tackle a compelling challenge: decrypting WhatsApp messages. However, before we dive into the solution, it&#39;s crucial to grasp some foundational concepts about how Android—though not all versions—stores your screen lock password. More importantly, we&#39;ll explore why reusing this password across other applications, such as WhatsApp, is a security misstep.&lt;/p&gt;&#xA;&lt;p&gt;Our journey will begin with an exploration of Android&#39;s password storage mechanisms, focusing on the nuances of different versions and how they impact your device&#39;s security. This understanding is pivotal as we delve into the risks associated with password reuse. It&#39;s a common practice, yet one fraught with vulnerabilities, especially when the same password guards access to both your device and your applications.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Template Injection Kitctf</title>
-      <link>https://incogbyte.github.io/posts/kitctf2023/</link>
-      <pubDate>Mon, 19 Jun 2023 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/kitctf2023/</guid>
-      <description>&lt;p&gt;In this blog post, we will explore a specific template injection vulnerability discovered in a CTF (Capture The Flag) challenge from kitctf. We will delve into the details of the vulnerability. Let’s dive in!&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;If you don’t know what is template injection, strong recoment that you visit the Burp labs &lt;a href=&#34;https://portswigger.net/web-security/server-side-template-injection&#34;&gt;https://portswigger.net/web-security/server-side-template-injection&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;Brief introduction what is template injection. Template injection occurs when an application allows user-controlled input to be directly included in a template without proper sanitization or validation. This can lead to the execution of arbitrary code within the template context, potentially leading to remote code execution (RCE) or other critical security breaches.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>PHPIPAM CVE</title>
-      <link>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</link>
-      <pubDate>Thu, 02 Feb 2023 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</guid>
-      <description>&lt;p&gt;TL;DR&lt;/p&gt;&#xA;&lt;p&gt;This write up is about a SQL injection which I found 4 days after another researcher reported it :/, however, because of the fact that I haven’t found any write ups or publicly available exploits, I decided to write about it.&#xA;Exploit at the end!&lt;/p&gt;&#xA;&lt;p&gt;PHPIPAM is a software widely used internally by several companies. And by being so, it is relatively common for you to find a running instance to manage IT assets, networks, etc. &lt;strong&gt;1.4.4&lt;/strong&gt; is the vulnerable version and a fix has already been made public with the arrival of version &lt;strong&gt;1.4.5&lt;/strong&gt;. The request responsible for triggering the SQLi is presented below, but if you want to look at the rest, feel free.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Reversing Nim Binary With Radare</title>
-      <link>https://incogbyte.github.io/posts/reverse-nim-binary/</link>
-      <pubDate>Thu, 09 Jun 2022 10:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/reverse-nim-binary/</guid>
-      <description>&lt;p&gt;This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (&lt;a href=&#34;https://nim-lang.org/&#34;&gt;https://nim-lang.org/&lt;/a&gt;) program language.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;tl;dr&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;If you want to know the answer right away, just put a break point in the &lt;strong&gt;sym.join_main_42&lt;/strong&gt; function, and check the registers and your flag will be there.&lt;/p&gt;&#xA;&lt;p&gt;The challenge itself was not complex however, I had never written anything in Nim. So right after downloading the challenge binary, I went to look at some of Nim&#39;s documentation and created a simple example, a guess number:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>iOS Anti-Tampers Bypass</title>
-      <link>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</link>
-      <pubDate>Sat, 19 Mar 2022 17:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Hi everyone, in this blog i&#39;m going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&#34;&gt;https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;ptrace&lt;/li&gt;&#xA;&lt;li&gt;sysctl&lt;/li&gt;&#xA;&lt;li&gt;strstr&lt;/li&gt;&#xA;&lt;li&gt;geppid&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;In this blog, I will only talk about how I did it to bypass, using only &lt;a href=&#34;https://frida.re&#34;&gt;frida&lt;/a&gt;  with &lt;a href=&#34;https://github.com/radare2&#34;&gt;radare2&lt;/a&gt;. So let&#39;s go.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Research &amp; Vulnerability Disclosures</title>
-      <link>https://incogbyte.github.io/cve/</link>
-      <pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate>
-      <guid>https://incogbyte.github.io/cve/</guid>
-      <description>&lt;h3 id=&#34;remote-code-execution-rce--sql-injection-sqli&#34;&gt;Remote Code Execution (RCE) &amp;amp; SQL Injection (SQLi)&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Bruno IDE&lt;/strong&gt; - Remote Code Execution (&lt;a href=&#34;https://github.com/advisories/GHSA-9394-rw2q-x5m7&#34;&gt;CVE-2024-48463&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;SeSuite&lt;/strong&gt; - Remote Code Execution (&lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2023-26877&#34;&gt;CVE-2023-26877&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Typesetter CMS&lt;/strong&gt; - Remote Code Execution (&lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2020-25790&#34;&gt;CVE-2020-25790&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;phpIPAM&lt;/strong&gt; - Second Order SQL Injection (&lt;a href=&#34;https://www.tenable.com/cve/CVE-2026-4189&#34;&gt;CVE-2026-4189&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Piwigo&lt;/strong&gt; - SQL Injection (&lt;a href=&#34;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-26876&#34;&gt;CVE-2023-26876&lt;/a&gt;)&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Official module published in the Metasploit Framework.&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;hr&gt;&#xA;&lt;h3 id=&#34;cross-site-scripting-xss--cross-site-request-forgery-csrf&#34;&gt;Cross-Site Scripting (XSS) &amp;amp; Cross-Site Request Forgery (CSRF)&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;LumisXP&lt;/strong&gt; - Unauthenticated XSS (&lt;a href=&#34;https://seclists.org/fulldisclosure/2024/Jul/7&#34;&gt;CVE-2024-33329&lt;/a&gt;, &lt;a href=&#34;https://seclists.org/fulldisclosure/2024/Jul/8&#34;&gt;CVE-2024-33328&lt;/a&gt;, &lt;a href=&#34;https://seclists.org/fulldisclosure/2024/Jul/9&#34;&gt;CVE-2024-33327&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;phpIPAM&lt;/strong&gt; - CSRF to Stored XSS (&lt;a href=&#34;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-46426&#34;&gt;CVE-2021-46426&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;LiquidFiles&lt;/strong&gt; - Stored XSS (&lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2021-30140&#34;&gt;CVE-2021-30140&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Wordpress (Envira Gallery)&lt;/strong&gt; - Stored XSS (&lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2020-35581&#34;&gt;CVE-2020-35581&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Gila CMS&lt;/strong&gt; - Reflected XSS (&lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2019-20803&#34;&gt;CVE-2019-20803&lt;/a&gt;) &amp;amp; CSRF (&lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2019-20804&#34;&gt;CVE-2019-20804&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Piwigo&lt;/strong&gt; - Stored XSS (&lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2019-13364&#34;&gt;CVE-2019-13364&lt;/a&gt;) &amp;amp; CSRF (&lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2019-13363&#34;&gt;CVE-2019-13363&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;hr&gt;&#xA;&lt;h3 id=&#34;other-vulnerabilities&#34;&gt;Other Vulnerabilities&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;LumisXP&lt;/strong&gt; - Information Disclosure &amp;amp; IDOR (&lt;a href=&#34;https://seclists.org/fulldisclosure/2024/Jul/10&#34;&gt;CVE-2024-33326&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Wordpress (WPvivid Backup)&lt;/strong&gt; - Path Traversal (&lt;a href=&#34;https://wpscan.com/vulnerability/cb6a3304-2166-47a0-a011-4dcacaa133e5&#34;&gt;CVE-2022-2863&lt;/a&gt;)&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
-    </item>
-    <item>
-      <title>About</title>
-      <link>https://incogbyte.github.io/about/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://incogbyte.github.io/about/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Rodolfo Tavares&lt;/strong&gt; is an Offensive Security professional with a deep passion for breaking things also create things to break them. Known in the community as &lt;strong&gt;&lt;code&gt;incogbyte&lt;/code&gt;&lt;/strong&gt; and &lt;strong&gt;&lt;code&gt;rodtvs&lt;/code&gt;&lt;/strong&gt;, he specializes in mobile application security, reverse engineering, and ofensive consulting/pentesting.&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;h3 id=&#34;professional-snapshot&#34;&gt;Professional Snapshot&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Name&lt;/strong&gt;: Rodolfo Tavares&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Aliases&lt;/strong&gt;: &lt;code&gt;incogbyte&lt;/code&gt;, &lt;code&gt;rodtvs&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Role&lt;/strong&gt;: Offensive Security Engineer/Consultant&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Core Competencies&lt;/strong&gt;:&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Mobile Security (iOS &amp;amp; Android)&lt;/li&gt;&#xA;&lt;li&gt;Reverse Engineering&lt;/li&gt;&#xA;&lt;li&gt;Web Application Security&lt;/li&gt;&#xA;&lt;li&gt;Internal Network Penetration Testing&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;hr&gt;&#xA;&lt;h3 id=&#34;expertise&#34;&gt;Expertise&lt;/h3&gt;&#xA;&lt;p&gt;With over 10 years of experience in Security Consulting and Penetration Testing, my work spans a comprehensive range of security assessments:&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Rodolfo Tavares | Offensive Security Researcher</title><link>https://incogbyte.github.io/</link><description>Recent content on Rodolfo Tavares | Offensive Security Researcher</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 02 Aug 2026 10:00:00 -0300</lastBuildDate><atom:link href="https://incogbyte.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain</title><link>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</link><pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</guid><description>&lt;h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-3-bypassing-the-boot-chain">Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href="https://x.com/incogbyte">X (@incogbyte)&lt;/a> or on &lt;a href="https://linkedin.com/in/rodolfo-tavares-543863a7">LinkedIn&lt;/a>. I am grateful for any corrections and happy to learn from them.&lt;/p>
+&lt;/blockquote>
+&lt;p>In this post, I'll show what I found in my own 64KB dump, what I compared with
+public tools, and what actually worked on the phone. The custom Image3 comes in
+Part 4, so I won't claim that part here.&lt;/p></description></item><item><title>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</title><link>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</link><pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</guid><description>&lt;h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-2-reverse-engineering-the-bootrom">Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href="https://x.com/incogbyte">X (@incogbyte)&lt;/a> or on &lt;a href="https://linkedin.com/in/rodolfo-tavares-543863a7">LinkedIn&lt;/a>. I am grateful for any corrections and happy to learn from them.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="where-we-left-off">Where we left off&lt;/h2>
+&lt;p>In &lt;a href="https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/">Part 1&lt;/a> we used
+the &lt;strong>limera1n&lt;/strong> heap overflow to break into the iPhone 3GS SecureROM in DFU mode,
+ran a 76-byte ARM payload, and pulled 64KB of raw code out of the chip:&lt;/p></description></item><item><title>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</title><link>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</link><pubDate>Wed, 15 Apr 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</guid><description>&lt;h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-1-initial-access">Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href="https://x.com/incogbyte">X (@incogbyte)&lt;/a> or via &lt;a href="mailto:incogbyte@protonmail.com">email&lt;/a>. I am grateful for any corrections and happy to learn from them.&lt;/p>
+&lt;/blockquote>
+&lt;p>This is the first post in a series where I document the entire process of building a jailbreak for the iPhone 3GS from scratch. The end goal is a fully working jailbreak: unsigned code execution, a patched kernel, Cydia, SSH, the whole thing. But before any of that can happen, we need to get our foot in the door.&lt;/p></description></item><item><title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</title><link>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</link><pubDate>Tue, 17 Mar 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/</guid><description>&lt;h1 id="second-order-sql-injection-in-phpipam-174-cve-2026-4189">Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)&lt;/h1>
+&lt;p>Back in 2022, I found a &lt;a href="https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/">SQL injection in phpIPAM 1.4.4&lt;/a> (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a &lt;strong>Second Order SQL Injection&lt;/strong> in version &lt;strong>1.7.4&lt;/strong>, where the payload is stored first and executed later in a completely different context.&lt;/p></description></item><item><title>Runner Mobile Hacking Labs</title><link>https://incogbyte.github.io/posts/runner-mobilehackinglabs/</link><pubDate>Mon, 02 Jun 2025 09:29:08 -0300</pubDate><guid>https://incogbyte.github.io/posts/runner-mobilehackinglabs/</guid><description>&lt;p>In this challenge, you’ll be working with a fictitious app called &lt;strong>Run Time&lt;/strong>, which tracks your steps while running. Your objective is to &lt;strong>bypass the app’s protections, inject a dynamic library, and achieve code execution&lt;/strong>. &lt;a href="https://www.mobilehackinglab.com/path-player?courseid=lab-runtime">https://www.mobilehackinglab.com/path-player?courseid=lab-runtime&lt;/a>&lt;/p>
+&lt;p>On a &lt;strong>jailbroken device&lt;/strong>, you can install the .ipa file using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ideviceinstaller -i com.mobilehackinglab.runtime.ipa
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>We’ll start by analyzing the app’s binary using class-dump, examining its Info.plist, and extracting class metadata.&lt;/p>
+&lt;p>You can use the following script to automate the extraction:&lt;/p></description></item><item><title>Captain No Hook Mobile Hacking Labs</title><link>https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/</link><pubDate>Sat, 31 May 2025 19:35:40 -0300</pubDate><guid>https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/</guid><description>&lt;h3 id="introduction">Introduction&lt;/h3>
+&lt;p>The Captain No Hooks lab provides an in-depth exploration of iOS RASP (Runtime Application Self-Protection) defenses. This comprehensive guide focuses on how we can bypass these security mechanisms.&lt;/p>
+&lt;p>The lab description:&lt;/p>
+&lt;blockquote>
+&lt;p>Welcome to the iOS Application Security Lab: Captain No Hook Anti-Debugging Challenge. This challenge focuses on a fictitious app called Captain No Hook, which implements advanced anti-debugging and jailbreak detection techniques. Your objective is to bypass these protections and retrieve the hidden flag within the app.&lt;/p></description></item><item><title>Time Trap Mobile Hacking Labs</title><link>https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/</link><pubDate>Sat, 31 May 2025 14:10:48 -0300</pubDate><guid>https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/</guid><description>&lt;h3 id="introduction">Introduction&lt;/h3>
+&lt;p>In this challenge, you will explore the vulnerabilities in an internally used application named Time Trap, focusing on Command Injection. Time Trap is a fictional application that showcases insecure practices commonly found in internal applications. Your objective is to exploit the Command Injection vulnerability to gain unauthorized access and execute commands on the iOS device.&lt;/p>
+&lt;h3 id="initial-setup">Initial Setup&lt;/h3>
+&lt;p>First, let's install the .ipa file on our jailbroken device:&lt;/p>
+&lt;p>&lt;img src="https://incogbyte.github.io/images/time-01.png" alt="">&lt;/p>
+&lt;h3 id="analysis-process">Analysis Process&lt;/h3>
+&lt;h4 id="1-automated-analysis-setup">1. Automated Analysis Setup&lt;/h4>
+&lt;p>We'll use the following bash script to automate the class-dump analysis and .IPA extraction:&lt;/p></description></item><item><title>Gotham Times Mobile Hacking Labs</title><link>https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/</link><pubDate>Sat, 31 May 2025 10:14:01 -0300</pubDate><guid>https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/</guid><description>&lt;h3 id="introduction">Introduction&lt;/h3>
+&lt;p>The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.&lt;/p>
+&lt;p>In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:&lt;/p>
+&lt;ul>
+&lt;li>How webviews function in iOS applications&lt;/li>
+&lt;li>Understanding deep links and their implementation&lt;/li>
+&lt;li>Identifying open redirect vulnerabilities&lt;/li>
+&lt;li>Techniques for exploiting these security flaws&lt;/li>
+&lt;li>Methods for extracting session tokens&lt;/li>
+&lt;li>Best practices for preventing such attacks&lt;/li>
+&lt;/ul>
+&lt;p>This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.&lt;/p></description></item><item><title>Flipcoin Wallet Mobile Hacking Lab</title><link>https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/</link><pubDate>Fri, 30 May 2025 18:57:03 -0300</pubDate><guid>https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/</guid><description>&lt;h1 id="flipcoin-wallet-ctf---sql-injection-challenge">Flipcoin Wallet CTF - SQL Injection Challenge&lt;/h1>
+&lt;p>In this CTF challenge, I'll explore a SQL Injection vulnerability ( Client Side) in the Flipcoin Wallet iOS app. I'll walk you through my process of identifying and exploiting the vulnerability to retrieve a recovery phrase from the application's database (this is the chall 👌).&lt;/p>
+&lt;h1 id="intro">Intro&lt;/h1>
+&lt;p>When I first opened the app, I found a typical crypto wallet interface with features for buying, sending, and receiving cryptocurrencies. It also shows crypto news and displays balances for different coins. Since I couldn't find any obvious way to get the recovery phrase through the normal interface, I decided to dig into the app's code to find a way in.&lt;/p></description></item><item><title>Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques</title><link>https://incogbyte.github.io/posts/flutter-encryption-bypass/</link><pubDate>Thu, 20 Feb 2025 22:40:38 -0300</pubDate><guid>https://incogbyte.github.io/posts/flutter-encryption-bypass/</guid><description>&lt;p>In my previous post &lt;a href="https://incogbyte.github.io/posts/bypassmtlsflutter/">Bypassing MTLS in Flutter&lt;/a>, I discussed how MTLS is &lt;strong>generaly&lt;/strong> implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: &lt;em>&amp;quot;It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open.&amp;quot;&lt;/em>&lt;/p></description></item><item><title>Nasa Path Traversal and XSS (waf bypass)</title><link>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</link><pubDate>Mon, 07 Oct 2024 07:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/</guid><description>&lt;h1 id="exploit-path-traversal-and-xss-in-nasa-subdomains">Exploit Path Traversal and XSS in NASA Subdomains&lt;/h1>
+&lt;p>In this post, I’ll share my journey of discovering two vulnerabilities on NASA subdomains (Just 4 fun). With a bit of luck (and a shout-out to LinkedIn hashtags 😅 #thanksGod #Nasa #ObrigadoDeus), I stumbled upon a path traversal vulnerability that could have granted access to AWS infrastructure and possibly compromised several services. Due to bug bounty policies, I can’t go into specific details about the AWS environment.&lt;/p></description></item><item><title>Bypass MTLS Flutter</title><link>https://incogbyte.github.io/posts/bypassmtlsflutter/</link><pubDate>Thu, 18 Apr 2024 22:40:38 -0300</pubDate><guid>https://incogbyte.github.io/posts/bypassmtlsflutter/</guid><description>&lt;h4 id="overview">Overview&lt;/h4>
+&lt;p>In this blog post, we'll tackle: bypassing mTLS with Flutter due to common mistake ( ¯\&lt;em>(ツ)&lt;/em>/¯ ) from developers. Before we continue.. into the specifics, it's essential to understand some foundational concepts about how mTLS—mutual Transport Layer Security—functions and why certain coding or configuration errors can compromise its intended security benefits.&lt;/p>
+&lt;p>Our journey will begin with an exploration of Flutter's network layer, focusing on the nuances of mTLS implementations and how these can be misconfigured or exploited. This understanding is pivotal as we continue into the common mistakes developers make when implementing mTLS in Flutter applications.&lt;/p></description></item><item><title>Decrypt WhatsApp Msgs Android (Investigator)</title><link>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</link><pubDate>Sun, 10 Mar 2024 22:40:38 -0300</pubDate><guid>https://incogbyte.github.io/posts/decryptwhatsappmsgandroid/</guid><description>&lt;h2 id="overview">Overview&lt;/h2>
+&lt;p>In this blog post, we'll tackle a compelling challenge: decrypting WhatsApp messages. However, before we dive into the solution, it's crucial to grasp some foundational concepts about how Android—though not all versions—stores your screen lock password. More importantly, we'll explore why reusing this password across other applications, such as WhatsApp, is a security misstep.&lt;/p>
+&lt;p>Our journey will begin with an exploration of Android's password storage mechanisms, focusing on the nuances of different versions and how they impact your device's security. This understanding is pivotal as we delve into the risks associated with password reuse. It's a common practice, yet one fraught with vulnerabilities, especially when the same password guards access to both your device and your applications.&lt;/p></description></item><item><title>Template Injection Kitctf</title><link>https://incogbyte.github.io/posts/kitctf2023/</link><pubDate>Mon, 19 Jun 2023 17:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/kitctf2023/</guid><description>&lt;p>In this blog post, we will explore a specific template injection vulnerability discovered in a CTF (Capture The Flag) challenge from kitctf. We will delve into the details of the vulnerability. Let’s dive in!&lt;/p>
+&lt;blockquote>
+&lt;p>If you don’t know what is template injection, strong recoment that you visit the Burp labs &lt;a href="https://portswigger.net/web-security/server-side-template-injection">https://portswigger.net/web-security/server-side-template-injection&lt;/a>.&lt;/p>
+&lt;/blockquote>
+&lt;p>Brief introduction what is template injection. Template injection occurs when an application allows user-controlled input to be directly included in a template without proper sanitization or validation. This can lead to the execution of arbitrary code within the template context, potentially leading to remote code execution (RCE) or other critical security breaches.&lt;/p></description></item><item><title>PHPIPAM CVE</title><link>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</link><pubDate>Thu, 02 Feb 2023 17:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/2022-01-20-cve-2022-23046-phpipam/</guid><description>&lt;p>TL;DR&lt;/p>
+&lt;p>This write up is about a SQL injection which I found 4 days after another researcher reported it :/, however, because of the fact that I haven’t found any write ups or publicly available exploits, I decided to write about it.
+Exploit at the end!&lt;/p>
+&lt;p>PHPIPAM is a software widely used internally by several companies. And by being so, it is relatively common for you to find a running instance to manage IT assets, networks, etc. &lt;strong>1.4.4&lt;/strong> is the vulnerable version and a fix has already been made public with the arrival of version &lt;strong>1.4.5&lt;/strong>. The request responsible for triggering the SQLi is presented below, but if you want to look at the rest, feel free.&lt;/p></description></item><item><title>Reversing Nim Binary With Radare</title><link>https://incogbyte.github.io/posts/reverse-nim-binary/</link><pubDate>Thu, 09 Jun 2022 10:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/reverse-nim-binary/</guid><description>&lt;p>This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (&lt;a href="https://nim-lang.org/">https://nim-lang.org/&lt;/a>) program language.&lt;/p>
+&lt;p>&lt;strong>tl;dr&lt;/strong>&lt;/p>
+&lt;p>If you want to know the answer right away, just put a break point in the &lt;strong>sym.join_main_42&lt;/strong> function, and check the registers and your flag will be there.&lt;/p>
+&lt;p>The challenge itself was not complex however, I had never written anything in Nim. So right after downloading the challenge binary, I went to look at some of Nim's documentation and created a simple example, a guess number:&lt;/p></description></item><item><title>iOS Anti-Tampers Bypass</title><link>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</link><pubDate>Sat, 19 Mar 2022 17:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/ios-anti-tampers-bypass/</guid><description>&lt;p>&lt;strong>Hi everyone, in this blog i'm going to explain a little bit of my journey to solve a iOS challenge proposed by @as0ler. The Challenge can be found at the following link:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;a href="https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa">https://github.com/hexploitable/r2con2020_r2frida/blob/master/ios-challenge-2.ipa&lt;/a>&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;p>The challenge is to remove all anti-tamper methods, that means you will have to remove some methods such as:&lt;/p>
+&lt;ul>
+&lt;li>ptrace&lt;/li>
+&lt;li>sysctl&lt;/li>
+&lt;li>strstr&lt;/li>
+&lt;li>geppid&lt;/li>
+&lt;/ul>
+&lt;p>In this blog, I will only talk about how I did it to bypass, using only &lt;a href="https://frida.re">frida&lt;/a> with &lt;a href="https://github.com/radare2">radare2&lt;/a>. So let's go.&lt;/p></description></item><item><title>Research &amp; Vulnerability Disclosures</title><link>https://incogbyte.github.io/cve/</link><pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate><guid>https://incogbyte.github.io/cve/</guid><description>&lt;div class="cve-archive">
+ &lt;section class="cve-year" aria-labelledby="cve-year-2026">
+ &lt;h2 id="cve-year-2026">2026&lt;/h2>
+ &lt;div class="cve-category">
+ &lt;h3>Access control and authentication&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-899j-cjwp-v4gw" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2026-72864&lt;/strong>&lt;span>Dokploy&lt;/span>&lt;small>Missing authorization in the container terminal&lt;/small>&lt;/span>
+ &lt;span class="cve-rating critical">Critical 9.9&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;li>
+ &lt;a class="cve-entry" href="https://github.com/fastify/fastify-jwt/security/advisories/GHSA-j4cx-787j-xjqg" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2026-18500&lt;/strong>&lt;span>@fastify/jwt&lt;/span>&lt;small>Improper signature verification and authorization bypass&lt;/small>&lt;/span>
+ &lt;span class="cve-rating high">High 8.1&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;div class="cve-category">
+ &lt;h3>SQL injection&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://www.tenable.com/cve/CVE-2026-4189" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2026-4189&lt;/strong>&lt;span>phpIPAM&lt;/span>&lt;small>Second-order SQL injection&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 4.7&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;/section>
+ &lt;section class="cve-year" aria-labelledby="cve-year-2024">
+ &lt;h2 id="cve-year-2024">2024&lt;/h2>
+ &lt;div class="cve-category">
+ &lt;h3>Access control&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://seclists.org/fulldisclosure/2024/Jul/7" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2024-33329&lt;/strong>&lt;span>LumisXP&lt;/span>&lt;small>Hardcoded privileged identifier and authorization bypass&lt;/small>&lt;/span>
+ &lt;span class="cve-rating high">High 7.5&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;div class="cve-category">
+ &lt;h3>Code execution&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://github.com/advisories/GHSA-9394-rw2q-x5m7" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2024-48463&lt;/strong>&lt;span>Bruno IDE&lt;/span>&lt;small>Remote code execution&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 6.5&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;div class="cve-category">
+ &lt;h3>Cross-site scripting&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://seclists.org/fulldisclosure/2024/Jul/8" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2024-33328&lt;/strong>&lt;span>LumisXP&lt;/span>&lt;small>Unauthenticated cross-site scripting&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 6.1&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;li>
+ &lt;a class="cve-entry" href="https://seclists.org/fulldisclosure/2024/Jul/9" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2024-33327&lt;/strong>&lt;span>LumisXP&lt;/span>&lt;small>Unauthenticated cross-site scripting&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 6.1&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;li>
+ &lt;a class="cve-entry" href="https://seclists.org/fulldisclosure/2024/Jul/10" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2024-33326&lt;/strong>&lt;span>LumisXP&lt;/span>&lt;small>Unauthenticated cross-site scripting&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 6.1&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;/section>
+ &lt;section class="cve-year" aria-labelledby="cve-year-2023">
+ &lt;h2 id="cve-year-2023">2023&lt;/h2>
+ &lt;div class="cve-category">
+ &lt;h3>SQL injection&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2023-26876" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2023-26876&lt;/strong>&lt;span>Piwigo&lt;/span>&lt;small>SQL injection with a public Metasploit module&lt;/small>&lt;/span>
+ &lt;span class="cve-rating high">High 8.8&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;div class="cve-category">
+ &lt;h3>File upload and code execution&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2023-26877" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2023-26877&lt;/strong>&lt;span>SoftExpert Excellence Suite&lt;/span>&lt;small>Unrestricted file upload and code execution&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 6.3&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;/section>
+ &lt;section class="cve-year" aria-labelledby="cve-year-2022">
+ &lt;h2 id="cve-year-2022">2022&lt;/h2>
+ &lt;div class="cve-category">
+ &lt;h3>Path traversal&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://wpscan.com/vulnerability/cb6a3304-2166-47a0-a011-4dcacaa133e5" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2022-2863&lt;/strong>&lt;span>WPvivid Backup&lt;/span>&lt;small>Authenticated path traversal&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 4.9&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;/section>
+ &lt;section class="cve-year" aria-labelledby="cve-year-2021">
+ &lt;h2 id="cve-year-2021">2021&lt;/h2>
+ &lt;div class="cve-category">
+ &lt;h3>Cross-site scripting and CSRF&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2021-46426" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2021-46426&lt;/strong>&lt;span>phpIPAM&lt;/span>&lt;small>Cross-site scripting through a forged request&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 6.1&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2021-30140" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2021-30140&lt;/strong>&lt;span>LiquidFiles&lt;/span>&lt;small>Stored cross-site scripting&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 5.4&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;/section>
+ &lt;section class="cve-year" aria-labelledby="cve-year-2020">
+ &lt;h2 id="cve-year-2020">2020&lt;/h2>
+ &lt;div class="cve-category">
+ &lt;h3>File upload and code execution&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2020-25790" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2020-25790&lt;/strong>&lt;span>Typesetter CMS&lt;/span>&lt;small>Dangerous file upload leading to code execution&lt;/small>&lt;/span>
+ &lt;span class="cve-rating high">High 7.2&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;div class="cve-category">
+ &lt;h3>Cross-site scripting&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2020-35581" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2020-35581&lt;/strong>&lt;span>Envira Gallery&lt;/span>&lt;small>Stored cross-site scripting&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 5.4&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;/section>
+ &lt;section class="cve-year" aria-labelledby="cve-year-2019">
+ &lt;h2 id="cve-year-2019">2019&lt;/h2>
+ &lt;div class="cve-category">
+ &lt;h3>Cross-site scripting and CSRF&lt;/h3>
+ &lt;ul class="cve-list">
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2019-13364" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2019-13364&lt;/strong>&lt;span>Piwigo&lt;/span>&lt;small>Stored cross-site scripting&lt;/small>&lt;/span>
+ &lt;span class="cve-rating critical">Critical 9.6&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2019-13363" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2019-13363&lt;/strong>&lt;span>Piwigo&lt;/span>&lt;small>Cross-site request forgery&lt;/small>&lt;/span>
+ &lt;span class="cve-rating critical">Critical 9.6&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2019-20804" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2019-20804&lt;/strong>&lt;span>Gila CMS&lt;/span>&lt;small>Cross-site request forgery&lt;/small>&lt;/span>
+ &lt;span class="cve-rating high">High 8.8&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;li>
+ &lt;a class="cve-entry" href="https://nvd.nist.gov/vuln/detail/CVE-2019-20803" target="_blank" rel="noopener noreferrer">
+ &lt;span class="cve-entry-main">&lt;strong>CVE-2019-20803&lt;/strong>&lt;span>Gila CMS&lt;/span>&lt;small>Reflected cross-site scripting&lt;/small>&lt;/span>
+ &lt;span class="cve-rating medium">Medium 6.1&lt;/span>
+ &lt;/a>
+ &lt;/li>
+ &lt;/ul>
+ &lt;/div>
+ &lt;/section>
+&lt;/div>
+&lt;p>Additional public research is available on &lt;a href="https://packetstormsecurity.com/files/author/14480/">Packet Storm&lt;/a> and &lt;a href="https://www.exploit-db.com/?author=10769">Exploit Database&lt;/a>.&lt;/p></description></item><item><title>About</title><link>https://incogbyte.github.io/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://incogbyte.github.io/about/</guid><description>&lt;p>I'm &lt;strong>Rodolfo Tavares&lt;/strong>, also known as &lt;strong>&lt;code>incogbyte&lt;/code>&lt;/strong>. I'm a hacker and security researcher with more than 10 years of experience in offensive security. My work covers application security, mobile security, reverse engineering, low-level vulnerabilities, infrastructure security, and exploit development. Over the years, I've found and exploited vulnerabilities across web applications, APIs, iOS, Android, and infrastructure software. You'll find some of that work published here through CVEs and technical write-ups. I'll keep adding new research and revisiting older work that I have not documented yet. I hope you find it useful.&lt;/p></description></item></channel></rss>

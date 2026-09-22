@@ -1,122 +1,32 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Research &amp; Vulnerability Disclosures | incogbyte</title>
-  <meta name="description" content="Offensive Security">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-  <canvas id="matrix-bg"></canvas>
-  <div class="scanline"></div>
-
-  <header class="site-header">
-  <nav class="navbar">
-    <a href="/" class="logo">
-      <span class="logo-bracket">[</span>
-      <span class="logo-text">incogbyte</span>
-      <span class="logo-bracket">]</span>
-      <span class="cursor">_</span>
-    </a>
-    <button class="menu-toggle" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <ul class="nav-links">
-      
-      <li><a href="/" class="nav-link">Home</a></li>
-      
-      <li><a href="/posts/" class="nav-link">Posts</a></li>
-      
-      <li><a href="/cve/" class="nav-link">CVEs</a></li>
-      
-      <li><a href="/about/" class="nav-link">About</a></li>
-      
-    </ul>
-  </nav>
-</header>
-
-
-  <main class="container">
-    
-<article class="post-single">
-  <header class="post-header fade-in">
-    <h1 class="post-single-title">Research &amp; Vulnerability Disclosures</h1>
-    
-    <div class="post-single-meta">
-      <time>May 28, 2020</time>
-      <span class="reading-time">1 min read</span>
-    </div>
-    
-    
-  </header>
-
-  <div class="post-content fade-in">
-    <h3 id="remote-code-execution-rce--sql-injection-sqli">Remote Code Execution (RCE) &amp; SQL Injection (SQLi)</h3>
-<ul>
-<li><strong>Bruno IDE</strong> - Remote Code Execution (<a href="https://github.com/advisories/GHSA-9394-rw2q-x5m7">CVE-2024-48463</a>)</li>
-<li><strong>SeSuite</strong> - Remote Code Execution (<a href="https://nvd.nist.gov/vuln/detail/CVE-2023-26877">CVE-2023-26877</a>)</li>
-<li><strong>Typesetter CMS</strong> - Remote Code Execution (<a href="https://nvd.nist.gov/vuln/detail/CVE-2020-25790">CVE-2020-25790</a>)</li>
-<li><strong>phpIPAM</strong> - Second Order SQL Injection (<a href="https://www.tenable.com/cve/CVE-2026-4189">CVE-2026-4189</a>)</li>
-<li><strong>Piwigo</strong> - SQL Injection (<a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-26876">CVE-2023-26876</a>)
-<ul>
-<li><strong>Official module published in the Metasploit Framework.</strong></li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="cross-site-scripting-xss--cross-site-request-forgery-csrf">Cross-Site Scripting (XSS) &amp; Cross-Site Request Forgery (CSRF)</h3>
-<ul>
-<li><strong>LumisXP</strong> - Unauthenticated XSS (<a href="https://seclists.org/fulldisclosure/2024/Jul/7">CVE-2024-33329</a>, <a href="https://seclists.org/fulldisclosure/2024/Jul/8">CVE-2024-33328</a>, <a href="https://seclists.org/fulldisclosure/2024/Jul/9">CVE-2024-33327</a>)</li>
-<li><strong>phpIPAM</strong> - CSRF to Stored XSS (<a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-46426">CVE-2021-46426</a>)</li>
-<li><strong>LiquidFiles</strong> - Stored XSS (<a href="https://nvd.nist.gov/vuln/detail/CVE-2021-30140">CVE-2021-30140</a>)</li>
-<li><strong>Wordpress (Envira Gallery)</strong> - Stored XSS (<a href="https://nvd.nist.gov/vuln/detail/CVE-2020-35581">CVE-2020-35581</a>)</li>
-<li><strong>Gila CMS</strong> - Reflected XSS (<a href="https://nvd.nist.gov/vuln/detail/CVE-2019-20803">CVE-2019-20803</a>) &amp; CSRF (<a href="https://nvd.nist.gov/vuln/detail/CVE-2019-20804">CVE-2019-20804</a>)</li>
-<li><strong>Piwigo</strong> - Stored XSS (<a href="https://nvd.nist.gov/vuln/detail/CVE-2019-13364">CVE-2019-13364</a>) &amp; CSRF (<a href="https://nvd.nist.gov/vuln/detail/CVE-2019-13363">CVE-2019-13363</a>)</li>
-</ul>
-<hr>
-<h3 id="other-vulnerabilities">Other Vulnerabilities</h3>
-<ul>
-<li><strong>LumisXP</strong> - Information Disclosure &amp; IDOR (<a href="https://seclists.org/fulldisclosure/2024/Jul/10">CVE-2024-33326</a>)</li>
-<li><strong>Wordpress (WPvivid Backup)</strong> - Path Traversal (<a href="https://wpscan.com/vulnerability/cb6a3304-2166-47a0-a011-4dcacaa133e5">CVE-2022-2863</a>)</li>
-</ul>
-
-  </div>
-
-  <footer class="post-footer fade-in">
-    <div class="post-nav">
-      
-      <a href="https://incogbyte.github.io/about/" class="post-nav-link prev">
-        <span>← Previous</span>
-        <span class="post-nav-title">About</span>
-      </a>
-      
-      
-    </div>
-  </footer>
-</article>
-
-  </main>
-
-  <footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-links">
-      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
-      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
-  </div>
-</footer>
-
-
-  <script src="/js/matrix.js"></script>
-  <script src="/js/main.js"></script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Research & Vulnerability Disclosures | incogbyte</title>
+<meta name=description content="Public CVEs and coordinated vulnerability disclosures by offensive security researcher Rodolfo Tavares (incogbyte)."><meta name=author content="Rodolfo Tavares"><meta name=theme-color content="#0b0e13"><link rel=canonical href=https://incogbyte.github.io/cve/><meta property="og:title" content="Research & Vulnerability Disclosures | incogbyte"><meta property="og:description" content="Public CVEs and coordinated vulnerability disclosures by offensive security researcher Rodolfo Tavares (incogbyte)."><meta property="og:type" content="article"><meta property="og:url" content="https://incogbyte.github.io/cve/"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel=stylesheet><script src=/js/theme-init.js></script><link rel=stylesheet href=/css/style.css></head><body><a class=skip-link href=#main-content>Skip to content</a><div class=site-grid aria-hidden=true></div><header class=site-header><nav class=navbar aria-label="Main navigation"><a href=/ class=logo aria-label="Rodolfo Tavares, Home"><span class=logo-mark aria-hidden=true>~/</span>
+<span class=logo-lockup><span class=logo-text>incogbyte</span>
+<span class=logo-subtitle>offensive security research</span></span></a><ul class=nav-links id=site-navigation><li><a href=/posts/ class=nav-link>Writing</a></li><li><a href=/cve/ class=nav-link>CVEs</a></li><li><a href=/about/ class=nav-link>About</a></li></ul><div class=nav-actions><button class=theme-toggle type=button aria-label="Switch to light theme" title="Switch to light theme">
+<span class=theme-icon aria-hidden=true>☀</span>
+</button>
+<button class=menu-toggle type=button aria-label="Open navigation" aria-expanded=false aria-controls=site-navigation>
+<span></span>
+<span></span>
+<span></span></button></div></nav></header><main class=container id=main-content><article class=cve-page><header class=cve-page-header><p class=section-label>Security research</p><h1>Research & Vulnerability Disclosures</h1></header><div class=post-content><div class=cve-archive><section class=cve-year aria-labelledby=cve-year-2026><h2 id=cve-year-2026>2026</h2><div class=cve-category><h3>Access control and authentication</h3><ul class=cve-list><li><a class=cve-entry href=https://github.com/Dokploy/dokploy/security/advisories/GHSA-899j-cjwp-v4gw target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2026-72864</strong><span>Dokploy</span><small>Missing authorization in the container terminal</small></span>
+<span class="cve-rating critical">Critical 9.9</span></a></li><li><a class=cve-entry href=https://github.com/fastify/fastify-jwt/security/advisories/GHSA-j4cx-787j-xjqg target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2026-18500</strong><span>@fastify/jwt</span><small>Improper signature verification and authorization bypass</small></span>
+<span class="cve-rating high">High 8.1</span></a></li></ul></div><div class=cve-category><h3>SQL injection</h3><ul class=cve-list><li><a class=cve-entry href=https://www.tenable.com/cve/CVE-2026-4189 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2026-4189</strong><span>phpIPAM</span><small>Second-order SQL injection</small></span>
+<span class="cve-rating medium">Medium 4.7</span></a></li></ul></div></section><section class=cve-year aria-labelledby=cve-year-2024><h2 id=cve-year-2024>2024</h2><div class=cve-category><h3>Access control</h3><ul class=cve-list><li><a class=cve-entry href=https://seclists.org/fulldisclosure/2024/Jul/7 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2024-33329</strong><span>LumisXP</span><small>Hardcoded privileged identifier and authorization bypass</small></span>
+<span class="cve-rating high">High 7.5</span></a></li></ul></div><div class=cve-category><h3>Code execution</h3><ul class=cve-list><li><a class=cve-entry href=https://github.com/advisories/GHSA-9394-rw2q-x5m7 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2024-48463</strong><span>Bruno IDE</span><small>Remote code execution</small></span>
+<span class="cve-rating medium">Medium 6.5</span></a></li></ul></div><div class=cve-category><h3>Cross-site scripting</h3><ul class=cve-list><li><a class=cve-entry href=https://seclists.org/fulldisclosure/2024/Jul/8 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2024-33328</strong><span>LumisXP</span><small>Unauthenticated cross-site scripting</small></span>
+<span class="cve-rating medium">Medium 6.1</span></a></li><li><a class=cve-entry href=https://seclists.org/fulldisclosure/2024/Jul/9 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2024-33327</strong><span>LumisXP</span><small>Unauthenticated cross-site scripting</small></span>
+<span class="cve-rating medium">Medium 6.1</span></a></li><li><a class=cve-entry href=https://seclists.org/fulldisclosure/2024/Jul/10 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2024-33326</strong><span>LumisXP</span><small>Unauthenticated cross-site scripting</small></span>
+<span class="cve-rating medium">Medium 6.1</span></a></li></ul></div></section><section class=cve-year aria-labelledby=cve-year-2023><h2 id=cve-year-2023>2023</h2><div class=cve-category><h3>SQL injection</h3><ul class=cve-list><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2023-26876 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2023-26876</strong><span>Piwigo</span><small>SQL injection with a public Metasploit module</small></span>
+<span class="cve-rating high">High 8.8</span></a></li></ul></div><div class=cve-category><h3>File upload and code execution</h3><ul class=cve-list><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2023-26877 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2023-26877</strong><span>SoftExpert Excellence Suite</span><small>Unrestricted file upload and code execution</small></span>
+<span class="cve-rating medium">Medium 6.3</span></a></li></ul></div></section><section class=cve-year aria-labelledby=cve-year-2022><h2 id=cve-year-2022>2022</h2><div class=cve-category><h3>Path traversal</h3><ul class=cve-list><li><a class=cve-entry href=https://wpscan.com/vulnerability/cb6a3304-2166-47a0-a011-4dcacaa133e5 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2022-2863</strong><span>WPvivid Backup</span><small>Authenticated path traversal</small></span>
+<span class="cve-rating medium">Medium 4.9</span></a></li></ul></div></section><section class=cve-year aria-labelledby=cve-year-2021><h2 id=cve-year-2021>2021</h2><div class=cve-category><h3>Cross-site scripting and CSRF</h3><ul class=cve-list><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2021-46426 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2021-46426</strong><span>phpIPAM</span><small>Cross-site scripting through a forged request</small></span>
+<span class="cve-rating medium">Medium 6.1</span></a></li><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2021-30140 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2021-30140</strong><span>LiquidFiles</span><small>Stored cross-site scripting</small></span>
+<span class="cve-rating medium">Medium 5.4</span></a></li></ul></div></section><section class=cve-year aria-labelledby=cve-year-2020><h2 id=cve-year-2020>2020</h2><div class=cve-category><h3>File upload and code execution</h3><ul class=cve-list><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2020-25790 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2020-25790</strong><span>Typesetter CMS</span><small>Dangerous file upload leading to code execution</small></span>
+<span class="cve-rating high">High 7.2</span></a></li></ul></div><div class=cve-category><h3>Cross-site scripting</h3><ul class=cve-list><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2020-35581 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2020-35581</strong><span>Envira Gallery</span><small>Stored cross-site scripting</small></span>
+<span class="cve-rating medium">Medium 5.4</span></a></li></ul></div></section><section class=cve-year aria-labelledby=cve-year-2019><h2 id=cve-year-2019>2019</h2><div class=cve-category><h3>Cross-site scripting and CSRF</h3><ul class=cve-list><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2019-13364 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2019-13364</strong><span>Piwigo</span><small>Stored cross-site scripting</small></span>
+<span class="cve-rating critical">Critical 9.6</span></a></li><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2019-13363 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2019-13363</strong><span>Piwigo</span><small>Cross-site request forgery</small></span>
+<span class="cve-rating critical">Critical 9.6</span></a></li><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2019-20804 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2019-20804</strong><span>Gila CMS</span><small>Cross-site request forgery</small></span>
+<span class="cve-rating high">High 8.8</span></a></li><li><a class=cve-entry href=https://nvd.nist.gov/vuln/detail/CVE-2019-20803 target=_blank rel="noopener noreferrer"><span class=cve-entry-main><strong>CVE-2019-20803</strong><span>Gila CMS</span><small>Reflected cross-site scripting</small></span>
+<span class="cve-rating medium">Medium 6.1</span></a></li></ul></div></section></div><p>Additional public research is available on <a href=https://packetstormsecurity.com/files/author/14480/>Packet Storm</a> and <a href="https://www.exploit-db.com/?author=10769">Exploit Database</a>.</p></div></article></main><footer class=site-footer><div class=footer-content><p><span class=footer-prompt>~/incogbyte</span> <span>Security research, notes and disclosures.</span></p><nav class=footer-links aria-label="External profiles"><a href=https://github.com/incogbyte target=_blank rel="noopener noreferrer">GitHub</a>
+<a href=https://linkedin.com/in/rodolfo-tavares-543863a7 target=_blank rel="noopener noreferrer">LinkedIn</a>
+<a href=mailto:incogbyte@protonmail.com>Email</a>
+<a href=/index.xml>RSS</a></nav></div></footer><script src=/js/main.js></script></body></html>

@@ -1,19 +1,8 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Ctf on incogbyte</title>
-    <link>https://incogbyte.github.io/tags/ctf/</link>
-    <description>Recent content in Ctf on incogbyte</description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 09 Jun 2022 10:12:34 -0300</lastBuildDate>
-    <atom:link href="https://incogbyte.github.io/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Reversing Nim Binary With Radare</title>
-      <link>https://incogbyte.github.io/posts/reverse-nim-binary/</link>
-      <pubDate>Thu, 09 Jun 2022 10:12:34 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/reverse-nim-binary/</guid>
-      <description>&lt;p&gt;This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (&lt;a href=&#34;https://nim-lang.org/&#34;&gt;https://nim-lang.org/&lt;/a&gt;) program language.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;tl;dr&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;If you want to know the answer right away, just put a break point in the &lt;strong&gt;sym.join_main_42&lt;/strong&gt; function, and check the registers and your flag will be there.&lt;/p&gt;&#xA;&lt;p&gt;The challenge itself was not complex however, I had never written anything in Nim. So right after downloading the challenge binary, I went to look at some of Nim&#39;s documentation and created a simple example, a guess number:&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ctf on Rodolfo Tavares | Offensive Security Researcher</title><link>https://incogbyte.github.io/tags/ctf/</link><description>Recent content in Ctf on Rodolfo Tavares | Offensive Security Researcher</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Mon, 19 Jun 2023 17:12:34 -0300</lastBuildDate><atom:link href="https://incogbyte.github.io/tags/ctf/index.xml" rel="self" type="application/rss+xml"/><item><title>Template Injection Kitctf</title><link>https://incogbyte.github.io/posts/kitctf2023/</link><pubDate>Mon, 19 Jun 2023 17:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/kitctf2023/</guid><description>&lt;p>In this blog post, we will explore a specific template injection vulnerability discovered in a CTF (Capture The Flag) challenge from kitctf. We will delve into the details of the vulnerability. Let’s dive in!&lt;/p>
+&lt;blockquote>
+&lt;p>If you don’t know what is template injection, strong recoment that you visit the Burp labs &lt;a href="https://portswigger.net/web-security/server-side-template-injection">https://portswigger.net/web-security/server-side-template-injection&lt;/a>.&lt;/p>
+&lt;/blockquote>
+&lt;p>Brief introduction what is template injection. Template injection occurs when an application allows user-controlled input to be directly included in a template without proper sanitization or validation. This can lead to the execution of arbitrary code within the template context, potentially leading to remote code execution (RCE) or other critical security breaches.&lt;/p></description></item><item><title>Reversing Nim Binary With Radare</title><link>https://incogbyte.github.io/posts/reverse-nim-binary/</link><pubDate>Thu, 09 Jun 2022 10:12:34 -0300</pubDate><guid>https://incogbyte.github.io/posts/reverse-nim-binary/</guid><description>&lt;p>This write up explains how i solved the challenge proposed by CakeCTF2022. The challenge was to get the flag in a binary made with the Nim (&lt;a href="https://nim-lang.org/">https://nim-lang.org/&lt;/a>) program language.&lt;/p>
+&lt;p>&lt;strong>tl;dr&lt;/strong>&lt;/p>
+&lt;p>If you want to know the answer right away, just put a break point in the &lt;strong>sym.join_main_42&lt;/strong> function, and check the registers and your flag will be there.&lt;/p>
+&lt;p>The challenge itself was not complex however, I had never written anything in Nim. So right after downloading the challenge binary, I went to look at some of Nim's documentation and created a simple example, a guess number:&lt;/p></description></item></channel></rss>

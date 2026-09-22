@@ -1,257 +1,100 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques | incogbyte</title>
-  <meta name="description" content="Offensive Security">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-  <canvas id="matrix-bg"></canvas>
-  <div class="scanline"></div>
-
-  <header class="site-header">
-  <nav class="navbar">
-    <a href="/" class="logo">
-      <span class="logo-bracket">[</span>
-      <span class="logo-text">incogbyte</span>
-      <span class="logo-bracket">]</span>
-      <span class="cursor">_</span>
-    </a>
-    <button class="menu-toggle" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <ul class="nav-links">
-      
-      <li><a href="/" class="nav-link">Home</a></li>
-      
-      <li><a href="/posts/" class="nav-link">Posts</a></li>
-      
-      <li><a href="/cve/" class="nav-link">CVEs</a></li>
-      
-      <li><a href="/about/" class="nav-link">About</a></li>
-      
-    </ul>
-  </nav>
-</header>
-
-
-  <main class="container">
-    
-<article class="post-single">
-  <header class="post-header fade-in">
-    <h1 class="post-single-title">Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques</h1>
-    
-    <div class="post-single-meta">
-      <time>February 20, 2025</time>
-      <span class="reading-time">6 min read</span>
-    </div>
-    
-    
-  </header>
-
-  <div class="post-content fade-in">
-    <p>In my previous post <a href="https://incogbyte.github.io/posts/bypassmtlsflutter/">Bypassing MTLS in Flutter</a>, I discussed how MTLS is <strong>generaly</strong> implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: <em>&quot;It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open.&quot;</em></p>
-<p>In this blog post, I will explain how to bypass scenarios where the application encrypts the request body (RSA) before sending it to the server. This technique is commonly seen in banking applications or other apps with mature security practices in mobile development.</p>
-<h3 id="understanding-rsa-encryption">Understanding RSA Encryption</h3>
-<p>The most commonly used encryption method in such cases is RSA. Let’s break it down in simple terms:</p>
-<p>In mobile applications, <em>RSA</em> is generally used for communication security and authentication (and, in some cases, even authorization). TL;DR:</p>
-<ol>
-<li><strong>Secure Key Exchange:</strong> RSA is often used to exchange symmetric encryption keys (like AES). Since RSA is slow for large data volumes, it primarily secures the transmission of a faster encryption key.</li>
-<li><strong>Authentication and Digital Signatures:</strong> Apps use RSA to ensure messages or transactions originate from a trusted source. This is achieved by signing content with a private key and verifying it with a public key.</li>
-<li><strong>Secure Communication (HTTPS/TLS):</strong> When an app connects to a secure server, RSA is used to establish a TLS/SSL connection. The server sends its public key, the app encrypts a session key with it, and subsequent communication is encrypted with a more efficient algorithm.</li>
-<li><strong>Sensitive Data Protection:</strong> Some apps store encrypted information locally, using RSA to safeguard credentials or critical data.</li>
-</ol>
-<p>RSA plays a crucial role in app security but is often combined with faster methods (like AES) to ensure both security and performance. The following image illustrates how RSA works:</p>
-<p><img src="/images/rsa-01.png" alt=""></p>
-<h3 id="implementing-rsa-in-flutter">Implementing RSA in Flutter</h3>
-<p>Now that we understand how RSA works, let’s explore how Flutter apps implement it. Based on empirical research, most Flutter applications use the following libraries:</p>
-<ul>
-<li><a href="https://pub.dev/packages/dio">dio</a> - A powerful HTTP networking package.</li>
-<li><a href="https://pub.dev/packages/pointycastle">pointycastle</a> - A Dart library for encryption and decryption.</li>
-</ul>
-<p>In general, there are two common implementation approaches:</p>
-<ol>
-<li>The application requests the public key from the backend, which is then encrypted and stored in <em>SharedPreferences</em> on Android using another widely used Flutter package: <a href="https://pub.dev/packages/flutter_secure_storage">flutter_secure_storage</a>.</li>
-<li>The public key is hardcoded in the Flutter code, meaning you would need to reverse-engineer the app or identify the exact function call that utilizes the key.</li>
-</ol>
-<p>To simulate this scenario, I developed a Flutter app with a Node.js backend. The backend holds the private key, while the Flutter app contains the public key to encrypt the request body. This is a common setup in REST API or GraphQL applications.</p>
-<p>However, to make it more realistic, I compiled the Flutter app in <em>release mode</em> rather than <em>debug mode</em> (More easy to reverse). When a Flutter app is built for production (e.g., for Google Play Store), several optimizations are applied to the binary (<code>libflutter.so</code> and <code>libapp.so</code>), including:</p>
-<ul>
-<li>Dart Ahead-Of-Time (AOT) compilation.</li>
-<li>Execution inside a Dart Virtual Machine (VM).</li>
-<li>Serialization of code and data into a binary snapshot.</li>
-<li>Stripping of symbols in release mode.</li>
-<li>Full optimization.</li>
-</ul>
-<p>For more details, check out the talk by Worawit: <a href="https://www.youtube.com/watch?v=EU3KOzNkCdI">B(l)utter Reversing Flutter Application Using Dart Runtime</a>.</p>
-<h3 id="analyzing-the-android-apk">Analyzing the Android APK</h3>
-<p>In a real scenario, obtaining the APK file is the first step. Once you have the APK, you can use tools like <a href="https://apktool.org/">APKTool</a> with the command <code>apktool d foo.apk</code> to decompile it.</p>
-<p>Since I built the app myself, I simply compiled it in release mode, signed it, and installed it on a physical device:</p>
-<ul>
-<li>
-<p><strong>Build and sign:</strong>
-<img src="/images/build-01.png" alt=""></p>
-</li>
-<li>
-<p><strong>Install with ADB:</strong>
-<img src="/images/adb-01.png" alt=""></p>
-</li>
-</ul>
-<p>With the APK in hand, we can use Worawit’s <a href="https://github.com/worawit/blutter">Blutter tool</a>. Blutter locally initializes the Dart app and inspects objects like the Object Pool and Thread Pool, helping us understand its structure.</p>
-<p><img src="/images/blutter_decrypt_app.png" alt=""></p>
-<p><img src="/images/flutter_decrypted_folders.png" alt=""></p>
-<p>The next step is to analyze Blutter’s output and identify function addresses for hooking. Each application is different and may require a unique approach (shoutout to @edunovella 🍻 for this reminder!).</p>
-<p>Since we aim to intercept the request before encryption, we first attempt to capture it using a proxy. Flutter has some quirks in this area; I recommend reading <a href="https://blog.nviso.eu/2020/05/20/intercepting-flutter-traffic-on-android-x64/">this blog</a> for insights into Flutter and HTTP proxying.</p>
-<p><img src="/images/http-enc.png" alt=""></p>
-<p>A good reversing approach is to search for the app’s entry points. Using Blutter, we can inspect the main package (<code>flutter_body_encrypt_rsa</code>) and locate the relevant class:</p>
-<p><img src="/images/flutter_decrypted_main_class.png" alt=""></p>
-<p>In this case, we find <code>rsa_helper.dart</code>, which appears to handle encryption:</p>
-<p><img src="/images/encrypted_function_blutter.png" alt=""></p>
-<h3 id="hooking-flutters-encryption-function">Hooking Flutter’s Encryption Function</h3>
-<p>To proceed, I analyze the loaded libraries and locate the <code>libapp.so</code> and <code>libflutter.so</code> addresses using Frida:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span>Java.perform(<span style="color:#8be9fd;font-style:italic">function</span>() {
-</span></span><span style="display:flex;"><span>    console.log(<span style="color:#f1fa8c">&#34;[*] Waiting for libraries to load...&#34;</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    setTimeout(<span style="color:#8be9fd;font-style:italic">function</span>() {
-</span></span><span style="display:flex;"><span>        console.warn(<span style="color:#f1fa8c">&#34;[*] Loaded libraries:&#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">var</span> modules <span style="color:#ff79c6">=</span> Process.enumerateModules();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        modules.forEach(<span style="color:#8be9fd;font-style:italic">function</span>(m) {
-</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (m.name.toLowerCase() <span style="color:#ff79c6">===</span> <span style="color:#f1fa8c">&#34;libflutter.so&#34;</span>) {
-</span></span><span style="display:flex;"><span>                console.warn(<span style="color:#f1fa8c">&#34;[*] libflutter found!&#34;</span>, m.name);
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#34;[*] &#34;</span> <span style="color:#ff79c6">+</span> m.name <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34; -&gt; &#34;</span> <span style="color:#ff79c6">+</span> m.base);
-</span></span><span style="display:flex;"><span>        });
-</span></span><span style="display:flex;"><span>    }, <span style="color:#bd93f9">1000</span>);
-</span></span><span style="display:flex;"><span>});
-</span></span></code></pre></div><p><img src="/images/hook-flutter-01.png" alt=""></p>
-<p><img src="/images/hook-flutter-02.png" alt=""></p>
-<p>From Frida’s output, we can verify that we have the address of libflutter.so and can also retrieve addresses for other libs. The most interesting one for us is <strong>libapp.so</strong>, where the application’s core logic is usually located.</p>
-<p>By analyzing the code more deeply 👀, we can understand that before calling the encrypt function, the app performs a <strong>JsonEncode</strong>, which is likely where the Dio package uses Flutter’s convert package before encrypting the request:</p>
-<p><img src="/images/blutter-encr-01.png" alt=""></p>
-<p><img src="/images/blutter-encr-02.png" alt=""></p>
-<p>I usually use the following Frida script to interact with lower-level functions within libapp.so. The idea is to get the base address of libapp.so, find the jsonEncode() function, and perform a hexdump. You can search for all BL (Branch with Link) instructions in ARM. The BL instruction performs a jump to a function/subroutine and stores the return address in the LR (Link Register). You can do this for all functions.</p>
-<p>The hook I generally use is as follows:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span>setTimeout(<span style="color:#8be9fd;font-style:italic">function</span>() {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">var</span> flutterBase <span style="color:#ff79c6">=</span> Module.findBaseAddress(<span style="color:#f1fa8c">&#34;libapp.so&#34;</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> (flutterBase) {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">var</span> encryptFnAddr <span style="color:#ff79c6">=</span> flutterBase.add(<span style="color:#bd93f9">0x337694</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            console.warn(<span style="color:#f1fa8c">&#34;[*] Function found at:&#34;</span>, encryptFnAddr);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    Interceptor.attach(encryptFnAddr, {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            onEnter<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span>(args) {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#34;[*] Entering encrypt function...&#34;</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">try</span> {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">var</span> size <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1024</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">var</span> buffer <span style="color:#ff79c6">=</span> Memory.readByteArray(args[<span style="color:#bd93f9">0</span>], size);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#34;[*] Hexdump (function) args[0]:\n&#34;</span> <span style="color:#ff79c6">+</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            hexdump(buffer, { offset<span style="color:#ff79c6">:</span> <span style="color:#bd93f9">0</span>, length<span style="color:#ff79c6">:</span> size, header<span style="color:#ff79c6">:</span> <span style="color:#ff79c6">true</span>, ansi<span style="color:#ff79c6">:</span> <span style="color:#ff79c6">true</span> }));
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    } <span style="color:#ff79c6">catch</span> (e) {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            console.error(<span style="color:#f1fa8c">&#34;[!] Error reading input (args[0]):&#34;</span>, e);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>},
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>onLeave<span style="color:#ff79c6">:</span> <span style="color:#8be9fd;font-style:italic">function</span>(retval) {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">try</span> {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">var</span> size <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1024</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            <span style="color:#8be9fd;font-style:italic">var</span> buffer <span style="color:#ff79c6">=</span> Memory.readByteArray(retval, size);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            console.log(<span style="color:#f1fa8c">&#34;[*] Hexdump return value (encrypted):\n&#34;</span> <span style="color:#ff79c6">+</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            hexdump(buffer, { offset<span style="color:#ff79c6">:</span> <span style="color:#bd93f9">0</span>, length<span style="color:#ff79c6">:</span> size, header<span style="color:#ff79c6">:</span> <span style="color:#ff79c6">true</span>, ansi<span style="color:#ff79c6">:</span> <span style="color:#ff79c6">true</span> }));
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        } <span style="color:#ff79c6">catch</span> (e) {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            console.error(<span style="color:#f1fa8c">&#34;[!] Error reading return value:&#34;</span>, e);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>});
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>} <span style="color:#ff79c6">else</span> {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        console.log(<span style="color:#f1fa8c">&#34;[!] libapp.so not found!&#34;</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>}, <span style="color:#bd93f9">1000</span>);
-</span></span></code></pre></div><p>Finally, we successfully intercept the data before encryption:</p>
-<p><img src="/images/jodson-flutter.png.png" alt=""></p>
-<p><img src="/images/burp-encrypted-flutter-req.png" alt=""></p>
-<p><img src="/images/e1.png" alt=""></p>
-<p><img src="/images/e2.png" alt=""></p>
-<p>If you enjoyed this post, send feedback on X (@incogbyte) or email me at <a href="mailto:incogbyte@protonmail.com">incogbyte@protonmail.com</a>. Let me know if you'd like a part 2!</p>
-<p><strong>References:</strong></p>
-<ul>
-<li><a href="https://github.com/worawit/blutter">Blutter</a></li>
-<li><a href="https://frida.re/">Frida</a></li>
-<li><a href="https://flutter.dev/">Flutter</a></li>
-<li><a href="https://filestore.fortinet.com/fortiguard/research/nullcon.pdf">Nullcon cryptax</a></li>
-</ul>
-
-  </div>
-
-  <footer class="post-footer fade-in">
-    <div class="post-nav">
-      
-      <a href="https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/" class="post-nav-link prev">
-        <span>← Previous</span>
-        <span class="post-nav-title">Nasa Path Traversal and XSS (waf bypass)</span>
-      </a>
-      
-      
-      <a href="https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/" class="post-nav-link next">
-        <span>Next →</span>
-        <span class="post-nav-title">Flipcoin Wallet Mobile Hacking Lab</span>
-      </a>
-      
-    </div>
-  </footer>
-</article>
-
-  </main>
-
-  <footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-links">
-      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
-      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
-  </div>
-</footer>
-
-
-  <script src="/js/matrix.js"></script>
-  <script src="/js/main.js"></script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques | incogbyte</title>
+<meta name=description content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta name=author content="Rodolfo Tavares"><meta name=theme-color content="#0b0e13"><link rel=canonical href=https://incogbyte.github.io/posts/flutter-encryption-bypass/><meta property="og:title" content="Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques | incogbyte"><meta property="og:description" content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta property="og:type" content="article"><meta property="og:url" content="https://incogbyte.github.io/posts/flutter-encryption-bypass/"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel=stylesheet><script src=/js/theme-init.js></script><link rel=stylesheet href=/css/style.css></head><body><a class=skip-link href=#main-content>Skip to content</a><div class=site-grid aria-hidden=true></div><header class=site-header><nav class=navbar aria-label="Main navigation"><a href=/ class=logo aria-label="Rodolfo Tavares, Home"><span class=logo-mark aria-hidden=true>~/</span>
+<span class=logo-lockup><span class=logo-text>incogbyte</span>
+<span class=logo-subtitle>offensive security research</span></span></a><ul class=nav-links id=site-navigation><li><a href=/posts/ class=nav-link>Writing</a></li><li><a href=/cve/ class=nav-link>CVEs</a></li><li><a href=/about/ class=nav-link>About</a></li></ul><div class=nav-actions><button class=theme-toggle type=button aria-label="Switch to light theme" title="Switch to light theme">
+<span class=theme-icon aria-hidden=true>☀</span>
+</button>
+<button class=menu-toggle type=button aria-label="Open navigation" aria-expanded=false aria-controls=site-navigation>
+<span></span>
+<span></span>
+<span></span></button></div></nav></header><main class=container id=main-content><article class=post-single><header class="post-header fade-in"><h1 class=post-single-title>Breaking Flutter’s RSA Encryption: Reverse Engineering and Hooking Techniques</h1><div class=post-single-meta><time>February 20, 2025</time>
+<span class=reading-time>6 min read</span></div><div class=post-tags><span class=tag>mobile</span>
+<span class=tag>flutter</span>
+<span class=tag>reverse-engineering</span>
+<span class=tag>research</span></div></header><div class="post-content fade-in"><p>In my previous post <a href=https://incogbyte.github.io/posts/bypassmtlsflutter/>Bypassing MTLS in Flutter</a>, I discussed how MTLS is <strong>generaly</strong> implemented in the Flutter framework. Depending on how an application is developed, exposing certificates can become a security issue. If an attacker gains access to the certificate, MTLS is rendered useless. This reinforces the analogy: <em>"It’s pointless to protect the front of your house with lasers, cameras, guard dogs, and motion detectors while leaving the windows and doors wide open."</em></p><p>In this blog post, I will explain how to bypass scenarios where the application encrypts the request body (RSA) before sending it to the server. This technique is commonly seen in banking applications or other apps with mature security practices in mobile development.</p><h3 id=understanding-rsa-encryption>Understanding RSA Encryption</h3><p>The most commonly used encryption method in such cases is RSA. Let’s break it down in simple terms:</p><p>In mobile applications, <em>RSA</em> is generally used for communication security and authentication (and, in some cases, even authorization). TL;DR:</p><ol><li><strong>Secure Key Exchange:</strong> RSA is often used to exchange symmetric encryption keys (like AES). Since RSA is slow for large data volumes, it primarily secures the transmission of a faster encryption key.</li><li><strong>Authentication and Digital Signatures:</strong> Apps use RSA to ensure messages or transactions originate from a trusted source. This is achieved by signing content with a private key and verifying it with a public key.</li><li><strong>Secure Communication (HTTPS/TLS):</strong> When an app connects to a secure server, RSA is used to establish a TLS/SSL connection. The server sends its public key, the app encrypts a session key with it, and subsequent communication is encrypted with a more efficient algorithm.</li><li><strong>Sensitive Data Protection:</strong> Some apps store encrypted information locally, using RSA to safeguard credentials or critical data.</li></ol><p>RSA plays a crucial role in app security but is often combined with faster methods (like AES) to ensure both security and performance. The following image illustrates how RSA works:</p><p><img src=/images/rsa-01.png alt></p><h3 id=implementing-rsa-in-flutter>Implementing RSA in Flutter</h3><p>Now that we understand how RSA works, let’s explore how Flutter apps implement it. Based on empirical research, most Flutter applications use the following libraries:</p><ul><li><a href=https://pub.dev/packages/dio>dio</a> - A powerful HTTP networking package.</li><li><a href=https://pub.dev/packages/pointycastle>pointycastle</a> - A Dart library for encryption and decryption.</li></ul><p>In general, there are two common implementation approaches:</p><ol><li>The application requests the public key from the backend, which is then encrypted and stored in <em>SharedPreferences</em> on Android using another widely used Flutter package: <a href=https://pub.dev/packages/flutter_secure_storage>flutter_secure_storage</a>.</li><li>The public key is hardcoded in the Flutter code, meaning you would need to reverse-engineer the app or identify the exact function call that utilizes the key.</li></ol><p>To simulate this scenario, I developed a Flutter app with a Node.js backend. The backend holds the private key, while the Flutter app contains the public key to encrypt the request body. This is a common setup in REST API or GraphQL applications.</p><p>However, to make it more realistic, I compiled the Flutter app in <em>release mode</em> rather than <em>debug mode</em> (More easy to reverse). When a Flutter app is built for production (e.g., for Google Play Store), several optimizations are applied to the binary (<code>libflutter.so</code> and <code>libapp.so</code>), including:</p><ul><li>Dart Ahead-Of-Time (AOT) compilation.</li><li>Execution inside a Dart Virtual Machine (VM).</li><li>Serialization of code and data into a binary snapshot.</li><li>Stripping of symbols in release mode.</li><li>Full optimization.</li></ul><p>For more details, check out the talk by Worawit: <a href="https://www.youtube.com/watch?v=EU3KOzNkCdI">B(l)utter Reversing Flutter Application Using Dart Runtime</a>.</p><h3 id=analyzing-the-android-apk>Analyzing the Android APK</h3><p>In a real scenario, obtaining the APK file is the first step. Once you have the APK, you can use tools like <a href=https://apktool.org/>APKTool</a> with the command <code>apktool d foo.apk</code> to decompile it.</p><p>Since I built the app myself, I simply compiled it in release mode, signed it, and installed it on a physical device:</p><ul><li><p><strong>Build and sign:</strong>
+<img src=/images/build-01.png alt></p></li><li><p><strong>Install with ADB:</strong>
+<img src=/images/adb-01.png alt></p></li></ul><p>With the APK in hand, we can use Worawit’s <a href=https://github.com/worawit/blutter>Blutter tool</a>. Blutter locally initializes the Dart app and inspects objects like the Object Pool and Thread Pool, helping us understand its structure.</p><p><img src=/images/blutter_decrypt_app.png alt></p><p><img src=/images/flutter_decrypted_folders.png alt></p><p>The next step is to analyze Blutter’s output and identify function addresses for hooking. Each application is different and may require a unique approach (shoutout to @edunovella 🍻 for this reminder!).</p><p>Since we aim to intercept the request before encryption, we first attempt to capture it using a proxy. Flutter has some quirks in this area; I recommend reading <a href=https://blog.nviso.eu/2020/05/20/intercepting-flutter-traffic-on-android-x64/>this blog</a> for insights into Flutter and HTTP proxying.</p><p><img src=/images/http-enc.png alt></p><p>A good reversing approach is to search for the app’s entry points. Using Blutter, we can inspect the main package (<code>flutter_body_encrypt_rsa</code>) and locate the relevant class:</p><p><img src=/images/flutter_decrypted_main_class.png alt></p><p>In this case, we find <code>rsa_helper.dart</code>, which appears to handle encryption:</p><p><img src=/images/encrypted_function_blutter.png alt></p><h3 id=hooking-flutters-encryption-function>Hooking Flutter’s Encryption Function</h3><p>To proceed, I analyze the loaded libraries and locate the <code>libapp.so</code> and <code>libflutter.so</code> addresses using Frida:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span>Java.perform(<span style=color:#8be9fd;font-style:italic>function</span>() {
+</span></span><span style=display:flex><span>    console.log(<span style=color:#f1fa8c>&#34;[*] Waiting for libraries to load...&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    setTimeout(<span style=color:#8be9fd;font-style:italic>function</span>() {
+</span></span><span style=display:flex><span>        console.warn(<span style=color:#f1fa8c>&#34;[*] Loaded libraries:&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>var</span> modules <span style=color:#ff79c6>=</span> Process.enumerateModules();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        modules.forEach(<span style=color:#8be9fd;font-style:italic>function</span>(m) {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> (m.name.toLowerCase() <span style=color:#ff79c6>===</span> <span style=color:#f1fa8c>&#34;libflutter.so&#34;</span>) {
+</span></span><span style=display:flex><span>                console.warn(<span style=color:#f1fa8c>&#34;[*] libflutter found!&#34;</span>, m.name);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            console.log(<span style=color:#f1fa8c>&#34;[*] &#34;</span> <span style=color:#ff79c6>+</span> m.name <span style=color:#ff79c6>+</span> <span style=color:#f1fa8c>&#34; -&gt; &#34;</span> <span style=color:#ff79c6>+</span> m.base);
+</span></span><span style=display:flex><span>        });
+</span></span><span style=display:flex><span>    }, <span style=color:#bd93f9>1000</span>);
+</span></span><span style=display:flex><span>});
+</span></span></code></pre></div><p><img src=/images/hook-flutter-01.png alt></p><p><img src=/images/hook-flutter-02.png alt></p><p>From Frida’s output, we can verify that we have the address of libflutter.so and can also retrieve addresses for other libs. The most interesting one for us is <strong>libapp.so</strong>, where the application’s core logic is usually located.</p><p>By analyzing the code more deeply 👀, we can understand that before calling the encrypt function, the app performs a <strong>JsonEncode</strong>, which is likely where the Dio package uses Flutter’s convert package before encrypting the request:</p><p><img src=/images/blutter-encr-01.png alt></p><p><img src=/images/blutter-encr-02.png alt></p><p>I usually use the following Frida script to interact with lower-level functions within libapp.so. The idea is to get the base address of libapp.so, find the jsonEncode() function, and perform a hexdump. You can search for all BL (Branch with Link) instructions in ARM. The BL instruction performs a jump to a function/subroutine and stores the return address in the LR (Link Register). You can do this for all functions.</p><p>The hook I generally use is as follows:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span>setTimeout(<span style=color:#8be9fd;font-style:italic>function</span>() {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>var</span> flutterBase <span style=color:#ff79c6>=</span> Module.findBaseAddress(<span style=color:#f1fa8c>&#34;libapp.so&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> (flutterBase) {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>var</span> encryptFnAddr <span style=color:#ff79c6>=</span> flutterBase.add(<span style=color:#bd93f9>0x337694</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            console.warn(<span style=color:#f1fa8c>&#34;[*] Function found at:&#34;</span>, encryptFnAddr);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    Interceptor.attach(encryptFnAddr, {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            onEnter<span style=color:#ff79c6>:</span> <span style=color:#8be9fd;font-style:italic>function</span>(args) {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            console.log(<span style=color:#f1fa8c>&#34;[*] Entering encrypt function...&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>try</span> {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#8be9fd;font-style:italic>var</span> size <span style=color:#ff79c6>=</span> <span style=color:#bd93f9>1024</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#8be9fd;font-style:italic>var</span> buffer <span style=color:#ff79c6>=</span> Memory.readByteArray(args[<span style=color:#bd93f9>0</span>], size);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            console.log(<span style=color:#f1fa8c>&#34;[*] Hexdump (function) args[0]:\n&#34;</span> <span style=color:#ff79c6>+</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            hexdump(buffer, { offset<span style=color:#ff79c6>:</span> <span style=color:#bd93f9>0</span>, length<span style=color:#ff79c6>:</span> size, header<span style=color:#ff79c6>:</span> <span style=color:#ff79c6>true</span>, ansi<span style=color:#ff79c6>:</span> <span style=color:#ff79c6>true</span> }));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    } <span style=color:#ff79c6>catch</span> (e) {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            console.error(<span style=color:#f1fa8c>&#34;[!] Error reading input (args[0]):&#34;</span>, e);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>},
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>onLeave<span style=color:#ff79c6>:</span> <span style=color:#8be9fd;font-style:italic>function</span>(retval) {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>try</span> {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#8be9fd;font-style:italic>var</span> size <span style=color:#ff79c6>=</span> <span style=color:#bd93f9>1024</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#8be9fd;font-style:italic>var</span> buffer <span style=color:#ff79c6>=</span> Memory.readByteArray(retval, size);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            console.log(<span style=color:#f1fa8c>&#34;[*] Hexdump return value (encrypted):\n&#34;</span> <span style=color:#ff79c6>+</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            hexdump(buffer, { offset<span style=color:#ff79c6>:</span> <span style=color:#bd93f9>0</span>, length<span style=color:#ff79c6>:</span> size, header<span style=color:#ff79c6>:</span> <span style=color:#ff79c6>true</span>, ansi<span style=color:#ff79c6>:</span> <span style=color:#ff79c6>true</span> }));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        } <span style=color:#ff79c6>catch</span> (e) {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            console.error(<span style=color:#f1fa8c>&#34;[!] Error reading return value:&#34;</span>, e);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>});
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>} <span style=color:#ff79c6>else</span> {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        console.log(<span style=color:#f1fa8c>&#34;[!] libapp.so not found!&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>}, <span style=color:#bd93f9>1000</span>);
+</span></span></code></pre></div><p>Finally, we successfully intercept the data before encryption:</p><p><img src=/images/jodson-flutter.png.png alt></p><p><img src=/images/burp-encrypted-flutter-req.png alt></p><p><img src=/images/e1.png alt></p><p><img src=/images/e2.png alt></p><p>If you enjoyed this post, send feedback on X (@incogbyte) or email me at <a href=mailto:incogbyte@protonmail.com>incogbyte@protonmail.com</a>. Let me know if you'd like a part 2!</p><p><strong>References:</strong></p><ul><li><a href=https://github.com/worawit/blutter>Blutter</a></li><li><a href=https://frida.re/>Frida</a></li><li><a href=https://flutter.dev/>Flutter</a></li><li><a href=https://filestore.fortinet.com/fortiguard/research/nullcon.pdf>Nullcon cryptax</a></li></ul></div><footer class="post-footer fade-in"><div class=post-nav><a href=https://incogbyte.github.io/posts/2024-07-10-nasa-pathtraversal-xss-tricks/ class="post-nav-link prev"><span>← Previous</span>
+<span class=post-nav-title>Nasa Path Traversal and XSS (waf bypass)</span>
+</a><a href=https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/ class="post-nav-link next"><span>Next →</span>
+<span class=post-nav-title>Flipcoin Wallet Mobile Hacking Lab</span></a></div></footer></article></main><footer class=site-footer><div class=footer-content><p><span class=footer-prompt>~/incogbyte</span> <span>Security research, notes and disclosures.</span></p><nav class=footer-links aria-label="External profiles"><a href=https://github.com/incogbyte target=_blank rel="noopener noreferrer">GitHub</a>
+<a href=https://linkedin.com/in/rodolfo-tavares-543863a7 target=_blank rel="noopener noreferrer">LinkedIn</a>
+<a href=mailto:incogbyte@protonmail.com>Email</a>
+<a href=/index.xml>RSS</a></nav></div></footer><script src=/js/main.js></script></body></html>

@@ -1,33 +1,18 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Hardware on incogbyte</title>
-    <link>https://incogbyte.github.io/tags/hardware/</link>
-    <description>Recent content in Hardware on incogbyte</description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 02 Aug 2026 10:00:00 -0300</lastBuildDate>
-    <atom:link href="https://incogbyte.github.io/tags/hardware/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain</title>
-      <link>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</link>
-      <pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</guid>
-      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-3-bypassing-the-boot-chain&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or on &lt;a href=&#34;https://linkedin.com/in/rodolfo-tavares-543863a7&#34;&gt;LinkedIn&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;In this post, I&#39;ll show what I found in my own 64KB dump, what I compared with&#xA;public tools, and what actually worked on the phone. The custom Image3 comes in&#xA;Part 4, so I won&#39;t claim that part here.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</title>
-      <link>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</link>
-      <pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</guid>
-      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-2-reverse-engineering-the-bootrom&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or on &lt;a href=&#34;https://linkedin.com/in/rodolfo-tavares-543863a7&#34;&gt;LinkedIn&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;h2 id=&#34;where-we-left-off&#34;&gt;Where we left off&lt;/h2&gt;&#xA;&lt;p&gt;In &lt;a href=&#34;https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/&#34;&gt;Part 1&lt;/a&gt; we used&#xA;the &lt;strong&gt;limera1n&lt;/strong&gt; heap overflow to break into the iPhone 3GS SecureROM in DFU mode,&#xA;ran a 76-byte ARM payload, and pulled 64KB of raw code out of the chip:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</title>
-      <link>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</link>
-      <pubDate>Wed, 15 Apr 2026 10:00:00 -0300</pubDate>
-      <guid>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</guid>
-      <description>&lt;h1 id=&#34;jailbreaking-the-iphone-3gs-from-scratch-part-1-initial-access&#34;&gt;Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href=&#34;https://x.com/incogbyte&#34;&gt;X (@incogbyte)&lt;/a&gt; or via &lt;a href=&#34;mailto:incogbyte@protonmail.com&#34;&gt;email&lt;/a&gt;. I am grateful for any corrections and happy to learn from them.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;This is the first post in a series where I document the entire process of building a jailbreak for the iPhone 3GS from scratch. The end goal is a fully working jailbreak: unsigned code execution, a patched kernel, Cydia, SSH, the whole thing. But before any of that can happen, we need to get our foot in the door.&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hardware on Rodolfo Tavares | Offensive Security Researcher</title><link>https://incogbyte.github.io/tags/hardware/</link><description>Recent content in Hardware on Rodolfo Tavares | Offensive Security Researcher</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 02 Aug 2026 10:00:00 -0300</lastBuildDate><atom:link href="https://incogbyte.github.io/tags/hardware/index.xml" rel="self" type="application/rss+xml"/><item><title>Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain</title><link>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</link><pubDate>Sun, 02 Aug 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-08-02-exploiting-iphone3gs-bypassing-boot-chain/</guid><description>&lt;h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-3-bypassing-the-boot-chain">Jailbreaking the iPhone 3GS from Scratch, Part 3: Bypassing the Boot Chain&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href="https://x.com/incogbyte">X (@incogbyte)&lt;/a> or on &lt;a href="https://linkedin.com/in/rodolfo-tavares-543863a7">LinkedIn&lt;/a>. I am grateful for any corrections and happy to learn from them.&lt;/p>
+&lt;/blockquote>
+&lt;p>In this post, I'll show what I found in my own 64KB dump, what I compared with
+public tools, and what actually worked on the phone. The custom Image3 comes in
+Part 4, so I won't claim that part here.&lt;/p></description></item><item><title>Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM</title><link>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</link><pubDate>Thu, 02 Jul 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-07-02-reverse-engineering-iphone3gs-bootrom-ghidra/</guid><description>&lt;h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-2-reverse-engineering-the-bootrom">Jailbreaking the iPhone 3GS from Scratch, Part 2: Reverse Engineering the BootROM&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href="https://x.com/incogbyte">X (@incogbyte)&lt;/a> or on &lt;a href="https://linkedin.com/in/rodolfo-tavares-543863a7">LinkedIn&lt;/a>. I am grateful for any corrections and happy to learn from them.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="where-we-left-off">Where we left off&lt;/h2>
+&lt;p>In &lt;a href="https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/">Part 1&lt;/a> we used
+the &lt;strong>limera1n&lt;/strong> heap overflow to break into the iPhone 3GS SecureROM in DFU mode,
+ran a 76-byte ARM payload, and pulled 64KB of raw code out of the chip:&lt;/p></description></item><item><title>Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access</title><link>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</link><pubDate>Wed, 15 Apr 2026 10:00:00 -0300</pubDate><guid>https://incogbyte.github.io/posts/2026-04-15-exploiting-iphone3gs-bootrom-dump-limera1n/</guid><description>&lt;h1 id="jailbreaking-the-iphone-3gs-from-scratch-part-1-initial-access">Jailbreaking the iPhone 3GS from Scratch, Part 1: initial access&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I am always learning. This series is a study project, not a definitive guide, and I will certainly make mistakes along the way. If you spot any errors, inaccuracies, or something that could be explained better, please reach out on &lt;a href="https://x.com/incogbyte">X (@incogbyte)&lt;/a> or via &lt;a href="mailto:incogbyte@protonmail.com">email&lt;/a>. I am grateful for any corrections and happy to learn from them.&lt;/p>
+&lt;/blockquote>
+&lt;p>This is the first post in a series where I document the entire process of building a jailbreak for the iPhone 3GS from scratch. The end goal is a fully working jailbreak: unsigned code execution, a patched kernel, Cydia, SSH, the whole thing. But before any of that can happen, we need to get our foot in the door.&lt;/p></description></item></channel></rss>

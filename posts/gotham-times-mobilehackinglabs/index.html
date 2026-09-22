@@ -1,480 +1,315 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gotham Times Mobile Hacking Labs | incogbyte</title>
-  <meta name="description" content="Offensive Security">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-  <canvas id="matrix-bg"></canvas>
-  <div class="scanline"></div>
-
-  <header class="site-header">
-  <nav class="navbar">
-    <a href="/" class="logo">
-      <span class="logo-bracket">[</span>
-      <span class="logo-text">incogbyte</span>
-      <span class="logo-bracket">]</span>
-      <span class="cursor">_</span>
-    </a>
-    <button class="menu-toggle" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <ul class="nav-links">
-      
-      <li><a href="/" class="nav-link">Home</a></li>
-      
-      <li><a href="/posts/" class="nav-link">Posts</a></li>
-      
-      <li><a href="/cve/" class="nav-link">CVEs</a></li>
-      
-      <li><a href="/about/" class="nav-link">About</a></li>
-      
-    </ul>
-  </nav>
-</header>
-
-
-  <main class="container">
-    
-<article class="post-single">
-  <header class="post-header fade-in">
-    <h1 class="post-single-title">Gotham Times Mobile Hacking Labs</h1>
-    
-    <div class="post-single-meta">
-      <time>May 31, 2025</time>
-      <span class="reading-time">6 min read</span>
-    </div>
-    
-    
-  </header>
-
-  <div class="post-content fade-in">
-    <h3 id="introduction">Introduction</h3>
-<p>The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.</p>
-<p>In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:</p>
-<ul>
-<li>How webviews function in iOS applications</li>
-<li>Understanding deep links and their implementation</li>
-<li>Identifying open redirect vulnerabilities</li>
-<li>Techniques for exploiting these security flaws</li>
-<li>Methods for extracting session tokens</li>
-<li>Best practices for preventing such attacks</li>
-</ul>
-<p>This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.</p>
-<h3 id="initial-application-analysis">Initial Application Analysis</h3>
-<p>Upon launching the application, we are presented with a login screen and an option to navigate to the registration screen. After creating an account and logging in, we are taken to the authenticated section of the app where we can view a list of news articles and profile information. Nothing seems unusual at first, so let's dig deeper into the application.</p>
-<p>Let's break down the initial application flow and interface:</p>
-<ol>
-<li>
-<p>Authentication Flow:</p>
-<ul>
-<li>Initial login screen with credentials input</li>
-<li>Registration option for new users</li>
-<li>Secure authentication process</li>
-</ul>
-</li>
-<li>
-<p>Main Application Features:</p>
-<ul>
-<li>News article listing functionality</li>
-<li>User profile management</li>
-<li>Authenticated user dashboard</li>
-</ul>
-</li>
-</ol>
-<h3 id="technical-analysis">Technical Analysis</h3>
-<p>First, with the .ipa file we can use the following script to extract the contents and get the class-dump information:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ff79c6">#!/bin/bash
-</span></span></span><span style="display:flex;"><span><span style="color:#ff79c6"></span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Check if an IPA file was provided</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span> -z <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$1</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;Usage: </span><span style="color:#8be9fd;font-style:italic">$0</span><span style="color:#f1fa8c"> &lt;path_to_ipa_file&gt;&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">exit</span> <span style="color:#bd93f9">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fi</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">IPA_FILE</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$1</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Check if the IPA file exists</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span> ! -f <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[@] Error: IPA file not found!&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">exit</span> <span style="color:#bd93f9">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fi</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Get the app name from the IPA file</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">APP_NAME</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">$(</span>basename <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> .ipa<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">OUTPUT_DIR</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">$(</span>dirname <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> | xargs readlink -f<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Create output directory</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">OUTPUT_DIR</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/</span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Unzip the IPA contents</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">UNZIP_DIR</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/_extracted&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[*] Extracting IPA contents...&#34;</span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$UNZIP_DIR</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>unzip -q <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$IPA_FILE</span><span style="color:#f1fa8c">&#34;</span> -d <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$UNZIP_DIR</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Locate the .app directory</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">APP_PATH</span><span style="color:#ff79c6">=</span><span style="color:#ff79c6">$(</span>find <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$UNZIP_DIR</span><span style="color:#f1fa8c">&#34;</span> -name <span style="color:#f1fa8c">&#34;*.app&#34;</span> -type d<span style="color:#ff79c6">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span> -z <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[@] No .app found in </span><span style="color:#8be9fd;font-style:italic">$UNZIP_DIR</span><span style="color:#f1fa8c">, exiting...&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">exit</span> <span style="color:#bd93f9">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fi</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">BINARY</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">/</span><span style="color:#ff79c6">$(</span>basename <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">&#34;</span> .app<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Check if the binary exists</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span> ! -f <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[@] No binary found in </span><span style="color:#8be9fd;font-style:italic">$APP_PATH</span><span style="color:#f1fa8c">, exiting...&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">exit</span> <span style="color:#bd93f9">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fi</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Create directories for class dumps</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">CLASS_DUMP_OUTPUT</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/class_dump&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">SWIFT_DUMP_OUTPUT</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$OUTPUT_DIR</span><span style="color:#f1fa8c">/swift_dump&#34;</span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$CLASS_DUMP_OUTPUT</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$SWIFT_DUMP_OUTPUT</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Dump Objective-C classes using class-dump</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[*] Dumping Objective-C classes for </span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">...&#34;</span>
-</span></span><span style="display:flex;"><span>ipsw class-dump <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> --headers -o <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$CLASS_DUMP_OUTPUT</span><span style="color:#f1fa8c">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Dump Swift classes using swift-dump</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[*] Dumping Swift classes for </span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">...&#34;</span>
-</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> &gt; <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$SWIFT_DUMP_OUTPUT</span><span style="color:#f1fa8c">/</span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">-mangled.txt&#34;</span>
-</span></span><span style="display:flex;"><span>ipsw swift-dump <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$BINARY</span><span style="color:#f1fa8c">&#34;</span> --demangle &gt; <span style="color:#f1fa8c">&#34;</span><span style="color:#8be9fd;font-style:italic">$SWIFT_DUMP_OUTPUT</span><span style="color:#f1fa8c">/</span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">-demangled.txt&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;[+] Decompilation completed for </span><span style="color:#8be9fd;font-style:italic">$APP_NAME</span><span style="color:#f1fa8c">&#34;</span>
-</span></span></code></pre></div><p>We can inspect the binary extracted contents and class-dump information:</p>
-<p><img src="/images/gothamt-01.png" alt=""></p>
-<p>This information show us some interesting things... but the mainly information is the name of the Gotham_Times classes/interfaces</p>
-<p>We can use the <code>ipsw</code> to verify the plist files:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ipsw plist Info.plist
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;BuildMachineOSBuild&#34;</span>: <span style="color:#f1fa8c">&#34;23D60&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleDevelopmentRegion&#34;</span>: <span style="color:#f1fa8c">&#34;en&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleExecutable&#34;</span>: <span style="color:#f1fa8c">&#34;Gotham Times&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleIcons&#34;</span>: <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;CFBundlePrimaryIcon&#34;</span>: <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleIconFiles&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;AppIcon60x60&#34;</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ff79c6">]</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleIconName&#34;</span>: <span style="color:#f1fa8c">&#34;AppIcon&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">}</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">}</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleIcons~ipad&#34;</span>: <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;CFBundlePrimaryIcon&#34;</span>: <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleIconFiles&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;AppIcon60x60&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;AppIcon76x76&#34;</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ff79c6">]</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleIconName&#34;</span>: <span style="color:#f1fa8c">&#34;AppIcon&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">}</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">}</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleIdentifier&#34;</span>: <span style="color:#f1fa8c">&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleInfoDictionaryVersion&#34;</span>: <span style="color:#f1fa8c">&#34;6.0&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleName&#34;</span>: <span style="color:#f1fa8c">&#34;Gotham Times&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundlePackageType&#34;</span>: <span style="color:#f1fa8c">&#34;APPL&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleShortVersionString&#34;</span>: <span style="color:#f1fa8c">&#34;1.0&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleSupportedPlatforms&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;iPhoneOS&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">]</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleURLTypes&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleTypeRole&#34;</span>: <span style="color:#f1fa8c">&#34;Viewer&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleURLName&#34;</span>: <span style="color:#f1fa8c">&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleURLSchemes&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;gothamtimes&#34;</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ff79c6">]</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">}</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">]</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;CFBundleVersion&#34;</span>: <span style="color:#f1fa8c">&#34;1&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;DTCompiler&#34;</span>: <span style="color:#f1fa8c">&#34;com.apple.compilers.llvm.clang.1_0&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;DTPlatformBuild&#34;</span>: <span style="color:#f1fa8c">&#34;21C52&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;DTPlatformName&#34;</span>: <span style="color:#f1fa8c">&#34;iphoneos&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;DTPlatformVersion&#34;</span>: <span style="color:#f1fa8c">&#34;17.2&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;DTSDKBuild&#34;</span>: <span style="color:#f1fa8c">&#34;21C52&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;DTSDKName&#34;</span>: <span style="color:#f1fa8c">&#34;iphoneos17.2&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;DTXcode&#34;</span>: <span style="color:#f1fa8c">&#34;1520&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;DTXcodeBuild&#34;</span>: <span style="color:#f1fa8c">&#34;15C500b&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;LSRequiresIPhoneOS&#34;</span>: true,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;MinimumOSVersion&#34;</span>: <span style="color:#f1fa8c">&#34;15.4&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;NSAccentColorName&#34;</span>: <span style="color:#f1fa8c">&#34;AccentColor&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;UIApplicationSceneManifest&#34;</span>: <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;UIApplicationSupportsMultipleScenes&#34;</span>: false,
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;UISceneConfigurations&#34;</span>: <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;UIWindowSceneSessionRoleApplication&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f1fa8c">&#34;UISceneConfigurationName&#34;</span>: <span style="color:#f1fa8c">&#34;Default Configuration&#34;</span>,
-</span></span><span style="display:flex;"><span>          <span style="color:#f1fa8c">&#34;UISceneDelegateClassName&#34;</span>: <span style="color:#f1fa8c">&#34;Gotham_Times.SceneDelegate&#34;</span>,
-</span></span><span style="display:flex;"><span>          <span style="color:#f1fa8c">&#34;UISceneStoryboardFile&#34;</span>: <span style="color:#f1fa8c">&#34;Main&#34;</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">}</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ff79c6">]</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">}</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">}</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;UIApplicationSupportsIndirectInputEvents&#34;</span>: true,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;UIDeviceFamily&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>    1,
-</span></span><span style="display:flex;"><span>    <span style="color:#bd93f9">2</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">]</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;UILaunchStoryboardName&#34;</span>: <span style="color:#f1fa8c">&#34;LaunchScreen&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;UIMainStoryboardFile&#34;</span>: <span style="color:#f1fa8c">&#34;Main&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;UIRequiredDeviceCapabilities&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;arm64&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">]</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;UISupportedInterfaceOrientations~ipad&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;UIInterfaceOrientationPortrait&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;UIInterfaceOrientationPortraitUpsideDown&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;UIInterfaceOrientationLandscapeLeft&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;UIInterfaceOrientationLandscapeRight&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">]</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#f1fa8c">&#34;UISupportedInterfaceOrientations~iphone&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;UIInterfaceOrientationPortrait&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;UIInterfaceOrientationLandscapeLeft&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;UIInterfaceOrientationLandscapeRight&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">]</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">}</span>
-</span></span></code></pre></div><p>The only interesting thing.. for this chall is the following scheme:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;CFBundleURLTypes&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">{</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleTypeRole&#34;</span>: <span style="color:#f1fa8c">&#34;Viewer&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleURLName&#34;</span>: <span style="color:#f1fa8c">&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#f1fa8c">&#34;CFBundleURLSchemes&#34;</span>: <span style="color:#ff79c6">[</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;gothamtimes&#34;</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ff79c6">]</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">}</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">]</span>,
-</span></span></code></pre></div><p><code>gothamtimes</code> can be used as <code>deeplink</code> with the following schema <code>gothamtimes://data</code>.</p>
-<p>Now we can open the Gothman Mach-O binary inside Ghidra and verify the decompiled binary:</p>
-<p><img src="/images/gothamt-02.png" alt=""></p>
-<p>The following function is responsible for open the the <code>deeplink</code> with the parameter URL:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#6272a4">/* Gotham_Times.SceneDelegate.scene(_: __C.UIScene, openURLContexts:
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">   Swift.Set&lt;__C.UIOpenURLContext&gt;) -&gt; () */</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd">void</span> __thiscall
-</span></span><span style="display:flex;"><span>Gotham_Times<span style="color:#ff79c6">::</span>SceneDelegate<span style="color:#ff79c6">::</span><span style="color:#50fa7b">scene</span>(SceneDelegate <span style="color:#ff79c6">*</span>this,<span style="color:#8be9fd">int</span> param_1,undefined <span style="color:#ff79c6">*</span>openURLContexts)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">int</span> iVar1;
-</span></span><span style="display:flex;"><span>  String SVar2;
-</span></span><span style="display:flex;"><span>  SceneDelegate <span style="color:#ff79c6">*</span>pSVar3;
-</span></span><span style="display:flex;"><span>  StaticString SVar4;
-</span></span><span style="display:flex;"><span>  code <span style="color:#ff79c6">*</span>pcVar5;
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">bool</span> bVar6;
-</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">int</span> iVar7;
-</span></span><span style="display:flex;"><span>  undefined <span style="color:#ff79c6">*</span>puVar8;
-</span></span><span style="display:flex;"><span>  Iterator IVar9;
-</span></span><span style="display:flex;"><span>.....
-</span></span><span style="display:flex;"><span>...
-</span></span><span style="display:flex;"><span>...
-</span></span><span style="display:flex;"><span>      tVar20 <span style="color:#ff79c6">=</span> Swift<span style="color:#ff79c6">::</span>$<span style="color:#50fa7b">_allocateUninitializedArray</span>(<span style="color:#bd93f9">1</span>);
-</span></span><span style="display:flex;"><span>      local_2a0 <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">int</span> <span style="color:#ff79c6">*</span>)tVar20<span style="color:#bd93f9">.1</span>;
-</span></span><span style="display:flex;"><span>      local_298 <span style="color:#ff79c6">=</span> tVar20._0_8_;
-</span></span><span style="display:flex;"><span>      local_268 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">&amp;</span>objc<span style="color:#ff79c6">::</span><span style="color:#8be9fd">protocol_t</span><span style="color:#ff79c6">::</span>WKUIDelegate;
-</span></span><span style="display:flex;"><span>      pcVar17 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;URL&#34;</span>;
-</span></span><span style="display:flex;"><span>      UVar10.unknown <span style="color:#ff79c6">=</span> local_260;
-</span></span><span style="display:flex;"><span>      <span style="color:#50fa7b">_objc_msgSend</span>();
-</span></span><span style="display:flex;"><span>      <span style="color:#50fa7b">_objc_retainAutoreleasedReturnValue</span>();
-</span></span><span style="display:flex;"><span>      local_290 <span style="color:#ff79c6">=</span> UVar10.unknown;
-</span></span><span style="display:flex;"><span>      Foundation<span style="color:#ff79c6">::</span>URL<span style="color:#ff79c6">::</span>$<span style="color:#50fa7b">_unconditionallyBridgeFromObjectiveC</span>(UVar10);
-</span></span><span style="display:flex;"><span>      local_2a0[<span style="color:#bd93f9">3</span>] <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">int</span>)local_1a0;
-</span></span><span style="display:flex;"><span>      piVar11 <span style="color:#ff79c6">=</span> <span style="color:#50fa7b">___swift_allocate_boxed_opaque_existential_0</span>(local_2a0,(<span style="color:#8be9fd">int</span> <span style="color:#ff79c6">*</span>)pcVar17);
-</span></span><span style="display:flex;"><span>      (<span style="color:#ff79c6">**</span>(code <span style="color:#ff79c6">**</span>)(local_198 <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x20</span>))(piVar11,local_158,local_1a0);
-</span></span><span style="display:flex;"><span>      local_270 <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)Swift<span style="color:#ff79c6">::</span>$<span style="color:#50fa7b">_finalizeUninitializedArray</span>(local_298);
-</span></span><span style="display:flex;"><span>      <span style="color:#50fa7b">_objc_release</span>(local_290);
-</span></span><span style="display:flex;"><span>      SVar21 <span style="color:#ff79c6">=</span> Swift<span style="color:#ff79c6">::</span>$<span style="color:#50fa7b">print</span>();
-</span></span><span style="display:flex;"><span>      <span style="color:#50fa7b">_swift_bridgeObjectRetain</span>(local_230);
-</span></span><span style="display:flex;"><span>      SVar21 <span style="color:#ff79c6">=</span> Swift<span style="color:#ff79c6">::</span>String<span style="color:#ff79c6">::</span><span style="color:#50fa7b">init</span>(<span style="color:#f1fa8c">&#34;open&#34;</span>,<span style="color:#bd93f9">4</span>,<span style="color:#bd93f9">1</span>);
-</span></span><span style="display:flex;"><span>      local_228 <span style="color:#ff79c6">=</span> SVar21.bridgeObject;
-</span></span><span style="display:flex;"><span>      local_240 <span style="color:#ff79c6">=</span> SVar21.str;
-</span></span><span style="display:flex;"><span>      <span style="color:#50fa7b">_swift_bridgeObjectRetain</span>();
-</span></span><span style="display:flex;"><span>      local_d0 <span style="color:#ff79c6">=</span> local_238;
-</span></span><span style="display:flex;"><span>      local_c8 <span style="color:#ff79c6">=</span> local_230;
-</span></span><span style="display:flex;"><span>      local_c0 <span style="color:#ff79c6">=</span> local_240;
-</span></span><span style="display:flex;"><span>      local_b8 <span style="color:#ff79c6">=</span> local_228;
-</span></span><span style="display:flex;"><span>      <span style="color:#ff79c6">if</span> (local_230 <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> (local_228 <span style="color:#ff79c6">!=</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x0</span>) <span style="color:#ff79c6">goto</span> LAB_1000195a4;
-</span></span><span style="display:flex;"><span>        $$outlined_destroy_of_Swift.String<span style="color:#ff79c6">?</span>((<span style="color:#8be9fd">int</span>)<span style="color:#ff79c6">&amp;</span>local_d0);
-</span></span><span style="display:flex;"><span>        local_2a4 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-</span></span><span style="display:flex;"><span>      }
-</span></span><span style="display:flex;"><span>      <span style="color:#ff79c6">else</span> {
-</span></span><span style="display:flex;"><span>        $$outlined_init_with_copy_of_Swift.String<span style="color:#ff79c6">?</span>(<span style="color:#ff79c6">&amp;</span>local_d0,<span style="color:#ff79c6">&amp;</span>local_140);
-</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> (local_b8 <span style="color:#ff79c6">==</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x0</span>) {
-</span></span><span style="display:flex;"><span>          $$outlined_destroy_of_Swift.<span style="color:#50fa7b">String</span>((<span style="color:#8be9fd">int</span>)<span style="color:#ff79c6">&amp;</span>local_140);
-</span></span><span style="display:flex;"><span>LAB_1
-</span></span><span style="display:flex;"><span>      <span style="color:#50fa7b">if</span> ((local_2d4 <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span>) {
-</span></span><span style="display:flex;"><span>        UVar10.unknown <span style="color:#ff79c6">=</span> local_260;
-</span></span><span style="display:flex;"><span>        <span style="color:#50fa7b">_objc_msgSend</span>(local_260,<span style="color:#f1fa8c">&#34;URL&#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#50fa7b">_objc_retainAutoreleasedReturnValue</span>();
-</span></span><span style="display:flex;"><span>        local_2f0 <span style="color:#ff79c6">=</span> UVar10.unknown;
-</span></span><span style="display:flex;"><span>        Foundation<span style="color:#ff79c6">::</span>URL<span style="color:#ff79c6">::</span>$<span style="color:#50fa7b">_unconditionallyBridgeFromObjectiveC</span>(UVar10);
-</span></span><span style="display:flex;"><span>        (<span style="color:#ff79c6">*</span>local_250)(UVar12.unknown,local_158,local_1a0);
-</span></span><span style="display:flex;"><span>        SVar21 <span style="color:#ff79c6">=</span> Foundation<span style="color:#ff79c6">::</span>URL<span style="color:#ff79c6">::</span><span style="color:#50fa7b">get_absoluteString</span>(UVar12);
-</span></span><span style="display:flex;"><span>        pSVar3 <span style="color:#ff79c6">=</span> local_1d8;
-</span></span><span style="display:flex;"><span>        local_2f8 <span style="color:#ff79c6">=</span> SVar21.bridgeObject;
-</span></span><span style="display:flex;"><span>        local_308 <span style="color:#ff79c6">=</span> SVar21.str;
-</span></span><span style="display:flex;"><span>        (<span style="color:#ff79c6">*</span>local_248)(local_188,local_1a0);
-</span></span><span style="display:flex;"><span>        (<span style="color:#ff79c6">*</span>local_248)(local_158,local_1a0);
-</span></span><span style="display:flex;"><span>        SVar21 <span style="color:#ff79c6">=</span> Swift<span style="color:#ff79c6">::</span>String<span style="color:#ff79c6">::</span><span style="color:#50fa7b">init</span>(<span style="color:#f1fa8c">&#34;url&#34;</span>,<span style="color:#bd93f9">3</span>,<span style="color:#bd93f9">1</span>);
-</span></span><span style="display:flex;"><span>        local_300 <span style="color:#ff79c6">=</span> SVar21.bridgeObject;
-</span></span><span style="display:flex;"><span>          SVar21 <span style="color:#ff79c6">=</span> Swift<span style="color:#ff79c6">::</span>String<span style="color:#ff79c6">::</span><span style="color:#50fa7b">init</span>(<span style="color:#f1fa8c">&#34;Main&#34;</span>,<span style="color:#bd93f9">4</span>,<span style="color:#bd93f9">1</span>);
-</span></span><span style="display:flex;"><span>          local_340 <span style="color:#ff79c6">=</span> __C<span style="color:#ff79c6">::</span>UIStoryboard<span style="color:#ff79c6">::</span>$<span style="color:#50fa7b">__allocating_init</span>
-</span></span><span style="display:flex;"><span>                                (auVar19._0_8_,SVar21.str,SVar21.bridgeObject,local_320);
-</span></span><span style="display:flex;"><span>          local_108 <span style="color:#ff79c6">=</span> local_340;
-</span></span><span style="display:flex;"><span>          SVar21 <span style="color:#ff79c6">=</span> Swift<span style="color:#ff79c6">::</span>String<span style="color:#ff79c6">::</span><span style="color:#50fa7b">init</span>(<span style="color:#f1fa8c">&#34;TabbedControllerID&#34;</span>,<span style="color:#bd93f9">0x12</span>,(byte)local_34c <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">1</span>);
-</span></span><span style="display:flex;"><span>          local_348 <span style="color:#ff79c6">=</span> SVar21.bridgeObject;
-</span></span><span style="display:flex;"><span>          local_338 <span style="color:#ff79c6">=</span> (extension_Foundation)<span style="color:#ff79c6">::</span>Swift<span style="color:#ff79c6">::</span>String<span style="color:#ff79c6">::</span><span style="color:#50fa7b">_bridgeToObjectiveC</span>();
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_swift_bridgeObjectRelease</span>(local_348);
-</span></span><span style="display:flex;"><span>          pUVar13 <span style="color:#ff79c6">=</span> local_340;
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_msgSend</span>(local_340,<span style="color:#f1fa8c">&#34;instantiateViewControllerWithIdentifier:&#34;</span>,local_338);
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_retainAutoreleasedReturnValue</span>();
-</span></span><span style="display:flex;"><span>          local_330 <span style="color:#ff79c6">=</span> pUVar13;
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_release</span>(local_338);
-</span></span><span style="display:flex;"><span>          puVar8 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">&amp;</span>_OBJC_CLASS_$_UITabBarController;
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_opt_self</span>(<span style="color:#ff79c6">&amp;</span>_OBJC_CLASS_$_UITabBarController);
-</span></span><span style="display:flex;"><span>          pUVar13 <span style="color:#ff79c6">=</span> local_330;
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_swift_dynamicCastObjCClassUnconditional</span>(local_330,puVar8,<span style="color:#bd93f9">0</span>,<span style="color:#bd93f9">0</span>);
-</span></span><span style="display:flex;"><span>          local_328 <span style="color:#ff79c6">=</span> pUVar13;
-</span></span><span style="display:flex;"><span>          local_110 <span style="color:#ff79c6">=</span> pUVar13;
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_msgSend</span>();
-</span></span><span style="display:flex;"><span>          auVar19 <span style="color:#ff79c6">=</span> __C<span style="color:#ff79c6">::</span>UINavigationController<span style="color:#ff79c6">::</span><span style="color:#50fa7b">typeMetadataAccessor</span>();
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_retain</span>(local_328,auVar19._8_8_);
-</span></span><span style="display:flex;"><span>          local_318 <span style="color:#ff79c6">=</span> __C<span style="color:#ff79c6">::</span>UINavigationController<span style="color:#ff79c6">::</span><span style="color:#50fa7b">__allocating_init</span>(auVar19._0_8_,local_328);
-</span></span><span style="display:flex;"><span>          local_118 <span style="color:#ff79c6">=</span> local_318;
-</span></span><span style="display:flex;"><span>          auVar19 <span style="color:#ff79c6">=</span> __C<span style="color:#ff79c6">::</span>UIWindow<span style="color:#ff79c6">::</span><span style="color:#50fa7b">typeMetadataAccessor</span>();
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_retain</span>(local_210,auVar19._8_8_);
-</span></span><span style="display:flex;"><span>          pUVar14 <span style="color:#ff79c6">=</span> __C<span style="color:#ff79c6">::</span>UIWindow<span style="color:#ff79c6">::</span><span style="color:#50fa7b">__allocating_init</span>(auVar19._0_8_,local_210);
-</span></span><span style="display:flex;"><span>          (<span style="color:#ff79c6">**</span>(code <span style="color:#ff79c6">**</span>)((<span style="color:#ff79c6">*</span>(uint <span style="color:#ff79c6">*</span>)local_1d8 <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">*</span>local_1c8) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x60</span>))();
-</span></span><span style="display:flex;"><span>          (<span style="color:#ff79c6">**</span>(code <span style="color:#ff79c6">**</span>)((<span style="color:#ff79c6">*</span>(uint <span style="color:#ff79c6">*</span>)local_1d8 <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">*</span>local_1c8) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x58</span>))();
-</span></span><span style="display:flex;"><span>          local_120 <span style="color:#ff79c6">=</span> pUVar14;
-</span></span><span style="display:flex;"><span>          <span style="color:#ff79c6">if</span> (pUVar14 <span style="color:#ff79c6">==</span> (UIWindow <span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x0</span>) {
-</span></span><span style="display:flex;"><span>            pUVar14 <span style="color:#ff79c6">=</span> (UIWindow <span style="color:#ff79c6">*</span>)$$outlined_destroy_of___C.UIWindow<span style="color:#ff79c6">?</span>(<span style="color:#ff79c6">&amp;</span>local_120);
-</span></span><span style="display:flex;"><span>          }
-</span></span><span style="display:flex;"><span>            Swift<span style="color:#ff79c6">::</span><span style="color:#50fa7b">_assertionFailure</span>(SVar4,(StaticString)<span style="color:#bd93f9">0xb</span>,(StaticString)<span style="color:#bd93f9">0x2</span>,(uint)pcVar17,<span style="color:#bd93f9">0x39</span>);
-</span></span><span style="display:flex;"><span>                    <span style="color:#6272a4">/* WARNING: Does not return */</span>
-</span></span><span style="display:flex;"><span>            pcVar5 <span style="color:#ff79c6">=</span> (code <span style="color:#ff79c6">*</span>)<span style="color:#50fa7b">SoftwareBreakpoint</span>(<span style="color:#bd93f9">1</span>,<span style="color:#bd93f9">0x1000199cc</span>);
-</span></span><span style="display:flex;"><span>            (<span style="color:#ff79c6">*</span>pcVar5)();
-</span></span><span style="display:flex;"><span>          }
-</span></span><span style="display:flex;"><span>          local_390 <span style="color:#ff79c6">=</span> pUVar13;
-</span></span><span style="display:flex;"><span>          local_380 <span style="color:#ff79c6">=</span> pUVar13;
-</span></span><span style="display:flex;"><span>          pNVar15 <span style="color:#ff79c6">=</span> NewsController<span style="color:#ff79c6">::</span><span style="color:#50fa7b">typeMetadataAccessor</span>();
-</span></span><span style="display:flex;"><span>          pUVar13 <span style="color:#ff79c6">=</span> local_390;
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_swift_dynamicCastClassUnconditional</span>(local_390,pNVar15,<span style="color:#bd93f9">0</span>,<span style="color:#bd93f9">0</span>);
-</span></span><span style="display:flex;"><span>          local_388 <span style="color:#ff79c6">=</span> pUVar13;
-</span></span><span style="display:flex;"><span>          local_130 <span style="color:#ff79c6">=</span> pUVar13;
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_swift_bridgeObjectRetain</span>(local_2e0);
-</span></span><span style="display:flex;"><span>          (<span style="color:#ff79c6">**</span>(code <span style="color:#ff79c6">**</span>)((<span style="color:#ff79c6">*</span>(uint <span style="color:#ff79c6">*</span>)pUVar13 <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">*</span>local_1c8) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x88</span>))(local_2e8,local_2e0);
-</span></span><span style="display:flex;"><span>          (<span style="color:#ff79c6">**</span>(code <span style="color:#ff79c6">**</span>)((<span style="color:#ff79c6">*</span>(uint <span style="color:#ff79c6">*</span>)local_388 <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">*</span>local_1c8) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xa0</span>))();
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_release</span>(local_388);
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_release</span>(local_318);
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_release</span>(local_328);
-</span></span><span style="display:flex;"><span>          <span style="color:#50fa7b">_objc_release</span>(local_340);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        <span style="color:#50fa7b">_swift_bridgeObjectRelease</span>(local_2e0);
-</span></span><span style="display:flex;"><span>      }
-</span></span><span style="display:flex;"><span>      <span style="color:#50fa7b">_objc_release</span>(local_260);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    $$outlined_destroy_of_Swift.Set<span style="color:#ff79c6">&lt;&gt;</span>.<span style="color:#50fa7b">Iterator</span>(auStack_a0);
-</span></span><span style="display:flex;"><span>    <span style="color:#50fa7b">_objc_release</span>(local_210);
-</span></span><span style="display:flex;"><span>  }
-</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">return</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Explaination:</p>
-<p>The scene(_:openURLContexts:) method in the SceneDelegate handles deep links when the app is opened via a custom URL scheme like:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gotham://open?url<span style="color:#ff79c6">=</span>http://example.com
-</span></span></code></pre></div><p><strong>Main steps:</strong></p>
-<ol>
-<li>
-<p><strong>Iterates over UIOpenURLContext items</strong> passed by the system.</p>
-</li>
-<li>
-<p><strong>Extracts the URL</strong> from each context and checks if the host is &quot;open&quot;.</p>
-</li>
-<li>
-<p>If matched, it:</p>
-<ul>
-<li>
-<p>Parses the url parameter from the query.</p>
-</li>
-<li>
-<p>Loads a storyboard view controller (TabbedControllerID).</p>
-</li>
-<li>
-<p>Wraps it inside a UINavigationController.</p>
-</li>
-<li>
-<p>Creates and sets a new UIWindow.</p>
-</li>
-</ul>
-</li>
-<li>
-<p>If the selected tab view controller is of type NewsController, it passes the extracted URL to it.</p>
-</li>
-</ol>
-<blockquote>
-<p>You can create a qrcode too.. and set the malicious deep linking</p>
-</blockquote>
-<h3 id="exploit">Exploit</h3>
-<pre tabindex="0"><code>&lt;html&gt;
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Gotham Times Mobile Hacking Labs | incogbyte</title>
+<meta name=description content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta name=author content="Rodolfo Tavares"><meta name=theme-color content="#0b0e13"><link rel=canonical href=https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/><meta property="og:title" content="Gotham Times Mobile Hacking Labs | incogbyte"><meta property="og:description" content="Offensive security researcher focused on vulnerability research, mobile security, application security, and reverse engineering."><meta property="og:type" content="article"><meta property="og:url" content="https://incogbyte.github.io/posts/gotham-times-mobilehackinglabs/"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel=stylesheet><script src=/js/theme-init.js></script><link rel=stylesheet href=/css/style.css></head><body><a class=skip-link href=#main-content>Skip to content</a><div class=site-grid aria-hidden=true></div><header class=site-header><nav class=navbar aria-label="Main navigation"><a href=/ class=logo aria-label="Rodolfo Tavares, Home"><span class=logo-mark aria-hidden=true>~/</span>
+<span class=logo-lockup><span class=logo-text>incogbyte</span>
+<span class=logo-subtitle>offensive security research</span></span></a><ul class=nav-links id=site-navigation><li><a href=/posts/ class=nav-link>Writing</a></li><li><a href=/cve/ class=nav-link>CVEs</a></li><li><a href=/about/ class=nav-link>About</a></li></ul><div class=nav-actions><button class=theme-toggle type=button aria-label="Switch to light theme" title="Switch to light theme">
+<span class=theme-icon aria-hidden=true>☀</span>
+</button>
+<button class=menu-toggle type=button aria-label="Open navigation" aria-expanded=false aria-controls=site-navigation>
+<span></span>
+<span></span>
+<span></span></button></div></nav></header><main class=container id=main-content><article class=post-single><header class="post-header fade-in"><h1 class=post-single-title>Gotham Times Mobile Hacking Labs</h1><div class=post-single-meta><time>May 31, 2025</time>
+<span class=reading-time>6 min read</span></div><div class=post-tags><span class=tag>mobile</span>
+<span class=tag>ios</span>
+<span class=tag>webview</span>
+<span class=tag>lab</span></div></header><div class="post-content fade-in"><h3 id=introduction>Introduction</h3><p>The Gotham Times lab provides an in-depth exploration of iOS webviews and their security implications. This comprehensive guide focuses on how vulnerabilities in webviews can be exploited through deep links, specifically demonstrating a session token theft scenario via an open redirect vulnerability.</p><p>In this article, we will walk through the complete process, from initial vulnerability discovery to successful exploitation. You will learn:</p><ul><li>How webviews function in iOS applications</li><li>Understanding deep links and their implementation</li><li>Identifying open redirect vulnerabilities</li><li>Techniques for exploiting these security flaws</li><li>Methods for extracting session tokens</li><li>Best practices for preventing such attacks</li></ul><p>This lab is perfect for developers, security analysts, and enthusiasts looking to deepen their understanding of mobile application security, particularly in the iOS environment.</p><h3 id=initial-application-analysis>Initial Application Analysis</h3><p>Upon launching the application, we are presented with a login screen and an option to navigate to the registration screen. After creating an account and logging in, we are taken to the authenticated section of the app where we can view a list of news articles and profile information. Nothing seems unusual at first, so let's dig deeper into the application.</p><p>Let's break down the initial application flow and interface:</p><ol><li><p>Authentication Flow:</p><ul><li>Initial login screen with credentials input</li><li>Registration option for new users</li><li>Secure authentication process</li></ul></li><li><p>Main Application Features:</p><ul><li>News article listing functionality</li><li>User profile management</li><li>Authenticated user dashboard</li></ul></li></ol><h3 id=technical-analysis>Technical Analysis</h3><p>First, with the .ipa file we can use the following script to extract the contents and get the class-dump information:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#ff79c6>#!/bin/bash
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6></span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Check if an IPA file was provided</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> <span style=color:#ff79c6>[</span> -z <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$1</span><span style=color:#f1fa8c>&#34;</span> <span style=color:#ff79c6>]</span>; <span style=color:#ff79c6>then</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;Usage: </span><span style=color:#8be9fd;font-style:italic>$0</span><span style=color:#f1fa8c> &lt;path_to_ipa_file&gt;&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>exit</span> <span style=color:#bd93f9>1</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>fi</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>IPA_FILE</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$1</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Check if the IPA file exists</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> <span style=color:#ff79c6>[</span> ! -f <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$IPA_FILE</span><span style=color:#f1fa8c>&#34;</span> <span style=color:#ff79c6>]</span>; <span style=color:#ff79c6>then</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[@] Error: IPA file not found!&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>exit</span> <span style=color:#bd93f9>1</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>fi</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Get the app name from the IPA file</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>APP_NAME</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#ff79c6>$(</span>basename <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$IPA_FILE</span><span style=color:#f1fa8c>&#34;</span> .ipa<span style=color:#ff79c6>)</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>OUTPUT_DIR</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#ff79c6>$(</span>dirname <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$IPA_FILE</span><span style=color:#f1fa8c>&#34;</span> | xargs readlink -f<span style=color:#ff79c6>)</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Create output directory</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>OUTPUT_DIR</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/</span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>mkdir -p <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Unzip the IPA contents</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>UNZIP_DIR</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/_extracted&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[*] Extracting IPA contents...&#34;</span>
+</span></span><span style=display:flex><span>mkdir -p <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$UNZIP_DIR</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>unzip -q <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$IPA_FILE</span><span style=color:#f1fa8c>&#34;</span> -d <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$UNZIP_DIR</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Locate the .app directory</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>APP_PATH</span><span style=color:#ff79c6>=</span><span style=color:#ff79c6>$(</span>find <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$UNZIP_DIR</span><span style=color:#f1fa8c>&#34;</span> -name <span style=color:#f1fa8c>&#34;*.app&#34;</span> -type d<span style=color:#ff79c6>)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> <span style=color:#ff79c6>[</span> -z <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$APP_PATH</span><span style=color:#f1fa8c>&#34;</span> <span style=color:#ff79c6>]</span>; <span style=color:#ff79c6>then</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[@] No .app found in </span><span style=color:#8be9fd;font-style:italic>$UNZIP_DIR</span><span style=color:#f1fa8c>, exiting...&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>exit</span> <span style=color:#bd93f9>1</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>fi</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>BINARY</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$APP_PATH</span><span style=color:#f1fa8c>/</span><span style=color:#ff79c6>$(</span>basename <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$APP_PATH</span><span style=color:#f1fa8c>&#34;</span> .app<span style=color:#ff79c6>)</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Check if the binary exists</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>if</span> <span style=color:#ff79c6>[</span> ! -f <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$BINARY</span><span style=color:#f1fa8c>&#34;</span> <span style=color:#ff79c6>]</span>; <span style=color:#ff79c6>then</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[@] No binary found in </span><span style=color:#8be9fd;font-style:italic>$APP_PATH</span><span style=color:#f1fa8c>, exiting...&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>exit</span> <span style=color:#bd93f9>1</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>fi</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Create directories for class dumps</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>CLASS_DUMP_OUTPUT</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/class_dump&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>SWIFT_DUMP_OUTPUT</span><span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$OUTPUT_DIR</span><span style=color:#f1fa8c>/swift_dump&#34;</span>
+</span></span><span style=display:flex><span>mkdir -p <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$CLASS_DUMP_OUTPUT</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>mkdir -p <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$SWIFT_DUMP_OUTPUT</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Dump Objective-C classes using class-dump</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[*] Dumping Objective-C classes for </span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>...&#34;</span>
+</span></span><span style=display:flex><span>ipsw class-dump <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$BINARY</span><span style=color:#f1fa8c>&#34;</span> --headers -o <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$CLASS_DUMP_OUTPUT</span><span style=color:#f1fa8c>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># Dump Swift classes using swift-dump</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[*] Dumping Swift classes for </span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>...&#34;</span>
+</span></span><span style=display:flex><span>ipsw swift-dump <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$BINARY</span><span style=color:#f1fa8c>&#34;</span> &gt; <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$SWIFT_DUMP_OUTPUT</span><span style=color:#f1fa8c>/</span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>-mangled.txt&#34;</span>
+</span></span><span style=display:flex><span>ipsw swift-dump <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$BINARY</span><span style=color:#f1fa8c>&#34;</span> --demangle &gt; <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$SWIFT_DUMP_OUTPUT</span><span style=color:#f1fa8c>/</span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>-demangled.txt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>echo</span> <span style=color:#f1fa8c>&#34;[+] Decompilation completed for </span><span style=color:#8be9fd;font-style:italic>$APP_NAME</span><span style=color:#f1fa8c>&#34;</span>
+</span></span></code></pre></div><p>We can inspect the binary extracted contents and class-dump information:</p><p><img src=/images/gothamt-01.png alt></p><p>This information show us some interesting things... but the mainly information is the name of the Gotham_Times classes/interfaces</p><p>We can use the <code>ipsw</code> to verify the plist files:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>ipsw plist Info.plist
+</span></span><span style=display:flex><span><span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;BuildMachineOSBuild&#34;</span>: <span style=color:#f1fa8c>&#34;23D60&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleDevelopmentRegion&#34;</span>: <span style=color:#f1fa8c>&#34;en&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleExecutable&#34;</span>: <span style=color:#f1fa8c>&#34;Gotham Times&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleIcons&#34;</span>: <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;CFBundlePrimaryIcon&#34;</span>: <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleIconFiles&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;AppIcon60x60&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>]</span>,
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleIconName&#34;</span>: <span style=color:#f1fa8c>&#34;AppIcon&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>}</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>}</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleIcons~ipad&#34;</span>: <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;CFBundlePrimaryIcon&#34;</span>: <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleIconFiles&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;AppIcon60x60&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;AppIcon76x76&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>]</span>,
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleIconName&#34;</span>: <span style=color:#f1fa8c>&#34;AppIcon&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>}</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>}</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleIdentifier&#34;</span>: <span style=color:#f1fa8c>&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleInfoDictionaryVersion&#34;</span>: <span style=color:#f1fa8c>&#34;6.0&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleName&#34;</span>: <span style=color:#f1fa8c>&#34;Gotham Times&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundlePackageType&#34;</span>: <span style=color:#f1fa8c>&#34;APPL&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleShortVersionString&#34;</span>: <span style=color:#f1fa8c>&#34;1.0&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleSupportedPlatforms&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;iPhoneOS&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>]</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleURLTypes&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleTypeRole&#34;</span>: <span style=color:#f1fa8c>&#34;Viewer&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleURLName&#34;</span>: <span style=color:#f1fa8c>&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleURLSchemes&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;gothamtimes&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>]</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>}</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>]</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;CFBundleVersion&#34;</span>: <span style=color:#f1fa8c>&#34;1&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;DTCompiler&#34;</span>: <span style=color:#f1fa8c>&#34;com.apple.compilers.llvm.clang.1_0&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;DTPlatformBuild&#34;</span>: <span style=color:#f1fa8c>&#34;21C52&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;DTPlatformName&#34;</span>: <span style=color:#f1fa8c>&#34;iphoneos&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;DTPlatformVersion&#34;</span>: <span style=color:#f1fa8c>&#34;17.2&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;DTSDKBuild&#34;</span>: <span style=color:#f1fa8c>&#34;21C52&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;DTSDKName&#34;</span>: <span style=color:#f1fa8c>&#34;iphoneos17.2&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;DTXcode&#34;</span>: <span style=color:#f1fa8c>&#34;1520&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;DTXcodeBuild&#34;</span>: <span style=color:#f1fa8c>&#34;15C500b&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;LSRequiresIPhoneOS&#34;</span>: true,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;MinimumOSVersion&#34;</span>: <span style=color:#f1fa8c>&#34;15.4&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;NSAccentColorName&#34;</span>: <span style=color:#f1fa8c>&#34;AccentColor&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;UIApplicationSceneManifest&#34;</span>: <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;UIApplicationSupportsMultipleScenes&#34;</span>: false,
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;UISceneConfigurations&#34;</span>: <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;UIWindowSceneSessionRoleApplication&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>          <span style=color:#f1fa8c>&#34;UISceneConfigurationName&#34;</span>: <span style=color:#f1fa8c>&#34;Default Configuration&#34;</span>,
+</span></span><span style=display:flex><span>          <span style=color:#f1fa8c>&#34;UISceneDelegateClassName&#34;</span>: <span style=color:#f1fa8c>&#34;Gotham_Times.SceneDelegate&#34;</span>,
+</span></span><span style=display:flex><span>          <span style=color:#f1fa8c>&#34;UISceneStoryboardFile&#34;</span>: <span style=color:#f1fa8c>&#34;Main&#34;</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>}</span>
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>]</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>}</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>}</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;UIApplicationSupportsIndirectInputEvents&#34;</span>: true,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;UIDeviceFamily&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>    1,
+</span></span><span style=display:flex><span>    <span style=color:#bd93f9>2</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>]</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;UILaunchStoryboardName&#34;</span>: <span style=color:#f1fa8c>&#34;LaunchScreen&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;UIMainStoryboardFile&#34;</span>: <span style=color:#f1fa8c>&#34;Main&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;UIRequiredDeviceCapabilities&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;arm64&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>]</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;UISupportedInterfaceOrientations~ipad&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;UIInterfaceOrientationPortrait&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;UIInterfaceOrientationPortraitUpsideDown&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;UIInterfaceOrientationLandscapeLeft&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;UIInterfaceOrientationLandscapeRight&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>]</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f1fa8c>&#34;UISupportedInterfaceOrientations~iphone&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;UIInterfaceOrientationPortrait&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;UIInterfaceOrientationLandscapeLeft&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;UIInterfaceOrientationLandscapeRight&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>]</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>}</span>
+</span></span></code></pre></div><p>The only interesting thing.. for this chall is the following scheme:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f1fa8c>&#34;CFBundleURLTypes&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>{</span>
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleTypeRole&#34;</span>: <span style=color:#f1fa8c>&#34;Viewer&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleURLName&#34;</span>: <span style=color:#f1fa8c>&#34;com.mobilehackinglab.Gotham-Times&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#f1fa8c>&#34;CFBundleURLSchemes&#34;</span>: <span style=color:#ff79c6>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;gothamtimes&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>]</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>}</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>]</span>,
+</span></span></code></pre></div><p><code>gothamtimes</code> can be used as <code>deeplink</code> with the following schema <code>gothamtimes://data</code>.</p><p>Now we can open the Gothman Mach-O binary inside Ghidra and verify the decompiled binary:</p><p><img src=/images/gothamt-02.png alt></p><p>The following function is responsible for open the the <code>deeplink</code> with the parameter URL:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#6272a4>/* Gotham_Times.SceneDelegate.scene(_: __C.UIScene, openURLContexts:
+</span></span></span><span style=display:flex><span><span style=color:#6272a4>   Swift.Set&lt;__C.UIOpenURLContext&gt;) -&gt; () */</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd>void</span> __thiscall
+</span></span><span style=display:flex><span>Gotham_Times<span style=color:#ff79c6>::</span>SceneDelegate<span style=color:#ff79c6>::</span><span style=color:#50fa7b>scene</span>(SceneDelegate <span style=color:#ff79c6>*</span>this,<span style=color:#8be9fd>int</span> param_1,undefined <span style=color:#ff79c6>*</span>openURLContexts)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd>int</span> iVar1;
+</span></span><span style=display:flex><span>  String SVar2;
+</span></span><span style=display:flex><span>  SceneDelegate <span style=color:#ff79c6>*</span>pSVar3;
+</span></span><span style=display:flex><span>  StaticString SVar4;
+</span></span><span style=display:flex><span>  code <span style=color:#ff79c6>*</span>pcVar5;
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd>bool</span> bVar6;
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd>int</span> iVar7;
+</span></span><span style=display:flex><span>  undefined <span style=color:#ff79c6>*</span>puVar8;
+</span></span><span style=display:flex><span>  Iterator IVar9;
+</span></span><span style=display:flex><span>.....
+</span></span><span style=display:flex><span>...
+</span></span><span style=display:flex><span>...
+</span></span><span style=display:flex><span>      tVar20 <span style=color:#ff79c6>=</span> Swift<span style=color:#ff79c6>::</span>$<span style=color:#50fa7b>_allocateUninitializedArray</span>(<span style=color:#bd93f9>1</span>);
+</span></span><span style=display:flex><span>      local_2a0 <span style=color:#ff79c6>=</span> (<span style=color:#8be9fd>int</span> <span style=color:#ff79c6>*</span>)tVar20<span style=color:#bd93f9>.1</span>;
+</span></span><span style=display:flex><span>      local_298 <span style=color:#ff79c6>=</span> tVar20._0_8_;
+</span></span><span style=display:flex><span>      local_268 <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>&amp;</span>objc<span style=color:#ff79c6>::</span><span style=color:#8be9fd>protocol_t</span><span style=color:#ff79c6>::</span>WKUIDelegate;
+</span></span><span style=display:flex><span>      pcVar17 <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;URL&#34;</span>;
+</span></span><span style=display:flex><span>      UVar10.unknown <span style=color:#ff79c6>=</span> local_260;
+</span></span><span style=display:flex><span>      <span style=color:#50fa7b>_objc_msgSend</span>();
+</span></span><span style=display:flex><span>      <span style=color:#50fa7b>_objc_retainAutoreleasedReturnValue</span>();
+</span></span><span style=display:flex><span>      local_290 <span style=color:#ff79c6>=</span> UVar10.unknown;
+</span></span><span style=display:flex><span>      Foundation<span style=color:#ff79c6>::</span>URL<span style=color:#ff79c6>::</span>$<span style=color:#50fa7b>_unconditionallyBridgeFromObjectiveC</span>(UVar10);
+</span></span><span style=display:flex><span>      local_2a0[<span style=color:#bd93f9>3</span>] <span style=color:#ff79c6>=</span> (<span style=color:#8be9fd>int</span>)local_1a0;
+</span></span><span style=display:flex><span>      piVar11 <span style=color:#ff79c6>=</span> <span style=color:#50fa7b>___swift_allocate_boxed_opaque_existential_0</span>(local_2a0,(<span style=color:#8be9fd>int</span> <span style=color:#ff79c6>*</span>)pcVar17);
+</span></span><span style=display:flex><span>      (<span style=color:#ff79c6>**</span>(code <span style=color:#ff79c6>**</span>)(local_198 <span style=color:#ff79c6>+</span> <span style=color:#bd93f9>0x20</span>))(piVar11,local_158,local_1a0);
+</span></span><span style=display:flex><span>      local_270 <span style=color:#ff79c6>=</span> (<span style=color:#8be9fd>char</span> <span style=color:#ff79c6>*</span>)Swift<span style=color:#ff79c6>::</span>$<span style=color:#50fa7b>_finalizeUninitializedArray</span>(local_298);
+</span></span><span style=display:flex><span>      <span style=color:#50fa7b>_objc_release</span>(local_290);
+</span></span><span style=display:flex><span>      SVar21 <span style=color:#ff79c6>=</span> Swift<span style=color:#ff79c6>::</span>$<span style=color:#50fa7b>print</span>();
+</span></span><span style=display:flex><span>      <span style=color:#50fa7b>_swift_bridgeObjectRetain</span>(local_230);
+</span></span><span style=display:flex><span>      SVar21 <span style=color:#ff79c6>=</span> Swift<span style=color:#ff79c6>::</span>String<span style=color:#ff79c6>::</span><span style=color:#50fa7b>init</span>(<span style=color:#f1fa8c>&#34;open&#34;</span>,<span style=color:#bd93f9>4</span>,<span style=color:#bd93f9>1</span>);
+</span></span><span style=display:flex><span>      local_228 <span style=color:#ff79c6>=</span> SVar21.bridgeObject;
+</span></span><span style=display:flex><span>      local_240 <span style=color:#ff79c6>=</span> SVar21.str;
+</span></span><span style=display:flex><span>      <span style=color:#50fa7b>_swift_bridgeObjectRetain</span>();
+</span></span><span style=display:flex><span>      local_d0 <span style=color:#ff79c6>=</span> local_238;
+</span></span><span style=display:flex><span>      local_c8 <span style=color:#ff79c6>=</span> local_230;
+</span></span><span style=display:flex><span>      local_c0 <span style=color:#ff79c6>=</span> local_240;
+</span></span><span style=display:flex><span>      local_b8 <span style=color:#ff79c6>=</span> local_228;
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>if</span> (local_230 <span style=color:#ff79c6>==</span> <span style=color:#bd93f9>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> (local_228 <span style=color:#ff79c6>!=</span> (<span style=color:#8be9fd>void</span> <span style=color:#ff79c6>*</span>)<span style=color:#bd93f9>0x0</span>) <span style=color:#ff79c6>goto</span> LAB_1000195a4;
+</span></span><span style=display:flex><span>        $$outlined_destroy_of_Swift.String<span style=color:#ff79c6>?</span>((<span style=color:#8be9fd>int</span>)<span style=color:#ff79c6>&amp;</span>local_d0);
+</span></span><span style=display:flex><span>        local_2a4 <span style=color:#ff79c6>=</span> <span style=color:#bd93f9>1</span>;
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>else</span> {
+</span></span><span style=display:flex><span>        $$outlined_init_with_copy_of_Swift.String<span style=color:#ff79c6>?</span>(<span style=color:#ff79c6>&amp;</span>local_d0,<span style=color:#ff79c6>&amp;</span>local_140);
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> (local_b8 <span style=color:#ff79c6>==</span> (<span style=color:#8be9fd>void</span> <span style=color:#ff79c6>*</span>)<span style=color:#bd93f9>0x0</span>) {
+</span></span><span style=display:flex><span>          $$outlined_destroy_of_Swift.<span style=color:#50fa7b>String</span>((<span style=color:#8be9fd>int</span>)<span style=color:#ff79c6>&amp;</span>local_140);
+</span></span><span style=display:flex><span>LAB_1
+</span></span><span style=display:flex><span>      <span style=color:#50fa7b>if</span> ((local_2d4 <span style=color:#ff79c6>&amp;</span> <span style=color:#bd93f9>1</span>) <span style=color:#ff79c6>!=</span> <span style=color:#bd93f9>0</span>) {
+</span></span><span style=display:flex><span>        UVar10.unknown <span style=color:#ff79c6>=</span> local_260;
+</span></span><span style=display:flex><span>        <span style=color:#50fa7b>_objc_msgSend</span>(local_260,<span style=color:#f1fa8c>&#34;URL&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#50fa7b>_objc_retainAutoreleasedReturnValue</span>();
+</span></span><span style=display:flex><span>        local_2f0 <span style=color:#ff79c6>=</span> UVar10.unknown;
+</span></span><span style=display:flex><span>        Foundation<span style=color:#ff79c6>::</span>URL<span style=color:#ff79c6>::</span>$<span style=color:#50fa7b>_unconditionallyBridgeFromObjectiveC</span>(UVar10);
+</span></span><span style=display:flex><span>        (<span style=color:#ff79c6>*</span>local_250)(UVar12.unknown,local_158,local_1a0);
+</span></span><span style=display:flex><span>        SVar21 <span style=color:#ff79c6>=</span> Foundation<span style=color:#ff79c6>::</span>URL<span style=color:#ff79c6>::</span><span style=color:#50fa7b>get_absoluteString</span>(UVar12);
+</span></span><span style=display:flex><span>        pSVar3 <span style=color:#ff79c6>=</span> local_1d8;
+</span></span><span style=display:flex><span>        local_2f8 <span style=color:#ff79c6>=</span> SVar21.bridgeObject;
+</span></span><span style=display:flex><span>        local_308 <span style=color:#ff79c6>=</span> SVar21.str;
+</span></span><span style=display:flex><span>        (<span style=color:#ff79c6>*</span>local_248)(local_188,local_1a0);
+</span></span><span style=display:flex><span>        (<span style=color:#ff79c6>*</span>local_248)(local_158,local_1a0);
+</span></span><span style=display:flex><span>        SVar21 <span style=color:#ff79c6>=</span> Swift<span style=color:#ff79c6>::</span>String<span style=color:#ff79c6>::</span><span style=color:#50fa7b>init</span>(<span style=color:#f1fa8c>&#34;url&#34;</span>,<span style=color:#bd93f9>3</span>,<span style=color:#bd93f9>1</span>);
+</span></span><span style=display:flex><span>        local_300 <span style=color:#ff79c6>=</span> SVar21.bridgeObject;
+</span></span><span style=display:flex><span>          SVar21 <span style=color:#ff79c6>=</span> Swift<span style=color:#ff79c6>::</span>String<span style=color:#ff79c6>::</span><span style=color:#50fa7b>init</span>(<span style=color:#f1fa8c>&#34;Main&#34;</span>,<span style=color:#bd93f9>4</span>,<span style=color:#bd93f9>1</span>);
+</span></span><span style=display:flex><span>          local_340 <span style=color:#ff79c6>=</span> __C<span style=color:#ff79c6>::</span>UIStoryboard<span style=color:#ff79c6>::</span>$<span style=color:#50fa7b>__allocating_init</span>
+</span></span><span style=display:flex><span>                                (auVar19._0_8_,SVar21.str,SVar21.bridgeObject,local_320);
+</span></span><span style=display:flex><span>          local_108 <span style=color:#ff79c6>=</span> local_340;
+</span></span><span style=display:flex><span>          SVar21 <span style=color:#ff79c6>=</span> Swift<span style=color:#ff79c6>::</span>String<span style=color:#ff79c6>::</span><span style=color:#50fa7b>init</span>(<span style=color:#f1fa8c>&#34;TabbedControllerID&#34;</span>,<span style=color:#bd93f9>0x12</span>,(byte)local_34c <span style=color:#ff79c6>&amp;</span> <span style=color:#bd93f9>1</span>);
+</span></span><span style=display:flex><span>          local_348 <span style=color:#ff79c6>=</span> SVar21.bridgeObject;
+</span></span><span style=display:flex><span>          local_338 <span style=color:#ff79c6>=</span> (extension_Foundation)<span style=color:#ff79c6>::</span>Swift<span style=color:#ff79c6>::</span>String<span style=color:#ff79c6>::</span><span style=color:#50fa7b>_bridgeToObjectiveC</span>();
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_swift_bridgeObjectRelease</span>(local_348);
+</span></span><span style=display:flex><span>          pUVar13 <span style=color:#ff79c6>=</span> local_340;
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_msgSend</span>(local_340,<span style=color:#f1fa8c>&#34;instantiateViewControllerWithIdentifier:&#34;</span>,local_338);
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_retainAutoreleasedReturnValue</span>();
+</span></span><span style=display:flex><span>          local_330 <span style=color:#ff79c6>=</span> pUVar13;
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_release</span>(local_338);
+</span></span><span style=display:flex><span>          puVar8 <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>&amp;</span>_OBJC_CLASS_$_UITabBarController;
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_opt_self</span>(<span style=color:#ff79c6>&amp;</span>_OBJC_CLASS_$_UITabBarController);
+</span></span><span style=display:flex><span>          pUVar13 <span style=color:#ff79c6>=</span> local_330;
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_swift_dynamicCastObjCClassUnconditional</span>(local_330,puVar8,<span style=color:#bd93f9>0</span>,<span style=color:#bd93f9>0</span>);
+</span></span><span style=display:flex><span>          local_328 <span style=color:#ff79c6>=</span> pUVar13;
+</span></span><span style=display:flex><span>          local_110 <span style=color:#ff79c6>=</span> pUVar13;
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_msgSend</span>();
+</span></span><span style=display:flex><span>          auVar19 <span style=color:#ff79c6>=</span> __C<span style=color:#ff79c6>::</span>UINavigationController<span style=color:#ff79c6>::</span><span style=color:#50fa7b>typeMetadataAccessor</span>();
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_retain</span>(local_328,auVar19._8_8_);
+</span></span><span style=display:flex><span>          local_318 <span style=color:#ff79c6>=</span> __C<span style=color:#ff79c6>::</span>UINavigationController<span style=color:#ff79c6>::</span><span style=color:#50fa7b>__allocating_init</span>(auVar19._0_8_,local_328);
+</span></span><span style=display:flex><span>          local_118 <span style=color:#ff79c6>=</span> local_318;
+</span></span><span style=display:flex><span>          auVar19 <span style=color:#ff79c6>=</span> __C<span style=color:#ff79c6>::</span>UIWindow<span style=color:#ff79c6>::</span><span style=color:#50fa7b>typeMetadataAccessor</span>();
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_retain</span>(local_210,auVar19._8_8_);
+</span></span><span style=display:flex><span>          pUVar14 <span style=color:#ff79c6>=</span> __C<span style=color:#ff79c6>::</span>UIWindow<span style=color:#ff79c6>::</span><span style=color:#50fa7b>__allocating_init</span>(auVar19._0_8_,local_210);
+</span></span><span style=display:flex><span>          (<span style=color:#ff79c6>**</span>(code <span style=color:#ff79c6>**</span>)((<span style=color:#ff79c6>*</span>(uint <span style=color:#ff79c6>*</span>)local_1d8 <span style=color:#ff79c6>&amp;</span> <span style=color:#ff79c6>*</span>local_1c8) <span style=color:#ff79c6>+</span> <span style=color:#bd93f9>0x60</span>))();
+</span></span><span style=display:flex><span>          (<span style=color:#ff79c6>**</span>(code <span style=color:#ff79c6>**</span>)((<span style=color:#ff79c6>*</span>(uint <span style=color:#ff79c6>*</span>)local_1d8 <span style=color:#ff79c6>&amp;</span> <span style=color:#ff79c6>*</span>local_1c8) <span style=color:#ff79c6>+</span> <span style=color:#bd93f9>0x58</span>))();
+</span></span><span style=display:flex><span>          local_120 <span style=color:#ff79c6>=</span> pUVar14;
+</span></span><span style=display:flex><span>          <span style=color:#ff79c6>if</span> (pUVar14 <span style=color:#ff79c6>==</span> (UIWindow <span style=color:#ff79c6>*</span>)<span style=color:#bd93f9>0x0</span>) {
+</span></span><span style=display:flex><span>            pUVar14 <span style=color:#ff79c6>=</span> (UIWindow <span style=color:#ff79c6>*</span>)$$outlined_destroy_of___C.UIWindow<span style=color:#ff79c6>?</span>(<span style=color:#ff79c6>&amp;</span>local_120);
+</span></span><span style=display:flex><span>          }
+</span></span><span style=display:flex><span>            Swift<span style=color:#ff79c6>::</span><span style=color:#50fa7b>_assertionFailure</span>(SVar4,(StaticString)<span style=color:#bd93f9>0xb</span>,(StaticString)<span style=color:#bd93f9>0x2</span>,(uint)pcVar17,<span style=color:#bd93f9>0x39</span>);
+</span></span><span style=display:flex><span>                    <span style=color:#6272a4>/* WARNING: Does not return */</span>
+</span></span><span style=display:flex><span>            pcVar5 <span style=color:#ff79c6>=</span> (code <span style=color:#ff79c6>*</span>)<span style=color:#50fa7b>SoftwareBreakpoint</span>(<span style=color:#bd93f9>1</span>,<span style=color:#bd93f9>0x1000199cc</span>);
+</span></span><span style=display:flex><span>            (<span style=color:#ff79c6>*</span>pcVar5)();
+</span></span><span style=display:flex><span>          }
+</span></span><span style=display:flex><span>          local_390 <span style=color:#ff79c6>=</span> pUVar13;
+</span></span><span style=display:flex><span>          local_380 <span style=color:#ff79c6>=</span> pUVar13;
+</span></span><span style=display:flex><span>          pNVar15 <span style=color:#ff79c6>=</span> NewsController<span style=color:#ff79c6>::</span><span style=color:#50fa7b>typeMetadataAccessor</span>();
+</span></span><span style=display:flex><span>          pUVar13 <span style=color:#ff79c6>=</span> local_390;
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_swift_dynamicCastClassUnconditional</span>(local_390,pNVar15,<span style=color:#bd93f9>0</span>,<span style=color:#bd93f9>0</span>);
+</span></span><span style=display:flex><span>          local_388 <span style=color:#ff79c6>=</span> pUVar13;
+</span></span><span style=display:flex><span>          local_130 <span style=color:#ff79c6>=</span> pUVar13;
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_swift_bridgeObjectRetain</span>(local_2e0);
+</span></span><span style=display:flex><span>          (<span style=color:#ff79c6>**</span>(code <span style=color:#ff79c6>**</span>)((<span style=color:#ff79c6>*</span>(uint <span style=color:#ff79c6>*</span>)pUVar13 <span style=color:#ff79c6>&amp;</span> <span style=color:#ff79c6>*</span>local_1c8) <span style=color:#ff79c6>+</span> <span style=color:#bd93f9>0x88</span>))(local_2e8,local_2e0);
+</span></span><span style=display:flex><span>          (<span style=color:#ff79c6>**</span>(code <span style=color:#ff79c6>**</span>)((<span style=color:#ff79c6>*</span>(uint <span style=color:#ff79c6>*</span>)local_388 <span style=color:#ff79c6>&amp;</span> <span style=color:#ff79c6>*</span>local_1c8) <span style=color:#ff79c6>+</span> <span style=color:#bd93f9>0xa0</span>))();
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_release</span>(local_388);
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_release</span>(local_318);
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_release</span>(local_328);
+</span></span><span style=display:flex><span>          <span style=color:#50fa7b>_objc_release</span>(local_340);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#50fa7b>_swift_bridgeObjectRelease</span>(local_2e0);
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>      <span style=color:#50fa7b>_objc_release</span>(local_260);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    $$outlined_destroy_of_Swift.Set<span style=color:#ff79c6>&lt;&gt;</span>.<span style=color:#50fa7b>Iterator</span>(auStack_a0);
+</span></span><span style=display:flex><span>    <span style=color:#50fa7b>_objc_release</span>(local_210);
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>return</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Explaination:</p><p>The scene(_:openURLContexts:) method in the SceneDelegate handles deep links when the app is opened via a custom URL scheme like:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>gotham://open?url<span style=color:#ff79c6>=</span>http://example.com
+</span></span></code></pre></div><p><strong>Main steps:</strong></p><ol><li><p><strong>Iterates over UIOpenURLContext items</strong> passed by the system.</p></li><li><p><strong>Extracts the URL</strong> from each context and checks if the host is "open".</p></li><li><p>If matched, it:</p><ul><li><p>Parses the url parameter from the query.</p></li><li><p>Loads a storyboard view controller (TabbedControllerID).</p></li><li><p>Wraps it inside a UINavigationController.</p></li><li><p>Creates and sets a new UIWindow.</p></li></ul></li><li><p>If the selected tab view controller is of type NewsController, it passes the extracted URL to it.</p></li></ol><blockquote><p>You can create a qrcode too.. and set the malicious deep linking</p></blockquote><h3 id=exploit>Exploit</h3><pre tabindex=0><code>&lt;html&gt;
 
 &lt;h1&gt; GotHam Exploit &lt;/h1&gt;
 
 &lt;a href=&#34;gothamtimes://open?url=https://incogbyte.github.io&#34;&gt; Click me Daddy! &lt;/a&gt;
 
 &lt;/html&gt;
-</code></pre><p><img src="/images/gothamt-03.png" alt=""></p>
-<p><img src="/images/gothamt-04.png" alt=""></p>
-<p><img src="/images/gothamt-05.png" alt=""></p>
-<p><img src="/images/gothamt-06.png" alt=""></p>
-<p>As we can see, the app could be exploited with an <code>open redirect vulnerability</code> that could leak the Session token. This vulnerability exists in the WebView implementation, where insufficient URL validation allows for malicious redirects.</p>
-<h3 id="conclusion">Conclusion</h3>
-<p>This lab serves as a valuable lesson in understanding the security implications of loading URLs within a WebView in iOS applications. By exploiting vulnerabilities like this, it's possible to load malicious sites and steal session tokens. For a hands-on experience with these concepts, visit the lab at MobileHackingLab - Gotham Times.</p>
-
-  </div>
-
-  <footer class="post-footer fade-in">
-    <div class="post-nav">
-      
-      <a href="https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/" class="post-nav-link prev">
-        <span>← Previous</span>
-        <span class="post-nav-title">Flipcoin Wallet Mobile Hacking Lab</span>
-      </a>
-      
-      
-      <a href="https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/" class="post-nav-link next">
-        <span>Next →</span>
-        <span class="post-nav-title">Time Trap Mobile Hacking Labs</span>
-      </a>
-      
-    </div>
-  </footer>
-</article>
-
-  </main>
-
-  <footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-links">
-      <a href="https://github.com/incogbyte" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
-      <a href="https://x.com/incogbyte" target="_blank" rel="noopener" aria-label="X/Twitter">X</a>
-      <a href="https://linkedin.com/in/rodolfo-tavares-543863a7" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
-      <a href="https://infosec.exchange/@incogbyte" target="_blank" rel="noopener" aria-label="Mastodon">Mastodon</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 Rodolfo Tavares — Built with Hugo</p>
-  </div>
-</footer>
-
-
-  <script src="/js/matrix.js"></script>
-  <script src="/js/main.js"></script>
-</body>
-</html>
+</code></pre><p><img src=/images/gothamt-03.png alt></p><p><img src=/images/gothamt-04.png alt></p><p><img src=/images/gothamt-05.png alt></p><p><img src=/images/gothamt-06.png alt></p><p>As we can see, the app could be exploited with an <code>open redirect vulnerability</code> that could leak the Session token. This vulnerability exists in the WebView implementation, where insufficient URL validation allows for malicious redirects.</p><h3 id=conclusion>Conclusion</h3><p>This lab serves as a valuable lesson in understanding the security implications of loading URLs within a WebView in iOS applications. By exploiting vulnerabilities like this, it's possible to load malicious sites and steal session tokens. For a hands-on experience with these concepts, visit the lab at MobileHackingLab - Gotham Times.</p></div><footer class="post-footer fade-in"><div class=post-nav><a href=https://incogbyte.github.io/posts/2025-30-05-flipcoin-wallet-mobile-hacking-lab/ class="post-nav-link prev"><span>← Previous</span>
+<span class=post-nav-title>Flipcoin Wallet Mobile Hacking Lab</span>
+</a><a href=https://incogbyte.github.io/posts/time-trap-mobilehackinglabs/ class="post-nav-link next"><span>Next →</span>
+<span class=post-nav-title>Time Trap Mobile Hacking Labs</span></a></div></footer></article></main><footer class=site-footer><div class=footer-content><p><span class=footer-prompt>~/incogbyte</span> <span>Security research, notes and disclosures.</span></p><nav class=footer-links aria-label="External profiles"><a href=https://github.com/incogbyte target=_blank rel="noopener noreferrer">GitHub</a>
+<a href=https://linkedin.com/in/rodolfo-tavares-543863a7 target=_blank rel="noopener noreferrer">LinkedIn</a>
+<a href=mailto:incogbyte@protonmail.com>Email</a>
+<a href=/index.xml>RSS</a></nav></div></footer><script src=/js/main.js></script></body></html>
